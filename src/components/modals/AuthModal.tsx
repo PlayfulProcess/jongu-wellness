@@ -12,7 +12,7 @@ interface AuthModalProps {
   subtitle?: string;
 }
 
-export function AuthModal({ isOpen, onClose, title = "Welcome to Best Possible Self", subtitle = "Sign in to save your work and access it anywhere" }: AuthModalProps) {
+export function AuthModal({ isOpen, onClose, title = "Welcome to Jongu Wellness", subtitle = "Sign in to access community tools and resources" }: AuthModalProps) {
   const supabase = createClient();
 
   // Close modal on successful auth
@@ -92,7 +92,7 @@ export function AuthModal({ isOpen, onClose, title = "Welcome to Best Possible S
               },
             }
           }}
-          providers={['github']}
+          providers={[]}
           redirectTo={typeof window !== 'undefined' ? 
             `${window.location.protocol}//${window.location.host}/auth/callback?next=${encodeURIComponent(window.location.pathname)}`
             : undefined}
