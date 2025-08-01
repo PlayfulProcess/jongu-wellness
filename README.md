@@ -1,6 +1,6 @@
-# Jongu Social Media Platform
+# Jongu Wellness Platform
 
-Community-driven wellness tool discovery platform. This is the social media component of the Jongu ecosystem, focused on tool sharing, discovery, and community building.
+Community-driven wellness tool discovery platform. This is the wellness component of the Jongu ecosystem, focused on tool sharing, discovery, and community building around mental health and wellness resources.
 
 ## Features
 
