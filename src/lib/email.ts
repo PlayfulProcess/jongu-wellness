@@ -101,18 +101,26 @@ export async function sendToolSubmissionNotification(data: ToolSubmissionData) {
           </div>
           
           <div style="text-align: center; padding: 20px;">
-            <a href="http://localhost:3002/admin" style="background: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: 500;">Review in Admin Panel</a>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 15px;">Go to your admin panel to review and approve this submission.</p>
           </div>
         </div>
       `,
     });
 
     if (error) {
-      console.error('Failed to send tool submission notification:', error);
+      console.error('❌ Failed to send tool submission notification:', {
+        error: error.message || error,
+        recipient: NOTIFICATION_EMAIL,
+        hasApiKey: !!process.env.RESEND_API_KEY
+      });
       return { success: false, error };
     }
 
-    console.log('Tool submission notification sent:', emailResult?.id);
+    console.log('✅ Tool submission notification sent successfully:', {
+      emailId: emailResult?.id,
+      recipient: NOTIFICATION_EMAIL,
+      toolTitle: data.title
+    });
     return { success: true, id: emailResult?.id };
   } catch (error) {
     console.error('Error sending tool submission notification:', error);
@@ -185,18 +193,26 @@ export async function sendCollaborationNotification(data: CollaborationData) {
           
           <div style="text-align: center; padding: 20px;">
             <a href="mailto:${data.email}" style="background: #16a34a; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: 500; margin-right: 10px;">Reply to ${data.name}</a>
-            <a href="http://localhost:3002/admin" style="background: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: 500;">View in Admin Panel</a>
+            <p style="color: #64748b; font-size: 14px; margin-top: 15px;">Check your admin panel to view all collaboration requests.</p>
           </div>
         </div>
       `,
     });
 
     if (error) {
-      console.error('Failed to send collaboration notification:', error);
+      console.error('❌ Failed to send collaboration notification:', {
+        error: error.message || error,
+        recipient: NOTIFICATION_EMAIL,
+        hasApiKey: !!process.env.RESEND_API_KEY
+      });
       return { success: false, error };
     }
 
-    console.log('Collaboration notification sent:', emailResult?.id);
+    console.log('✅ Collaboration notification sent successfully:', {
+      emailId: emailResult?.id,
+      recipient: NOTIFICATION_EMAIL,
+      collaboratorName: data.name
+    });
     return { success: true, id: emailResult?.id };
   } catch (error) {
     console.error('Error sending collaboration notification:', error);
