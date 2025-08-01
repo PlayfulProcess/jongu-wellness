@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { LINKS } from '@/config/links';
 import { Header } from '@/components/shared/Header';
 import { AuthModal } from '@/components/modals/AuthModal';
 import { SubmitToolModal } from '@/components/modals/SubmitToolModal';
@@ -119,7 +120,7 @@ export default function HomePage() {
                   <span className="bg-gray-100 px-3 py-1 rounded">🧠 Positive Psychology</span>
                 </div>
                 <a 
-                  href="https://bestpossibleself.app"
+                  href={LINKS.BEST_POSSIBLE_SELF_APP}
                   className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -214,12 +215,14 @@ export default function HomePage() {
           </div>
 
           {/* Stats Display with Search */}
-          <StatsDisplay 
-            totalTools={totalTools} 
-            averageRating={averageRating}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-          />
+          <div id="tools-search">
+            <StatsDisplay 
+              totalTools={totalTools} 
+              averageRating={averageRating}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+            />
+          </div>
 
           {/* Controls */}
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 space-y-4 lg:space-y-0">

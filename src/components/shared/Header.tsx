@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
+import { LINKS } from '@/config/links';
 
 interface HeaderProps {
   showAuthModal?: () => void;
@@ -30,10 +31,18 @@ export function Header({ showAuthModal }: HeaderProps) {
             <nav className="hidden md:flex space-x-6">
               <button 
                 onClick={() => {
-                  // Scroll to search bar area
-                  const searchSection = document.querySelector('.search-container');
-                  if (searchSection) {
-                    searchSection.scrollIntoView({ behavior: 'smooth' });
+                  // First navigate to home page if not already there
+                  if (window.location.pathname !== '/') {
+                    window.location.href = '/#tools-search';
+                    return;
+                  }
+                  // Scroll to the tools search section
+                  const toolsSection = document.getElementById('tools-search');
+                  if (toolsSection) {
+                    toolsSection.scrollIntoView({ 
+                      behavior: 'smooth', 
+                      block: 'center'
+                    });
                   }
                 }}
                 className="text-gray-600 hover:text-gray-900 font-medium cursor-pointer"
@@ -48,12 +57,45 @@ export function Header({ showAuthModal }: HeaderProps) {
                 Share Tool
               </Link>
 
-              <Link
-                href="/tools/best-possible-self"
-                className="text-gray-600 hover:text-gray-900 font-medium"
+              <button 
+                onClick={() => {
+                  // First navigate to home page if not already there
+                  if (window.location.pathname !== '/') {
+                    window.location.href = '/';
+                    return;
+                  }
+                  // Then scroll to the featured tool section
+                  setTimeout(() => {
+                    let featuredSection = null;
+                    
+                    // Look for the featured tool section
+                    featuredSection = document.querySelector('.bg-white.rounded-xl.shadow-xl');
+                    
+                    // Fallback: look for "Start Your Journey" text
+                    if (!featuredSection) {
+                      const allElements = Array.from(document.querySelectorAll('*'));
+                      const journeyButton = allElements.find(el => 
+                        el.textContent?.includes('Start Your Journey')
+                      );
+                      if (journeyButton) {
+                        featuredSection = journeyButton.closest('.bg-white');
+                      }
+                    }
+                    
+                    // Final fallback
+                    if (!featuredSection) {
+                      featuredSection = document.querySelector('.bg-gradient-to-br.from-blue-50');
+                    }
+                    
+                    if (featuredSection) {
+                      featuredSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                  }, 300);
+                }}
+                className="text-gray-600 hover:text-gray-900 font-medium cursor-pointer"
               >
-                Try Tool
-              </Link>
+                Featured Tool
+              </button>
               
               <Link 
                 href="/#about" 

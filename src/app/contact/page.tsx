@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { LINKS } from '@/config/links';
 
 export default function ContactPage() {
   return (
@@ -102,12 +103,14 @@ export default function ContactPage() {
           >
             🌱 Browse Community Tools
           </Link>
-          <Link
-            href="/tools/best-possible-self"
+          <a
+            href={LINKS.BEST_POSSIBLE_SELF_APP}
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 transition-colors text-center font-medium"
           >
             ✍️ Try Featured Tool
-          </Link>
+          </a>
         </div>
       </div>
     </div>
