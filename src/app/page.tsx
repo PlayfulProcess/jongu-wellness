@@ -90,7 +90,7 @@ export default function HomePage() {
               Keep a record of your progress, use AI help for deeper insights, and connect with the amazing people who created these tools.
             </p>
             <div className="text-sm text-gray-500 mb-8">
-              🔓 <a href="https://github.com/PlayfulProcess/best-possible-self-app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">Open source</a> - Building gateways, not gatekeepers
+              🔓 <a href={LINKS.GITHUB_REPO} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">Open source</a> - Building gateways, not gatekeepers
             </div>
           </div>
         </div>
