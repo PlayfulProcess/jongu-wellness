@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase-admin';
+import { sendCollaborationNotification } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -45,6 +46,22 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Error creating collaboration request:', error);
       return NextResponse.json({ error: 'Failed to submit collaboration request' }, { status: 500 });
+    }
+    
+    // Send email notification
+    try {
+      await sendCollaborationNotification({
+        name,
+        email,
+        organization,
+        expertise,
+        collaboration_type,
+        message,
+        submitter_ip: request.headers.get('x-forwarded-for') || 'unknown'
+      });
+    } catch (emailError) {
+      console.error('Failed to send collaboration email notification:', emailError);
+      // Don't fail the request if email fails - the submission was successful
     }
     
     return NextResponse.json(data, { status: 201 });
