@@ -23,18 +23,64 @@ interface ToolCardProps {
   onRate?: (toolId: string, rating: number, review?: string) => void;
 }
 
-const categoryEmojis = {
-  'mindfulness': '🧘',
-  'distress-tolerance': '🛡️',
-  'emotion-regulation': '❤️',
-  'interpersonal-effectiveness': '🤝'
-};
-
-const categoryNames = {
-  'mindfulness': 'Mindfulness & Creativity',
-  'distress-tolerance': 'Distress Tolerance',
-  'emotion-regulation': 'Emotion Regulation',
-  'interpersonal-effectiveness': 'Interpersonal Effectiveness'
+const getCategoryDesign = (category: string) => {
+  const designs = {
+    'mindfulness': {
+      gradient: 'bg-blue-50',
+      textColor: 'text-gray-800',
+      icon: '🧘‍♀️',
+      name: 'Mindfulness'
+    },
+    'distress-tolerance': {
+      gradient: 'bg-blue-50',
+      textColor: 'text-gray-800',
+      icon: '🌊',
+      name: 'Distress Tolerance'
+    },
+    'emotion-regulation': {
+      gradient: 'bg-blue-50',
+      textColor: 'text-gray-800',
+      icon: '💝',
+      name: 'Emotion Regulation'
+    },
+    'interpersonal-effectiveness': {
+      gradient: 'bg-blue-50',
+      textColor: 'text-gray-800',
+      icon: '🤝',
+      name: 'Interpersonal Skills'
+    },
+    'creativity': {
+      gradient: 'bg-blue-50',
+      textColor: 'text-gray-800',
+      icon: '🎨',
+      name: 'Creativity'
+    },
+    'productivity': {
+      gradient: 'bg-blue-50',
+      textColor: 'text-gray-800',
+      icon: '⚡',
+      name: 'Productivity'
+    },
+    'health': {
+      gradient: 'bg-blue-50',
+      textColor: 'text-gray-800',
+      icon: '🌱',
+      name: 'Health & Wellness'
+    },
+    'relationships': {
+      gradient: 'bg-blue-50',
+      textColor: 'text-gray-800',
+      icon: '💕',
+      name: 'Relationships'
+    }
+  };
+  
+  return designs[category] || {
+    gradient: 'bg-blue-50',
+    textColor: 'text-gray-800',
+    icon: '🛠️',
+    name: category || 'Tool'
+  };
 };
 
 export function ToolCard({ tool, onRate }: ToolCardProps) {
@@ -94,46 +140,44 @@ export function ToolCard({ tool, onRate }: ToolCardProps) {
     );
   };
 
-  const getCategoryGradient = (category: string) => {
-    const gradients = {
-      'mindfulness': 'from-purple-500 to-pink-500',
-      'distress-tolerance': 'from-blue-500 to-cyan-500',
-      'emotion-regulation': 'from-red-500 to-pink-500',
-      'interpersonal-effectiveness': 'from-green-500 to-blue-500',
-      // Additional categories for better coverage
-      'creativity': 'from-orange-500 to-yellow-500',
-      'productivity': 'from-indigo-500 to-purple-500',
-      'health': 'from-emerald-500 to-teal-500',
-      'relationships': 'from-rose-500 to-pink-500',
-      'wellness': 'from-cyan-500 to-blue-500',
-      'personal-growth': 'from-violet-500 to-indigo-500'
-    };
-    return gradients[category] || 'from-slate-500 to-gray-600';
-  };
+  const design = getCategoryDesign(tool.category);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
-      {/* Thumbnail or Enhanced Gradient Background */}
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+      {/* Enhanced Image/Placeholder Area */}
       <div className="relative h-48">
         {tool.thumbnail_url ? (
-          <img
-            src={tool.thumbnail_url}
-            alt={tool.title}
-            className="w-full h-full object-cover"
-          />
+          <>
+            <img
+              src={tool.thumbnail_url}
+              alt={tool.title}
+              className="w-full h-full object-cover"
+            />
+            {/* Category badge for images */}
+            <div className="absolute top-3 left-3">
+              <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${design.gradient} ${design.textColor} shadow-lg`}>
+                <span className="text-sm">{design.icon}</span>
+                {design.name}
+              </span>
+            </div>
+          </>
         ) : (
-          <div className={`w-full h-full bg-gradient-to-br ${getCategoryGradient(tool.category)} flex items-center justify-center relative overflow-hidden`}>
-            {/* Subtle pattern overlay */}
+          <div className={`w-full h-full ${design.gradient} flex items-center justify-center relative overflow-hidden`}>
+            {/* Subtle geometric pattern overlay */}
             <div className="absolute inset-0 opacity-10">
               <div className="w-full h-full" style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.3'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236b7280' fill-opacity='0.3'%3E%3Cpath d='M0 0h80v80H0V0zm20 20v40h40V20H20zm20 35a15 15 0 1 1 0-30 15 15 0 0 1 0 30z' fill-opacity='0.1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
               }} />
             </div>
             
-            <div className="text-center text-white relative z-10">
-              <div className="text-5xl mb-3 drop-shadow-lg">{categoryEmojis[tool.category] || '🛠️'}</div>
-              <p className="text-sm font-semibold opacity-95 drop-shadow-md">{categoryNames[tool.category] || tool.category}</p>
-              <div className="mt-2 w-12 h-0.5 bg-white/30 mx-auto rounded-full"></div>
+            <div className={`text-center ${design.textColor} relative z-10 p-6`}>
+              <div className="text-6xl mb-4 drop-shadow-lg filter">
+                {design.icon}
+              </div>
+              <h3 className="text-xl font-bold uppercase tracking-wider drop-shadow-md">
+                {design.name}
+              </h3>
+              <div className="mt-3 w-16 h-0.5 bg-gray-400/40 mx-auto rounded-full"></div>
             </div>
           </div>
         )}
