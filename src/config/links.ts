@@ -1,7 +1,7 @@
 // Centralized link configuration
 export const LINKS = {
   // Best Possible Self app URL - edit this one place to change everywhere
-  BEST_POSSIBLE_SELF_APP: 'https://jongu.org/tools/best-possible-self',
+  BEST_POSSIBLE_SELF_APP: 'https://wellness-tool.jongu.org/',
   
   // Other external links can be added here
   GITHUB_REPO: 'https://github.com/PlayfulProcess/jongu-wellness',
