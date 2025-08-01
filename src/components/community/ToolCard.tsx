@@ -24,7 +24,12 @@ interface ToolCardProps {
 }
 
 const getCategoryDesign = (category: string) => {
-  const designs = {
+  const designs: Record<string, {
+    gradient: string;
+    textColor: string;
+    icon: string;
+    name: string;
+  }> = {
     'mindfulness': {
       gradient: 'bg-blue-50',
       textColor: 'text-gray-800',

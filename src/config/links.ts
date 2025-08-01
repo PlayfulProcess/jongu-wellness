@@ -4,7 +4,7 @@ export const LINKS = {
   BEST_POSSIBLE_SELF_APP: 'https://best-possible-self-app.vercel.app/tools/best-possible-self',
   
   // Other external links can be added here
-  GITHUB_REPO: 'https://github.com/PlayfulProcess/best-possible-self-app',
+  GITHUB_REPO: 'https://github.com/PlayfulProcess/jongu-wellness',
   
   // Social links if needed
   // TWITTER: 'https://twitter.com/...',
