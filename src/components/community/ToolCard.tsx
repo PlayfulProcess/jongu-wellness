@@ -96,17 +96,24 @@ export function ToolCard({ tool, onRate }: ToolCardProps) {
 
   const getCategoryGradient = (category: string) => {
     const gradients = {
-      'mindfulness': 'from-purple-400 to-pink-400',
-      'distress-tolerance': 'from-blue-400 to-cyan-400',
-      'emotion-regulation': 'from-red-400 to-pink-400',
-      'interpersonal-effectiveness': 'from-green-400 to-blue-400'
+      'mindfulness': 'from-purple-500 to-pink-500',
+      'distress-tolerance': 'from-blue-500 to-cyan-500',
+      'emotion-regulation': 'from-red-500 to-pink-500',
+      'interpersonal-effectiveness': 'from-green-500 to-blue-500',
+      // Additional categories for better coverage
+      'creativity': 'from-orange-500 to-yellow-500',
+      'productivity': 'from-indigo-500 to-purple-500',
+      'health': 'from-emerald-500 to-teal-500',
+      'relationships': 'from-rose-500 to-pink-500',
+      'wellness': 'from-cyan-500 to-blue-500',
+      'personal-growth': 'from-violet-500 to-indigo-500'
     };
-    return gradients[category] || 'from-gray-400 to-gray-600';
+    return gradients[category] || 'from-slate-500 to-gray-600';
   };
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
-      {/* Thumbnail or Gradient Background */}
+      {/* Thumbnail or Enhanced Gradient Background */}
       <div className="relative h-48">
         {tool.thumbnail_url ? (
           <img
@@ -115,10 +122,18 @@ export function ToolCard({ tool, onRate }: ToolCardProps) {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className={`w-full h-full bg-gradient-to-br ${getCategoryGradient(tool.category)} flex items-center justify-center`}>
-            <div className="text-center text-white">
-              <div className="text-4xl mb-2">{categoryEmojis[tool.category] || '🛠️'}</div>
-              <p className="text-sm font-medium opacity-90">{categoryNames[tool.category] || tool.category}</p>
+          <div className={`w-full h-full bg-gradient-to-br ${getCategoryGradient(tool.category)} flex items-center justify-center relative overflow-hidden`}>
+            {/* Subtle pattern overlay */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="w-full h-full" style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.3'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              }} />
+            </div>
+            
+            <div className="text-center text-white relative z-10">
+              <div className="text-5xl mb-3 drop-shadow-lg">{categoryEmojis[tool.category] || '🛠️'}</div>
+              <p className="text-sm font-semibold opacity-95 drop-shadow-md">{categoryNames[tool.category] || tool.category}</p>
+              <div className="mt-2 w-12 h-0.5 bg-white/30 mx-auto rounded-full"></div>
             </div>
           </div>
         )}

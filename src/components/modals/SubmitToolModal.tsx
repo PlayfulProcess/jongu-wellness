@@ -35,14 +35,49 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
     const newErrors: {[key: string]: string} = {};
     
     if (!formData.title.trim()) newErrors.title = 'Title is required';
-    if (!formData.claude_url.trim()) newErrors.claude_url = 'Claude URL is required';
+    if (!formData.claude_url.trim()) newErrors.claude_url = 'Tool URL is required';
     if (!formData.category) newErrors.category = 'Category is required';
     if (!formData.description.trim()) newErrors.description = 'Description is required';
     if (!formData.creator_name.trim()) newErrors.creator_name = 'Creator name is required';
     
-    // Basic URL validation (allow any URL, not just Claude.ai)
-    if (formData.claude_url && !formData.claude_url.startsWith('http')) {
-      newErrors.claude_url = 'Please provide a valid URL starting with http:// or https://';
+    // URL validation (allow any valid URL format)
+    if (formData.claude_url) {
+      let urlToTest = formData.claude_url.trim();
+      
+      // Auto-add https:// if no protocol is provided
+      if (!urlToTest.startsWith('http://') && !urlToTest.startsWith('https://')) {
+        urlToTest = 'https://' + urlToTest;
+      }
+      
+      try {
+        new URL(urlToTest);
+        // URL is valid, but make sure original has protocol
+        if (!formData.claude_url.startsWith('http://') && !formData.claude_url.startsWith('https://')) {
+          newErrors.claude_url = 'Please include http:// or https:// in your URL';
+        }
+      } catch {
+        newErrors.claude_url = 'Please provide a valid URL (e.g., https://example.com)';
+      }
+    }
+    
+    // Optional creator link validation
+    if (formData.creator_link && formData.creator_link.trim()) {
+      let linkToTest = formData.creator_link.trim();
+      
+      // Auto-add https:// if no protocol is provided
+      if (!linkToTest.startsWith('http://') && !linkToTest.startsWith('https://')) {
+        linkToTest = 'https://' + linkToTest;
+      }
+      
+      try {
+        new URL(linkToTest);
+        // URL is valid, but make sure original has protocol
+        if (!formData.creator_link.startsWith('http://') && !formData.creator_link.startsWith('https://')) {
+          newErrors.creator_link = 'Please include http:// or https:// in your website link';
+        }
+      } catch {
+        newErrors.creator_link = 'Please provide a valid website URL';
+      }
     }
     
     setErrors(newErrors);
@@ -165,7 +200,7 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
                 Tool URL *
               </label>
               <input
-                type="url"
+                type="text"
                 value={formData.claude_url}
                 onChange={(e) => setFormData({ ...formData, claude_url: e.target.value })}
                 className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -232,12 +267,13 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
                   Your Website/Link (optional)
                 </label>
                 <input
-                  type="url"
+                  type="text"
                   value={formData.creator_link}
                   onChange={(e) => setFormData({ ...formData, creator_link: e.target.value })}
                   className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="https://yourwebsite.com"
                 />
+                {errors.creator_link && <p className="text-red-600 text-sm mt-1">{errors.creator_link}</p>}
               </div>
 
               <div>
