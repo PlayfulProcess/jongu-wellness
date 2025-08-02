@@ -1,5 +1,7 @@
 # Jongu Wellness Platform
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/PlayfulProcess/jongu-wellness&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY,RESEND_API_KEY,ADMIN_PASSWORD&envDescription=Required%20environment%20variables&envLink=https://github.com/PlayfulProcess/jongu-wellness%23environment-variables)
+
 Community-driven wellness tool discovery platform. This is the wellness component of the Jongu ecosystem, focused on tool sharing, discovery, and community building around mental health and wellness resources.
 
 ## Features
@@ -46,6 +48,29 @@ OPENAI_API_KEY=your_openai_key (if using AI features)
 ## Architecture
 
 This app shares the same Supabase backend with the Best Possible Self wellness app, enabling unified user authentication and cross-platform features.
+
+## Customization
+
+### Quick Start for Therapists & Creators
+
+1. **Fork this repository** 
+2. **Edit `jongu.config.json`** to customize:
+   - Channel name and description
+   - Discord server ID
+   - Stripe donation link
+   - Colors and theme
+
+3. **Deploy with one click** using the button at the top
+
+### What You Can Customize
+
+- **Channel Info**: Name, tagline, description
+- **Social Links**: Discord, Twitter, donation links  
+- **Features**: Toggle Discord widget, donations, newsletter
+- **Theme**: Colors and styling
+- **Content**: All text is in `jongu.config.json`
+
+No coding required! Just edit the JSON file and deploy.
 
 ## Deployment
 

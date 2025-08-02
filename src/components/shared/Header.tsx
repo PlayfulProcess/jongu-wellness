@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
 import { LINKS } from '@/config/links';
+import JonguNav from '@/components/JonguNav';
 
 interface HeaderProps {
   showAuthModal?: () => void;
@@ -27,6 +28,8 @@ export function Header({ showAuthModal }: HeaderProps) {
                 <span className="text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full font-medium">BETA</span>
               </div>
             </Link>
+            
+            <JonguNav currentChannel="wellness" />
             
             <nav className="hidden md:flex space-x-6">
               <button 
