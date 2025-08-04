@@ -12,7 +12,7 @@ interface NetworkChannel {
 
 export const JONGU_NETWORK: Record<string, NetworkChannel> = {
   main: {
-    name: "Jongu Collective",
+    name: "Home",
     url: "https://jongu.org",
     description: "Gateway to wellness channels"
   },
@@ -32,11 +32,6 @@ export const JONGU_NETWORK: Record<string, NetworkChannel> = {
     url: "https://developers.jongu.org",
     description: "Code with purpose",
     comingSoon: true
-  },
-  tools: {
-    name: "Tools",
-    url: "https://tools.jongu.org",
-    description: "Wellness tools collection"
   }
 };
 
@@ -53,8 +48,8 @@ export default function JonguNav({ currentChannel }: JonguNavProps) {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
       >
-        <span className="hidden sm:inline">Jongu Network</span>
-        <span className="sm:hidden">Network</span>
+        <span className="hidden sm:inline">Jongu</span>
+        <span className="sm:hidden">Jongu</span>
         <ChevronDownIcon className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       

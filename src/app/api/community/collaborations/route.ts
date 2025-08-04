@@ -24,28 +24,31 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Create submissions table entry (we'll use submissions table for collaborations too)
+    // Create provider signup entry
     const { data, error } = await adminClient
-      .from('submissions')
+      .from('provider_signups')  // Note: underscore, not hyphen
       .insert({
-        title: `Collaboration: ${collaboration_type}`,
-        claude_url: 'collaboration-request',
-        category: 'collaboration',
-        description: message,
-        creator_name: name,
-        creator_link: organization || null,
-        creator_background: `Email: ${email} | Expertise: ${expertise} | Type: ${collaboration_type}`,
-        thumbnail_url: null,
-        submitter_ip: request.headers.get('x-forwarded-for') || 'unknown',
-        reviewed: false,
-        approved: false
+        name,
+        email,
+        tool_comments: message || '',  // Using message as tool_comments
+        willing_to_collaborate: true,  // They're filling out collaboration form, so true
+        provider_type: 'mental_health'  // Default to mental_health for now
       })
       .select()
       .single();
     
     if (error) {
       console.error('Error creating collaboration request:', error);
-      return NextResponse.json({ error: 'Failed to submit collaboration request' }, { status: 500 });
+      console.error('Error details:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
+      return NextResponse.json({ 
+        error: 'Failed to submit collaboration request',
+        details: error.message 
+      }, { status: 500 });
     }
     
     // Send email notification
@@ -53,10 +56,10 @@ export async function POST(request: NextRequest) {
       await sendCollaborationNotification({
         name,
         email,
-        organization,
-        expertise,
-        collaboration_type,
-        message,
+        organization: organization || 'Not specified',
+        expertise: expertise || 'Not specified',
+        collaboration_type: collaboration_type || 'Not specified',
+        message: message || 'No message provided',
         submitter_ip: request.headers.get('x-forwarded-for') || 'unknown'
       });
     } catch (emailError) {
