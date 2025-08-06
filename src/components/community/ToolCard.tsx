@@ -5,12 +5,14 @@ import { useState } from 'react';
 interface Tool {
   id: string;
   name: string;
+  title?: string;
   url: string;
   category: string;
   description: string;
   submitted_by: string;
   star_count: number;
   total_clicks: number;
+  thumbnail_url?: string | null;
   created_at: string;
 }
 

@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase-client';
+import { User } from '@supabase/supabase-js';
 
 interface SubmitToolModalProps {
   isOpen: boolean;
@@ -9,6 +10,8 @@ interface SubmitToolModalProps {
 }
 
 export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     title: '',
     claude_url: '',
@@ -23,6 +26,27 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   const supabase = createClient();
+
+  // Check authentication when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      checkUser();
+    }
+  }, [isOpen]);
+
+  const checkUser = async () => {
+    try {
+      setLoading(true);
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) throw error;
+      setUser(user);
+    } catch (error) {
+      console.error('Error checking user:', error);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const categories = [
     { value: 'mindfulness', label: '🧘 Mindfulness & Creativity' },
@@ -39,6 +63,18 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
     if (!formData.category) newErrors.category = 'Category is required';
     if (!formData.description.trim()) newErrors.description = 'Description is required';
     if (!formData.creator_name.trim()) newErrors.creator_name = 'Creator name is required';
+    
+    // Check for reserved "Jongu" name
+    const checkJonguName = (text: string) => text.toLowerCase().includes('jongu');
+    if (checkJonguName(formData.title)) {
+      newErrors.title = '🛡️ "Jongu" is reserved for official platform tools. Please choose a different name.';
+    }
+    if (checkJonguName(formData.creator_name)) {
+      newErrors.creator_name = '🛡️ "Jongu" is reserved for official platform tools. Please choose a different creator name.';
+    }
+    if (checkJonguName(formData.description)) {
+      newErrors.description = '🛡️ "Jongu" is reserved for official platform tools. Please use different wording.';
+    }
     
     // URL validation (allow any valid URL format)
     if (formData.claude_url) {
@@ -135,7 +171,8 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
       });
       
       if (!response.ok) {
-        throw new Error('Failed to submit tool');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to submit tool');
       }
       
       // Reset form and close modal
@@ -154,9 +191,15 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
       alert('🎉 Tool submitted successfully! We\'ll review it and add it to the community garden soon.');
       onClose();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting tool:', error);
-      alert('❌ Failed to submit tool. Please try again.');
+      
+      // Show specific error message if it's about Jongu name protection
+      if (error.message.includes('Jongu') || error.message.includes('reserved')) {
+        alert('🛡️ The name "Jongu" is reserved for official platform tools.\n\nOnly Jongu administrators can create tools with "Jongu" branding.\n\nPlease choose a different name for your community tool.');
+      } else {
+        alert(`❌ Failed to submit tool: ${error.message}`);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -177,6 +220,42 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
               ×
             </button>
           </div>
+
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Checking authentication...</p>
+            </div>
+          ) : !user ? (
+            <div className="text-center py-8">
+              <div className="mb-6">
+                <div className="text-6xl mb-4">🔒</div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Sign In Required</h3>
+                <p className="text-gray-600 mb-6">
+                  You need to be signed in to submit tools to our community garden.
+                  This helps us maintain quality and prevents spam.
+                </p>
+              </div>
+              <div className="space-y-3">
+                <button
+                  onClick={() => {
+                    onClose();
+                    // Trigger sign in modal - you'll need to implement this
+                    window.dispatchEvent(new CustomEvent('openAuthModal'));
+                  }}
+                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  Sign In to Submit Tool
+                </button>
+                <button
+                  onClick={onClose}
+                  className="w-full bg-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-400 transition-colors font-medium"
+                >
+                  Maybe Later
+                </button>
+              </div>
+            </div>
+          ) : (
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title */}
@@ -324,6 +403,7 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
               </button>
             </div>
           </form>
+          )}
         </div>
       </div>
     </div>

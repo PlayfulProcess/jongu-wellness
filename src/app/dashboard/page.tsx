@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase-client';
 import { ToolCard } from '@/components/community/ToolCard';
 import { AuthModal } from '@/components/modals/AuthModal';
@@ -14,7 +15,6 @@ interface Tool {
   description: string;
   submitted_by: string;
   star_count: number;
-  total_clicks: number;
   created_at: string;
   approved: boolean;
   active: boolean;
@@ -25,7 +25,7 @@ interface StarredTool extends Tool {
 }
 
 export default function Dashboard() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [starredTools, setStarredTools] = useState<StarredTool[]>([]);
   const [submittedTools, setSubmittedTools] = useState<Tool[]>([]);
@@ -33,17 +33,6 @@ export default function Dashboard() {
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const supabase = createClient();
-
-  useEffect(() => {
-    checkUser();
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      fetchStarredTools();
-      fetchSubmittedTools();
-    }
-  }, [user]);
 
   const checkUser = async () => {
     try {
@@ -64,34 +53,51 @@ export default function Dashboard() {
   };
 
   const fetchStarredTools = async () => {
+    if (!user) return;
+    
     try {
-      const { data, error } = await supabase
-        .from('tool_stars')
-        .select(`
-          created_at,
-          tools (
-            id,
-            name,
-            url,
-            category,
-            description,
-            submitted_by,
-            star_count,
-            total_clicks,
-            created_at,
-            approved,
-            active
-          )
-        `)
+      // Get user's starred tool interactions
+      const { data: starData, error: starError } = await supabase
+        .from('user_documents')
+        .select('document_data, created_at')
         .eq('user_id', user.id)
+        .eq('document_type', 'interaction')
+        .eq('document_data->>interaction_type', 'star')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (starError) throw starError;
 
-      const starredTools = data?.map(item => ({
-        ...item.tools,
-        starred_at: item.created_at
-      })).filter(tool => tool.id) as StarredTool[];
+      const toolIds = starData?.map(item => item.document_data?.target_id).filter(Boolean) || [];
+      
+      if (toolIds.length === 0) {
+        setStarredTools([]);
+        return;
+      }
+
+      // Get tool details for starred tools
+      const { data: toolsData, error: toolsError } = await supabase
+        .from('tools')
+        .select('id, slug, tool_data, created_at')
+        .in('id', toolIds);
+
+      if (toolsError) throw toolsError;
+
+      const starredTools = toolsData?.map(tool => {
+        const starRecord = starData.find(star => star.document_data?.target_id === tool.id);
+        return {
+          id: tool.id,
+          name: tool.tool_data?.name || '',
+          url: tool.tool_data?.url || '#',
+          category: tool.tool_data?.category || 'uncategorized',
+          description: tool.tool_data?.description || '',
+          submitted_by: tool.tool_data?.submitted_by || 'Anonymous',
+          star_count: parseInt(tool.tool_data?.stats?.stars || '0'),
+          created_at: tool.created_at,
+          approved: tool.tool_data?.is_active === 'true',
+          active: tool.tool_data?.is_active === 'true',
+          starred_at: starRecord?.created_at || tool.created_at
+        };
+      }) as StarredTool[];
 
       setStarredTools(starredTools || []);
     } catch (error) {
@@ -100,15 +106,31 @@ export default function Dashboard() {
   };
 
   const fetchSubmittedTools = async () => {
+    if (!user) return;
+    
     try {
       const { data, error } = await supabase
         .from('tools')
-        .select('*')
-        .eq('user_id', user.id)
+        .select('id, slug, tool_data, created_at')
+        .eq('tool_data->>creator_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setSubmittedTools(data || []);
+      
+      const transformedTools = (data || []).map(tool => ({
+        id: tool.id,
+        name: tool.tool_data?.name || '',
+        url: tool.tool_data?.url || '#',
+        category: tool.tool_data?.category || 'uncategorized',
+        description: tool.tool_data?.description || '',
+        submitted_by: tool.tool_data?.submitted_by || 'Anonymous',
+        star_count: parseInt(tool.tool_data?.stats?.stars || '0'),
+        created_at: tool.created_at,
+        approved: tool.tool_data?.is_active === 'true',
+        active: tool.tool_data?.is_active === 'true'
+      }));
+      
+      setSubmittedTools(transformedTools);
     } catch (error) {
       console.error('Error fetching submitted tools:', error);
     }
@@ -136,7 +158,7 @@ export default function Dashboard() {
         .from('tools')
         .delete()
         .eq('id', toolId)
-        .eq('user_id', user.id);
+        .eq('tool_data->>creator_id', user.id);
 
       if (error) throw error;
       
@@ -146,6 +168,17 @@ export default function Dashboard() {
       alert('Error deleting tool. Please try again.');
     }
   };
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchStarredTools();
+      fetchSubmittedTools();
+    }
+  }, [user]);
 
   if (loading) {
     return (
@@ -239,7 +272,7 @@ export default function Dashboard() {
           <div>
             <div className="mb-6">
               <h2 className="text-lg font-medium text-gray-900 mb-2">Your Starred Tools</h2>
-              <p className="text-gray-600">Tools you've starred will appear here for easy access.</p>
+              <p className="text-gray-600">Tools you&apos;ve starred will appear here for easy access.</p>
             </div>
             
             {starredTools.length === 0 ? (
@@ -279,7 +312,7 @@ export default function Dashboard() {
             <div className="mb-6 flex justify-between items-start">
               <div>
                 <h2 className="text-lg font-medium text-gray-900 mb-2">Your Submitted Tools</h2>
-                <p className="text-gray-600">Tools you've submitted to the community.</p>
+                <p className="text-gray-600">Tools you&apos;ve submitted to the community.</p>
               </div>
               <Link
                 href="/submit"
@@ -317,8 +350,6 @@ export default function Dashboard() {
                           <span className="capitalize">{tool.category}</span>
                           <span>•</span>
                           <span>{tool.star_count} stars</span>
-                          <span>•</span>
-                          <span>{tool.total_clicks} clicks</span>
                           <span>•</span>
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                             tool.approved 

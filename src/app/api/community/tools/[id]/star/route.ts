@@ -30,12 +30,14 @@ export async function POST(
       return NextResponse.json({ error: 'Tool not found' }, { status: 404 });
     }
     
-    // Check if user has already starred this tool
+    // Check if user has already starred this tool using user_documents
     const { data: existingStar, error: checkError } = await supabase
-      .from('tool_stars')
+      .from('user_documents')
       .select('id')
-      .eq('tool_id', id)
       .eq('user_id', user.id)
+      .eq('document_type', 'interaction')
+      .eq('document_data->>target_id', id)
+      .eq('document_data->>interaction_type', 'star')
       .single();
     
     if (checkError && checkError.code !== 'PGRST116') {
@@ -50,17 +52,52 @@ export async function POST(
       }, { status: 409 });
     }
     
-    // Add star
+    // Add star using user_documents
     const { error: starError } = await supabase
-      .from('tool_stars')
+      .from('user_documents')
       .insert({
-        tool_id: id,
-        user_id: user.id
+        user_id: user.id,
+        document_type: 'interaction',
+        document_data: {
+          target_type: 'tool',
+          target_id: id,
+          interaction_type: 'star',
+          data: {}
+        }
       });
     
     if (starError) {
       console.error('Error adding star:', starError);
       return NextResponse.json({ error: 'Failed to star tool' }, { status: 500 });
+    }
+
+    // Update star count in tool
+    try {
+      // Get current tool data
+      const { data: currentTool, error: fetchError } = await supabase
+        .from('tools')
+        .select('tool_data')
+        .eq('id', id)
+        .single();
+
+      if (!fetchError && currentTool) {
+        const currentStarCount = parseInt(currentTool.tool_data?.stats?.stars || '0');
+        const updatedToolData = {
+          ...currentTool.tool_data,
+          stats: {
+            ...currentTool.tool_data?.stats,
+            stars: (currentStarCount + 1).toString()
+          }
+        };
+
+        await supabase
+          .from('tools')
+          .update({ tool_data: updatedToolData })
+          .eq('id', id);
+      }
+    } catch (error) {
+      console.error('Error updating star count:', error);
+      // Don't fail the request if star count update fails
     }
     
     return NextResponse.json({ 
@@ -92,16 +129,47 @@ export async function DELETE(
       );
     }
     
-    // Remove star
+    // Remove star using user_documents
     const { error: deleteError } = await supabase
-      .from('tool_stars')
+      .from('user_documents')
       .delete()
-      .eq('tool_id', id)
-      .eq('user_id', user.id);
+      .eq('user_id', user.id)
+      .eq('document_type', 'interaction')
+      .eq('document_data->>target_id', id)
+      .eq('document_data->>interaction_type', 'star');
     
     if (deleteError) {
       console.error('Error removing star:', deleteError);
       return NextResponse.json({ error: 'Failed to unstar tool' }, { status: 500 });
+    }
+
+    // Update star count in tool
+    try {
+      // Get current tool data
+      const { data: currentTool, error: fetchError } = await supabase
+        .from('tools')
+        .select('tool_data')
+        .eq('id', id)
+        .single();
+
+      if (!fetchError && currentTool) {
+        const currentStarCount = parseInt(currentTool.tool_data?.stats?.stars || '0');
+        const updatedToolData = {
+          ...currentTool.tool_data,
+          stats: {
+            ...currentTool.tool_data?.stats,
+            stars: Math.max(0, currentStarCount - 1).toString() // Ensure it doesn't go negative
+          }
+        };
+
+        await supabase
+          .from('tools')
+          .update({ tool_data: updatedToolData })
+          .eq('id', id);
+      }
+    } catch (error) {
+      console.error('Error updating star count:', error);
+      // Don't fail the request if star count update fails
     }
     
     return NextResponse.json({ 
@@ -131,12 +199,14 @@ export async function GET(
       return NextResponse.json({ isStarred: false });
     }
     
-    // Check if user has starred this tool
+    // Check if user has starred this tool using user_documents
     const { data: star, error: starError } = await supabase
-      .from('tool_stars')
+      .from('user_documents')
       .select('id')
-      .eq('tool_id', id)
       .eq('user_id', user.id)
+      .eq('document_type', 'interaction')
+      .eq('document_data->>target_id', id)
+      .eq('document_data->>interaction_type', 'star')
       .single();
     
     if (starError && starError.code !== 'PGRST116') {

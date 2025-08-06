@@ -13,6 +13,9 @@ import { CategoryFilter } from '@/components/community/CategoryFilter';
 import { SortingControls } from '@/components/community/SortingControls';
 import { StatsDisplay } from '@/components/community/StatsDisplay';
 import { useAuth } from '@/components/AuthProvider';
+import { AdminToolModal } from '@/components/modals/AdminToolModal';
+import { createClient } from '@/lib/supabase-client';
+import { isAdmin } from '@/lib/admin-utils';
 
 export default function HomePage() {
   const { loading } = useAuth();
@@ -20,6 +23,8 @@ export default function HomePage() {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showNewsletterModal, setShowNewsletterModal] = useState(false);
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  const [user, setUser] = useState<any>(null);
   
   // Community tools state
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -31,12 +36,47 @@ export default function HomePage() {
 
   useEffect(() => {
     fetchStats();
+    checkUser();
+    
+    // Listen for auth modal events from SubmitToolModal
+    const handleAuthModalEvent = () => {
+      setShowAuthModal(true);
+    };
+    
+    window.addEventListener('openAuthModal', handleAuthModalEvent);
+    
+    return () => {
+      window.removeEventListener('openAuthModal', handleAuthModalEvent);
+    };
   }, []);
+
+  const checkUser = async () => {
+    const supabase = createClient();
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (!error) {
+        setUser(user);
+      }
+    } catch (error) {
+      console.error('Error checking user:', error);
+    }
+  };
 
   const fetchStats = async () => {
     try {
       const response = await fetch('/api/community/tools');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const tools = await response.json();
+      
+      // Ensure tools is an array
+      if (!Array.isArray(tools)) {
+        console.error('Expected array but got:', typeof tools, tools);
+        return;
+      }
       
       // Calculate stats
       const stats: {[key: string]: number} = {};
@@ -56,6 +96,10 @@ export default function HomePage() {
       setAverageStars(starredToolsCount > 0 ? totalStars / starredToolsCount : 0);
     } catch (error) {
       console.error('Error fetching stats:', error);
+      // Set default values on error
+      setCategoryStats({});
+      setTotalTools(0);
+      setAverageStars(0);
     }
   };
 
@@ -250,6 +294,18 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Admin Button - Only visible to admins */}
+      {user && isAdmin(user.email || '') && (
+        <button
+          onClick={() => setShowAdminModal(true)}
+          className="fixed bottom-4 right-4 bg-purple-600 text-white p-4 rounded-full shadow-lg hover:bg-purple-700 transition-colors z-40"
+          title="Create Jongu Tool (Admin Only)"
+        >
+          <div className="text-2xl">🛡️</div>
+          <div className="text-xs mt-1">Admin</div>
+        </button>
+      )}
+
       {/* Section 3: About This Platform */}
       <section id="about" className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -340,6 +396,11 @@ export default function HomePage() {
       <NewsletterModal
         isOpen={showNewsletterModal}
         onClose={() => setShowNewsletterModal(false)}
+      />
+
+      <AdminToolModal
+        isOpen={showAdminModal}
+        onClose={() => setShowAdminModal(false)}
       />
     </div>
   );

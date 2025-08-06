@@ -7,12 +7,14 @@ import { createClient } from '@/lib/supabase-client';
 interface Tool {
   id: string;
   name: string;
+  title?: string;
   url: string;
   category: string;
   description: string;
   submitted_by: string;
   star_count: number;
   total_clicks: number;
+  thumbnail_url?: string | null;
   created_at: string;
 }
 
@@ -90,12 +92,15 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
     
     try {
       const { data, error } = await supabase
-        .from('tool_stars')
-        .select('tool_id')
-        .eq('user_id', user.id);
+        .from('user_documents')
+        .select('document_data')
+        .eq('user_id', user.id)
+        .eq('document_type', 'interaction')
+        .eq('document_data->>interaction_type', 'star');
 
       if (!error && data) {
-        setStarredTools(new Set(data.map(item => item.tool_id)));
+        const toolIds = data.map(item => item.document_data?.target_id).filter(Boolean);
+        setStarredTools(new Set(toolIds));
       }
     } catch (error) {
       console.error('Error fetching starred tools:', error);

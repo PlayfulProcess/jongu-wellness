@@ -24,15 +24,35 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Create provider signup entry
+    // Get submitter IP for tracking
+    const submitterIP = request.headers.get('x-forwarded-for') || 
+                       request.headers.get('x-real-ip') || 
+                       'unknown';
+    
+    // Create collaboration request using ultra minimal schema
+    const collaborationData = {
+      type: 'collaboration_request',
+      name,
+      email,
+      organization: organization || null,
+      expertise,
+      collaboration_type,
+      message,
+      submitter_ip: submitterIP,
+      status: 'pending',
+      submitted_at: new Date().toISOString()
+    };
+
+    // Insert into user_documents table as a collaboration request
+    // Using admin client bypasses RLS, so we can use NULL for user_id
     const { data, error } = await adminClient
-      .from('provider_signups')  // Note: underscore, not hyphen
+      .from('user_documents')
       .insert({
-        name,
-        email,
-        tool_comments: message || '',  // Using message as tool_comments
-        willing_to_collaborate: true,  // They're filling out collaboration form, so true
-        provider_type: 'mental_health'  // Default to mental_health for now
+        user_id: null, // NULL is allowed when using admin client
+        document_type: 'transaction', // Use transaction type for business inquiries
+        tool_slug: 'collaboration-request',
+        is_public: false,
+        document_data: collaborationData
       })
       .select()
       .single();
