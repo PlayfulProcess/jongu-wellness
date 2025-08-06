@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack --port 3002",
     "build": "next build",
     "start": "next start --port 3002",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "npm rebuild lightningcss --silent || true"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
