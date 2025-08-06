@@ -4,23 +4,22 @@ import { useState } from 'react';
 
 interface Tool {
   id: string;
-  title: string;
-  claude_url: string;
+  name: string;
+  url: string;
   category: string;
   description: string;
-  creator_name: string;
-  creator_link?: string;
-  creator_background?: string;
-  thumbnail_url?: string;
-  avg_rating: number;
-  total_ratings: number;
-  view_count: number;
-  click_count: number;
+  submitted_by: string;
+  star_count: number;
+  total_clicks: number;
+  created_at: string;
 }
 
 interface ToolCardProps {
   tool: Tool;
-  onRate?: (toolId: string, rating: number, review?: string) => void;
+  onStar?: (toolId: string) => void;
+  onUnstar?: (toolId: string) => void;
+  isStarred?: boolean;
+  isAuthenticated?: boolean;
 }
 
 const getCategoryDesign = (category: string) => {
@@ -88,10 +87,8 @@ const getCategoryDesign = (category: string) => {
   };
 };
 
-export function ToolCard({ tool, onRate }: ToolCardProps) {
-  const [showRating, setShowRating] = useState(false);
-  const [selectedRating, setSelectedRating] = useState(0);
-  const [review, setReview] = useState('');
+export function ToolCard({ tool, onStar, onUnstar, isStarred = false, isAuthenticated = false }: ToolCardProps) {
+  const [isStarring, setIsStarring] = useState(false);
 
   const handleToolClick = async () => {
     try {
@@ -104,44 +101,54 @@ export function ToolCard({ tool, onRate }: ToolCardProps) {
       console.error('Error tracking click:', error);
     }
     
-    window.open(tool.claude_url, '_blank');
+    window.open(tool.url, '_blank');
   };
 
-  const handleSubmitRating = () => {
-    if (selectedRating > 0 && onRate) {
-      onRate(tool.id, selectedRating, review);
-      setShowRating(false);
-      setSelectedRating(0);
-      setReview('');
+  const handleStarToggle = async () => {
+    if (!isAuthenticated) {
+      alert('Please sign in to star tools');
+      return;
+    }
+
+    setIsStarring(true);
+    try {
+      if (isStarred) {
+        onUnstar?.(tool.id);
+      } else {
+        onStar?.(tool.id);
+      }
+    } catch (error) {
+      console.error('Error toggling star:', error);
+    } finally {
+      setIsStarring(false);
     }
   };
 
-  const renderStars = (rating: number, interactive = false, onClick?: (rating: number) => void) => {
+  const renderStarButton = () => {
     return (
-      <div className="flex space-x-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            type="button"
-            onClick={() => interactive && onClick?.(star)}
-            disabled={!interactive}
-            className={`w-4 h-4 ${interactive ? 'cursor-pointer hover:scale-110' : 'cursor-default'} transition-transform`}
-          >
-            <svg
-              fill={star <= rating ? '#facc15' : 'none'}
-              stroke={star <= rating ? '#facc15' : '#d1d5db'}
-              strokeWidth={1}
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-              />
-            </svg>
-          </button>
-        ))}
-      </div>
+      <button
+        onClick={handleStarToggle}
+        disabled={isStarring}
+        className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+          isStarred
+            ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+            : 'bg-gray-50 text-gray-700 border border-gray-300 hover:bg-gray-100'
+        } ${isStarring ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+      >
+        <svg
+          className={`w-4 h-4 ${isStarred ? 'fill-yellow-500' : 'fill-none'}`}
+          stroke={isStarred ? '#eab308' : '#6b7280'}
+          strokeWidth={1.5}
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+          />
+        </svg>
+        <span>{isStarred ? 'Starred' : 'Star'}</span>
+      </button>
     );
   };
 
@@ -190,14 +197,16 @@ export function ToolCard({ tool, onRate }: ToolCardProps) {
 
       {/* Content */}
       <div className="p-4">
-        {/* Title and Rating */}
+        {/* Title and Stars */}
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-semibold text-gray-900 text-lg line-clamp-2 flex-1 mr-2">
-            {tool.title}
+            {tool.name}
           </h3>
           <div className="flex items-center space-x-1 text-sm text-gray-600">
-            {renderStars(Math.round(tool.avg_rating))}
-            <span className="ml-1">({tool.total_ratings})</span>
+            <svg className="w-4 h-4 fill-yellow-500" viewBox="0 0 24 24">
+              <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+            </svg>
+            <span>{tool.star_count}</span>
           </div>
         </div>
 
@@ -209,26 +218,11 @@ export function ToolCard({ tool, onRate }: ToolCardProps) {
         {/* Creator Info */}
         <div className="flex items-center mb-4">
           <div className="flex-1">
-            <p className="text-xs text-gray-500">Created by</p>
-            {tool.creator_link ? (
-              <a
-                href={tool.creator_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-medium text-blue-600 hover:text-blue-800"
-              >
-                {tool.creator_name}
-              </a>
-            ) : (
-              <p className="text-sm font-medium text-gray-900">{tool.creator_name}</p>
-            )}
-            {tool.creator_background && (
-              <p className="text-xs text-gray-500 mt-1">{tool.creator_background}</p>
-            )}
+            <p className="text-xs text-gray-500">Submitted by</p>
+            <p className="text-sm font-medium text-gray-900">{tool.submitted_by}</p>
           </div>
           <div className="text-xs text-gray-500 text-right">
-            <div>{tool.view_count} views</div>
-            <div>{tool.click_count} tries</div>
+            <div>{tool.total_clicks} clicks</div>
           </div>
         </div>
 
@@ -240,56 +234,8 @@ export function ToolCard({ tool, onRate }: ToolCardProps) {
           >
             Try This Tool
           </button>
-          <button
-            onClick={() => setShowRating(!showRating)}
-            className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            Rate & Review
-          </button>
+          {renderStarButton()}
         </div>
-
-        {/* Rating Form */}
-        {showRating && (
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-            <div className="mb-3">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Your Rating
-              </label>
-              {renderStars(selectedRating, true, setSelectedRating)}
-            </div>
-            <div className="mb-3">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Review (optional)
-              </label>
-              <textarea
-                value={review}
-                onChange={(e) => setReview(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows={3}
-                placeholder="Share your experience with this tool..."
-              />
-            </div>
-            <div className="flex space-x-2">
-              <button
-                onClick={handleSubmitRating}
-                disabled={selectedRating === 0}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Submit Rating
-              </button>
-              <button
-                onClick={() => {
-                  setShowRating(false);
-                  setSelectedRating(0);
-                  setReview('');
-                }}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

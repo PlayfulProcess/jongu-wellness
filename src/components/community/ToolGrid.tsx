@@ -2,34 +2,35 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { ToolCard } from './ToolCard';
+import { createClient } from '@/lib/supabase-client';
 
 interface Tool {
   id: string;
-  title: string;
-  claude_url: string;
+  name: string;
+  url: string;
   category: string;
   description: string;
-  creator_name: string;
-  creator_link?: string;
-  creator_background?: string;
-  thumbnail_url?: string;
-  avg_rating: number;
-  total_ratings: number;
-  view_count: number;
-  click_count: number;
+  submitted_by: string;
+  star_count: number;
+  total_clicks: number;
+  created_at: string;
 }
 
 interface ToolGridProps {
   selectedCategory: string;
   sortBy: string;
   searchQuery?: string;
-  onToolRate?: (toolId: string, rating: number, review?: string) => void;
+  onToolStar?: () => void;
 }
 
-export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolRate }: ToolGridProps) {
+export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolStar }: ToolGridProps) {
   const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
+  const [starredTools, setStarredTools] = useState<Set<string>>(new Set());
+  
+  const supabase = createClient();
 
   const fetchTools = useCallback(async (forceRefresh = false) => {
     try {
@@ -64,38 +65,104 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolRat
 
   useEffect(() => {
     fetchTools();
+    checkUser();
   }, [fetchTools]);
 
-  const handleToolRate = async (toolId: string, rating: number, review?: string) => {
+  useEffect(() => {
+    if (user) {
+      fetchStarredTools();
+    }
+  }, [user]);
+
+  const checkUser = async () => {
     try {
-      const response = await fetch(`/api/community/tools/${toolId}/rate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rating, review })
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (!error) {
+        setUser(user);
+      }
+    } catch (error) {
+      console.error('Error checking user:', error);
+    }
+  };
+
+  const fetchStarredTools = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('tool_stars')
+        .select('tool_id')
+        .eq('user_id', user.id);
+
+      if (!error && data) {
+        setStarredTools(new Set(data.map(item => item.tool_id)));
+      }
+    } catch (error) {
+      console.error('Error fetching starred tools:', error);
+    }
+  };
+
+  const handleStar = async (toolId: string) => {
+    try {
+      const response = await fetch(`/api/community/tools/${toolId}/star`, {
+        method: 'POST'
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit rating');
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to star tool');
       }
 
-      // Refresh tools to show updated rating
+      // Update local state
+      setStarredTools(prev => new Set([...prev, toolId]));
+      
+      // Refresh tools to show updated star count
       await fetchTools(true);
       
-      if (onToolRate) {
-        onToolRate(toolId, rating, review);
+      if (onToolStar) {
+        onToolStar();
       }
     } catch (error) {
-      console.error('Error submitting rating:', error);
-      alert('Failed to submit rating. Please try again.');
+      console.error('Error starring tool:', error);
+      alert('Failed to star tool. Please try again.');
+    }
+  };
+
+  const handleUnstar = async (toolId: string) => {
+    try {
+      const response = await fetch(`/api/community/tools/${toolId}/star`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to unstar tool');
+      }
+
+      // Update local state
+      setStarredTools(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(toolId);
+        return newSet;
+      });
+      
+      // Refresh tools to show updated star count
+      await fetchTools(true);
+      
+      if (onToolStar) {
+        onToolStar();
+      }
+    } catch (error) {
+      console.error('Error unstarring tool:', error);
+      alert('Failed to unstar tool. Please try again.');
     }
   };
 
   // Filter tools by search query
   const filteredTools = tools.filter(tool =>
     searchQuery === '' ||
-    tool.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     tool.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    tool.creator_name.toLowerCase().includes(searchQuery.toLowerCase())
+    tool.submitted_by.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (loading) {
@@ -158,7 +225,10 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolRat
         <ToolCard
           key={tool.id}
           tool={tool}
-          onRate={handleToolRate}
+          onStar={handleStar}
+          onUnstar={handleUnstar}
+          isStarred={starredTools.has(tool.id)}
+          isAuthenticated={!!user}
         />
       ))}
     </div>

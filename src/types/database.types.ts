@@ -7,6 +7,7 @@ export type Database = {
           email?: string
           full_name?: string
           avatar_url?: string
+          role: string
           created_at: string
           updated_at: string
         }
@@ -15,6 +16,7 @@ export type Database = {
           email?: string
           full_name?: string
           avatar_url?: string
+          role?: string
           created_at?: string
           updated_at?: string
         }
@@ -23,6 +25,7 @@ export type Database = {
           email?: string
           full_name?: string
           avatar_url?: string
+          role?: string
           created_at?: string
           updated_at?: string
         }
@@ -99,10 +102,10 @@ export type Database = {
           category: string
           url: string
           submitted_by: string
+          user_id?: string
           approved: boolean
           active: boolean
-          rating: number
-          rating_count: number
+          star_count: number
           total_clicks: number
           created_at: string
           updated_at: string
@@ -114,10 +117,10 @@ export type Database = {
           category: string
           url: string
           submitted_by: string
+          user_id?: string
           approved?: boolean
           active?: boolean
-          rating?: number
-          rating_count?: number
+          star_count?: number
           total_clicks?: number
           created_at?: string
           updated_at?: string
@@ -129,35 +132,32 @@ export type Database = {
           category?: string
           url?: string
           submitted_by?: string
+          user_id?: string
           approved?: boolean
           active?: boolean
-          rating?: number
-          rating_count?: number
+          star_count?: number
           total_clicks?: number
           created_at?: string
           updated_at?: string
         }
       }
-      tool_ratings: {
+      tool_stars: {
         Row: {
           id: string
           tool_id: string
           user_id: string
-          rating: number
           created_at: string
         }
         Insert: {
           id?: string
           tool_id: string
           user_id: string
-          rating: number
           created_at?: string
         }
         Update: {
           id?: string
           tool_id?: string
           user_id?: string
-          rating?: number
           created_at?: string
         }
       }

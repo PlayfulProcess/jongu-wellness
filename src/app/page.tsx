@@ -23,11 +23,11 @@ export default function HomePage() {
   
   // Community tools state
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [sortBy, setSortBy] = useState('rating');
+  const [sortBy, setSortBy] = useState('stars');
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryStats, setCategoryStats] = useState({});
   const [totalTools, setTotalTools] = useState(0);
-  const [averageRating, setAverageRating] = useState(0);
+  const [averageStars, setAverageStars] = useState(0);
 
   useEffect(() => {
     fetchStats();
@@ -40,20 +40,20 @@ export default function HomePage() {
       
       // Calculate stats
       const stats: {[key: string]: number} = {};
-      let totalRating = 0;
-      let ratedToolsCount = 0;
+      let totalStars = 0;
+      let starredToolsCount = 0;
 
-      tools.forEach((tool: { category: string; total_ratings: number; avg_rating: number }) => {
+      tools.forEach((tool: { category: string; star_count: number }) => {
         stats[tool.category] = (stats[tool.category] || 0) + 1;
-        if (tool.total_ratings > 0) {
-          totalRating += tool.avg_rating;
-          ratedToolsCount++;
+        if (tool.star_count > 0) {
+          totalStars += tool.star_count;
+          starredToolsCount++;
         }
       });
 
       setCategoryStats(stats);
       setTotalTools(tools.length);
-      setAverageRating(ratedToolsCount > 0 ? totalRating / ratedToolsCount : 0);
+      setAverageStars(starredToolsCount > 0 ? totalStars / starredToolsCount : 0);
     } catch (error) {
       console.error('Error fetching stats:', error);
     }
@@ -218,7 +218,7 @@ export default function HomePage() {
           <div id="tools-search">
             <StatsDisplay 
               totalTools={totalTools} 
-              averageRating={averageRating}
+              averageRating={averageStars}
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
             />
@@ -243,7 +243,7 @@ export default function HomePage() {
               selectedCategory={selectedCategory}
               sortBy={sortBy}
               searchQuery={searchQuery}
-              onToolRate={fetchStats}
+              onToolStar={fetchStats}
             />
           </div>
 

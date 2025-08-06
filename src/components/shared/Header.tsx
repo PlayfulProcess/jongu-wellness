@@ -113,6 +113,12 @@ export function Header({ showAuthModal }: HeaderProps) {
           <div className="flex items-center space-x-4">
             {user ? (
               <div className="flex items-center space-x-4">
+                <Link
+                  href="/dashboard"
+                  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Dashboard
+                </Link>
                 <span className="text-sm text-gray-600">Welcome, {user.email}</span>
                 <button
                   onClick={signOut}

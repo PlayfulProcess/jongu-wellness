@@ -7,12 +7,13 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     
     const category = searchParams.get('category');
-    const sort = searchParams.get('sort') || 'rating';
+    const sort = searchParams.get('sort') || 'stars';
     
     let query = supabase
       .from('tools')
       .select('*')
-      .eq('approved', true);
+      .eq('approved', true)
+      .eq('active', true);
     
     // Apply category filter
     if (category && category !== 'all') {
@@ -21,17 +22,17 @@ export async function GET(request: NextRequest) {
     
     // Apply sorting
     switch (sort) {
-      case 'rating':
-        query = query.order('avg_rating', { ascending: false });
+      case 'stars':
+        query = query.order('star_count', { ascending: false });
         break;
       case 'newest':
         query = query.order('created_at', { ascending: false });
         break;
       case 'popular':
-        query = query.order('click_count', { ascending: false });
+        query = query.order('total_clicks', { ascending: false });
         break;
       default:
-        query = query.order('avg_rating', { ascending: false });
+        query = query.order('star_count', { ascending: false });
     }
     
     const { data, error } = await query;
@@ -52,21 +53,29 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
+    
+    // Check if user is authenticated
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Authentication required to submit tools' },
+        { status: 401 }
+      );
+    }
+    
     const body = await request.json();
     
     const {
-      title,
-      claude_url,
+      name,
+      url,
       category,
       description,
-      creator_name,
-      creator_link,
-      creator_background,
-      thumbnail_url
+      submitted_by
     } = body;
     
     // Validate required fields
-    if (!title || !claude_url || !category || !description || !creator_name) {
+    if (!name || !url || !category || !description || !submitted_by) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -77,15 +86,15 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase
       .from('tools')
       .insert({
-        title,
-        claude_url,
+        name,
+        url,
         category,
         description,
-        creator_name,
-        creator_link: creator_link || null,
-        creator_background: creator_background || null,
-        thumbnail_url: thumbnail_url || null,
-        approved: true // For MVP, auto-approve. In production, set to false for moderation
+        submitted_by,
+        user_id: user.id,
+        approved: false, // Require approval for user-submitted tools
+        active: true,
+        star_count: 0
       })
       .select()
       .single();
