@@ -29,7 +29,7 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
   const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [starredTools, setStarredTools] = useState<Set<string>>(new Set());
   
   const supabase = createClient();
@@ -65,17 +65,6 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
     }
   }, [selectedCategory, sortBy]);
 
-  useEffect(() => {
-    fetchTools();
-    checkUser();
-  }, [fetchTools]);
-
-  useEffect(() => {
-    if (user) {
-      fetchStarredTools();
-    }
-  }, [user]);
-
   const checkUser = async () => {
     try {
       const { data: { user }, error } = await supabase.auth.getUser();
@@ -106,6 +95,17 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
       console.error('Error fetching starred tools:', error);
     }
   };
+
+  useEffect(() => {
+    fetchTools();
+    checkUser();
+  }, [fetchTools]);
+
+  useEffect(() => {
+    if (user) {
+      fetchStarredTools();
+    }
+  }, [user]);
 
   const handleStar = async (toolId: string) => {
     try {

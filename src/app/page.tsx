@@ -24,7 +24,7 @@ export default function HomePage() {
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showNewsletterModal, setShowNewsletterModal] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ email?: string } | null>(null);
   
   // Community tools state
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -33,22 +33,6 @@ export default function HomePage() {
   const [categoryStats, setCategoryStats] = useState({});
   const [totalTools, setTotalTools] = useState(0);
   const [averageStars, setAverageStars] = useState(0);
-
-  useEffect(() => {
-    fetchStats();
-    checkUser();
-    
-    // Listen for auth modal events from SubmitToolModal
-    const handleAuthModalEvent = () => {
-      setShowAuthModal(true);
-    };
-    
-    window.addEventListener('openAuthModal', handleAuthModalEvent);
-    
-    return () => {
-      window.removeEventListener('openAuthModal', handleAuthModalEvent);
-    };
-  }, []);
 
   const checkUser = async () => {
     const supabase = createClient();
@@ -102,6 +86,22 @@ export default function HomePage() {
       setAverageStars(0);
     }
   };
+
+  useEffect(() => {
+    fetchStats();
+    checkUser();
+    
+    // Listen for auth modal events from SubmitToolModal
+    const handleAuthModalEvent = () => {
+      setShowAuthModal(true);
+    };
+    
+    window.addEventListener('openAuthModal', handleAuthModalEvent);
+    
+    return () => {
+      window.removeEventListener('openAuthModal', handleAuthModalEvent);
+    };
+  }, []);
 
   if (loading) {
     return (

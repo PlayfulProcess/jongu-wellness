@@ -3,7 +3,24 @@ import { createClient } from '@/lib/supabase-server';
 
 interface DatabaseTool {
   id: string;
-  tool_data?: Record<string, any>;
+  tool_data?: {
+    name?: string;
+    title?: string;
+    url?: string;
+    claude_url?: string;
+    category?: string;
+    description?: string;
+    submitted_by?: string;
+    creator_name?: string;
+    is_active?: string;
+    thumbnail_url?: string;
+    stats?: {
+      stars?: string;
+      clicks?: string;
+    };
+    click_count?: string;
+    [key: string]: unknown;
+  };
   created_at: string;
 }
 

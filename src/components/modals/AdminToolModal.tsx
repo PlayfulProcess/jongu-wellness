@@ -25,13 +25,6 @@ export function AdminToolModal({ isOpen, onClose }: AdminToolModalProps) {
 
   const supabase = createClient();
 
-  // Check authentication and admin status when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      checkUser();
-    }
-  }, [isOpen]);
-
   const checkUser = async () => {
     try {
       setLoading(true);
@@ -45,6 +38,13 @@ export function AdminToolModal({ isOpen, onClose }: AdminToolModalProps) {
       setLoading(false);
     }
   };
+
+  // Check authentication and admin status when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      checkUser();
+    }
+  }, [isOpen]);
 
   const validateForm = () => {
     const newErrors: {[key: string]: string} = {};
@@ -172,7 +172,7 @@ export function AdminToolModal({ isOpen, onClose }: AdminToolModalProps) {
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                 <p className="text-blue-800 text-sm">
                   ✨ <strong>Admin Tool Creation:</strong> This will create an official Jongu tool with auto-approval, 
-                  featuring, and "Jongu" branding.
+                  featuring, and &quot;Jongu&quot; branding.
                 </p>
               </div>
 

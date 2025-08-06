@@ -15,6 +15,7 @@ interface Tool {
   description: string;
   submitted_by: string;
   star_count: number;
+  total_clicks: number;
   created_at: string;
   approved: boolean;
   active: boolean;
@@ -92,6 +93,7 @@ export default function Dashboard() {
           description: tool.tool_data?.description || '',
           submitted_by: tool.tool_data?.submitted_by || 'Anonymous',
           star_count: parseInt(tool.tool_data?.stats?.stars || '0'),
+          total_clicks: parseInt(tool.tool_data?.stats?.clicks || '0'),
           created_at: tool.created_at,
           approved: tool.tool_data?.is_active === 'true',
           active: tool.tool_data?.is_active === 'true',
@@ -125,6 +127,7 @@ export default function Dashboard() {
         description: tool.tool_data?.description || '',
         submitted_by: tool.tool_data?.submitted_by || 'Anonymous',
         star_count: parseInt(tool.tool_data?.stats?.stars || '0'),
+        total_clicks: parseInt(tool.tool_data?.stats?.clicks || '0'),
         created_at: tool.created_at,
         approved: tool.tool_data?.is_active === 'true',
         active: tool.tool_data?.is_active === 'true'
@@ -152,6 +155,7 @@ export default function Dashboard() {
 
   const handleDeleteTool = async (toolId: string) => {
     if (!confirm('Are you sure you want to delete this tool?')) return;
+    if (!user) return;
 
     try {
       const { error } = await supabase
@@ -207,8 +211,7 @@ export default function Dashboard() {
         {showAuthModal && (
           <AuthModal
             isOpen={showAuthModal}
-            onClose={() => setShowAuthModal(false)}
-            onSuccess={() => {
+            onClose={() => {
               setShowAuthModal(false);
               checkUser();
             }}

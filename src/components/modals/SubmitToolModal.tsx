@@ -27,13 +27,6 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
 
   const supabase = createClient();
 
-  // Check authentication when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      checkUser();
-    }
-  }, [isOpen, checkUser]);
-
   const checkUser = useCallback(async () => {
     try {
       setLoading(true);
@@ -47,6 +40,13 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
       setLoading(false);
     }
   }, [supabase]);
+
+  // Check authentication when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      checkUser();
+    }
+  }, [isOpen, checkUser]);
 
   const categories = [
     { value: 'mindfulness', label: '🧘 Mindfulness & Creativity' },
