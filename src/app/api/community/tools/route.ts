@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 
+interface DatabaseTool {
+  id: string;
+  tool_data?: Record<string, any>;
+  created_at: string;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -39,7 +45,7 @@ export async function GET(request: NextRequest) {
     }
     
     // Transform JSONB data to match frontend expectations
-    const transformedTools = (data || []).map((tool: any) => ({
+    const transformedTools = (data || []).map((tool: DatabaseTool) => ({
       id: tool.id,
       name: tool.tool_data?.name || '',
       title: tool.tool_data?.title || tool.tool_data?.name || '', // Add title field for compatibility

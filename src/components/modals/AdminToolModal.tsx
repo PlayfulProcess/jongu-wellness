@@ -107,9 +107,10 @@ export function AdminToolModal({ isOpen, onClose }: AdminToolModalProps) {
       alert('🛡️ Jongu tool created successfully!');
       onClose();
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating Jongu tool:', error);
-      alert(`❌ Failed to create tool: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      alert(`❌ Failed to create tool: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }

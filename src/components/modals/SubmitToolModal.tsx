@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase-client';
 import { User } from '@supabase/supabase-js';
 
@@ -32,9 +32,9 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
     if (isOpen) {
       checkUser();
     }
-  }, [isOpen]);
+  }, [isOpen, checkUser]);
 
-  const checkUser = async () => {
+  const checkUser = useCallback(async () => {
     try {
       setLoading(true);
       const { data: { user }, error } = await supabase.auth.getUser();
@@ -46,7 +46,7 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [supabase]);
 
   const categories = [
     { value: 'mindfulness', label: '🧘 Mindfulness & Creativity' },
@@ -191,14 +191,15 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
       alert('🎉 Tool submitted successfully! We\'ll review it and add it to the community garden soon.');
       onClose();
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error submitting tool:', error);
       
       // Show specific error message if it's about Jongu name protection
-      if (error.message.includes('Jongu') || error.message.includes('reserved')) {
-        alert('🛡️ The name "Jongu" is reserved for official platform tools.\n\nOnly Jongu administrators can create tools with "Jongu" branding.\n\nPlease choose a different name for your community tool.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      if (errorMessage.includes('Jongu') || errorMessage.includes('reserved')) {
+        alert('🛡️ The name &quot;Jongu&quot; is reserved for official platform tools.\n\nOnly Jongu administrators can create tools with &quot;Jongu&quot; branding.\n\nPlease choose a different name for your community tool.');
       } else {
-        alert(`❌ Failed to submit tool: ${error.message}`);
+        alert(`❌ Failed to submit tool: ${errorMessage}`);
       }
     } finally {
       setIsSubmitting(false);
