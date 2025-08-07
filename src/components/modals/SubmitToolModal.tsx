@@ -312,15 +312,29 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
             {/* Description */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description *
+                Description * <span className="text-gray-500 text-xs">(max 280 characters)</span>
               </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                rows={4}
-                className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Describe what your tool does and how it helps people..."
-              />
+              <div className="relative">
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.length <= 280) {
+                      setFormData({ ...formData, description: value });
+                    }
+                  }}
+                  maxLength={280}
+                  rows={4}
+                  className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Describe what your tool does and how it helps people..."
+                />
+                <div className={`absolute bottom-2 right-3 text-xs ${
+                  formData.description.length > 250 ? 'text-red-600' : 
+                  formData.description.length > 200 ? 'text-yellow-600' : 'text-gray-400'
+                }`}>
+                  {formData.description.length}/280
+                </div>
+              </div>
               {errors.description && <p className="text-red-600 text-sm mt-1">{errors.description}</p>}
             </div>
 

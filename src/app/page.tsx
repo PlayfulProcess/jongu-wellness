@@ -306,30 +306,32 @@ export default function HomePage() {
         </button>
       )}
 
-      {/* Section 3: About This Platform */}
+      {/* Section 3: About This Wellness Channel */}
       <section id="about" className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">About This Platform</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-8">About This Wellness Channel</h2>
           <div className="prose prose-lg mx-auto text-gray-600">
             <p className="mb-6">
-              This platform was inspired by Dialectical Behavior Therapy (DBT) skills, but we&apos;ve added our own 
-              PlayfulProcess touch to make wellness more accessible and creative.
+              This channel brings together evidence-based wellness practices with interactive technology to make growth tools accessible to everyone. 
+              Starting with research-backed exercises from positive psychology, we're expanding to include contributions from therapists, coaches, and community members.
             </p>
-            <p className="mb-6">
-              We believe in building gateways, not gatekeepers. Founded by PlayfulProcess, this community-driven 
-              platform welcomes tools that help people grow, heal, and connect—whether through creative approaches to healing, 
-              creative expression, or innovative approaches to wellness.
-            </p>
-            <div className="bg-blue-50 border-l-4 border-blue-400 p-6 text-left rounded-lg">
-              <h3 className="text-xl font-semibold text-blue-900 mb-4">Our Philosophy</h3>
+            <div className="bg-blue-50 border-l-4 border-blue-400 p-6 text-left rounded-lg mb-6">
+              <h3 className="text-xl font-semibold text-blue-900 mb-4">What makes this different?</h3>
               <ul className="list-disc list-inside space-y-2 text-blue-800">
-                <li>Open source and transparent development</li>
-                <li>Community-driven content creation</li>
-                <li>Evidence-based but accessible tools</li>
-                <li>Creative approaches to healing</li>
-                <li>Building bridges between helpers and seekers</li>
+                <li><strong>Open Access:</strong> All tools are completely free, supported by community donations</li>
+                <li><strong>Evidence-Based:</strong> Grounded in proven psychological research and therapeutic practices</li>
+                <li><strong>Community-Driven:</strong> Built with contributions from mental health professionals and practitioners</li>
+                <li><strong>Technology-Enhanced:</strong> Optional AI assistance for deeper reflection and insights</li>
+                <li><strong>Privacy-Focused:</strong> Your data stays yours—choose what to save and what to keep private</li>
               </ul>
             </div>
+            <p className="mb-4">
+              This channel is part of the broader Jongu experiment in reclaiming human connection in the digital age. 
+              We believe wellness tools should be gateways to growth, not gatekeepers behind paywalls.
+            </p>
+            <p className="text-sm text-gray-500">
+              <strong>Created by PlayfulProcess</strong> | <strong>Supported by the Jongu Community</strong>
+            </p>
           </div>
         </div>
       </section>
