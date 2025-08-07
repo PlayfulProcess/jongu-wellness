@@ -165,7 +165,7 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, isAuthenti
           <>
             <Image
               src={tool.thumbnail_url}
-              alt={tool.title}
+              alt={tool.title || tool.name || 'Tool thumbnail'}
               width={400}
               height={192}
               className="w-full h-full object-cover"

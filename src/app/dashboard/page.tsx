@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase-client';
 import { ToolCard } from '@/components/community/ToolCard';
@@ -36,7 +36,7 @@ export default function Dashboard() {
 
   const supabase = createClient();
 
-  const checkUser = async () => {
+  const checkUser = useCallback(async () => {
     try {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error) throw error;
@@ -52,9 +52,9 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [supabase.auth]);
 
-  const fetchStarredTools = async () => {
+  const fetchStarredTools = useCallback(async () => {
     if (!user) return;
     
     try {
@@ -107,9 +107,9 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Error fetching starred tools:', error);
     }
-  };
+  }, [user, supabase]);
 
-  const fetchSubmittedTools = async () => {
+  const fetchSubmittedTools = useCallback(async () => {
     if (!user) return;
     
     try {
@@ -140,7 +140,7 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Error fetching submitted tools:', error);
     }
-  };
+  }, [user, supabase]);
 
   const handleUnstar = async (toolId: string) => {
     try {
@@ -178,14 +178,14 @@ export default function Dashboard() {
 
   useEffect(() => {
     checkUser();
-  }, []);
+  }, [checkUser]);
 
   useEffect(() => {
     if (user) {
       fetchStarredTools();
       fetchSubmittedTools();
     }
-  }, [user]);
+  }, [user, fetchStarredTools, fetchSubmittedTools]);
 
   if (loading) {
     return (

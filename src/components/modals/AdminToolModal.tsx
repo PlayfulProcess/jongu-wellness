@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase-client';
 import { User } from '@supabase/supabase-js';
 import { isAdmin } from '@/lib/admin-utils';
@@ -25,7 +25,7 @@ export function AdminToolModal({ isOpen, onClose }: AdminToolModalProps) {
 
   const supabase = createClient();
 
-  const checkUser = async () => {
+  const checkUser = useCallback(async () => {
     try {
       setLoading(true);
       const { data: { user }, error } = await supabase.auth.getUser();
@@ -37,14 +37,14 @@ export function AdminToolModal({ isOpen, onClose }: AdminToolModalProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [supabase.auth]);
 
   // Check authentication and admin status when modal opens
   useEffect(() => {
     if (isOpen) {
       checkUser();
     }
-  }, [isOpen]);
+  }, [isOpen, checkUser]);
 
   const validateForm = () => {
     const newErrors: {[key: string]: string} = {};

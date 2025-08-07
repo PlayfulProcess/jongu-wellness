@@ -65,7 +65,7 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
     }
   }, [selectedCategory, sortBy]);
 
-  const checkUser = async () => {
+  const checkUser = useCallback(async () => {
     try {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (!error) {
@@ -74,9 +74,9 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
     } catch (error) {
       console.error('Error checking user:', error);
     }
-  };
+  }, [supabase.auth]);
 
-  const fetchStarredTools = async () => {
+  const fetchStarredTools = useCallback(async () => {
     if (!user) return;
     
     try {
@@ -94,18 +94,18 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
     } catch (error) {
       console.error('Error fetching starred tools:', error);
     }
-  };
+  }, [user, supabase]);
 
   useEffect(() => {
     fetchTools();
     checkUser();
-  }, [fetchTools]);
+  }, [fetchTools, checkUser]);
 
   useEffect(() => {
     if (user) {
       fetchStarredTools();
     }
-  }, [user]);
+  }, [user, fetchStarredTools]);
 
   const handleStar = async (toolId: string) => {
     try {
