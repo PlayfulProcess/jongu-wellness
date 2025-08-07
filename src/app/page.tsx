@@ -127,11 +127,11 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-5xl font-bold text-gray-900 mb-6">
-              Jongu, Interactive Tools
-              <span className="block text-blue-600">for a Better Life</span>
+              Jongu wellness channel:
+              <span className="block text-blue-600">Interactive Tools for a better life</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Discover science-backed wellness practices and reflection tools. 
+              Discover evidence-based wellness practices and reflection tools. 
               Keep a record of your progress, use AI help for deeper insights, and connect with the amazing people who created these tools.
             </p>
             <div className="text-sm text-gray-500 mb-8">
@@ -144,13 +144,11 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
           <div className="bg-white rounded-xl shadow-xl p-8">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Tool</h2>
-              <p className="text-gray-600">Try our flagship tool to see how the platform works</p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Tool: Best Possible Self</h2>
             </div>
             
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Best Possible Self</h3>
                 <p className="text-gray-600 mb-6">
                   A research-backed reflection practice from <a 
                     href="https://ggia.berkeley.edu/practice/best_possible_self" 
@@ -203,7 +201,7 @@ export default function HomePage() {
           {/* Section Header */}
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Community Wellness Tool Garden
+              Jongu Wellness Tool Garden
             </h2>
             
             {/* Two-box layout for Community Tools vs Jongu Tools */}
@@ -212,14 +210,16 @@ export default function HomePage() {
               <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
                 <h3 className="text-xl font-semibold text-green-900 mb-3">🌍 Community Tools</h3>
                 <p className="text-gray-700 mb-4">
-                  Discover wellness tools. Journaling apps, creativity prompts, relationship boosters, and therapeutic exercises. Created by the community for the community.
+                  Discover wellness tools. Journaling apps, creativity prompts, relationship boosters, and more. Created by the community for the community.
                 </p>
-                <button
-                  onClick={() => setShowSubmitModal(true)}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                >
-                  🔗 Share Tool
-                </button>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button
+                    onClick={() => setShowSubmitModal(true)}
+                    className="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  >
+                    🔗 Share Tool
+                  </button>
+                </div>
               </div>
 
               {/* Jongu Tools Box */}
@@ -322,10 +322,10 @@ export default function HomePage() {
               <h3 className="text-xl font-semibold text-blue-900 mb-4">What makes this different?</h3>
               <ul className="list-disc list-inside space-y-2 text-blue-800">
                 <li><strong>Open Access:</strong> All tools are completely free, supported by community donations</li>
-                <li><strong>Evidence-Based:</strong> Grounded in proven psychological research and therapeutic practices</li>
-                <li><strong>Community-Driven:</strong> Built with contributions from mental health professionals and practitioners</li>
-                <li><strong>Technology-Enhanced:</strong> Optional AI assistance for deeper reflection and insights</li>
-                <li><strong>Privacy-Focused:</strong> Your data stays yours—choose what to save and what to keep private</li>
+                <li><strong>Inclusive:</strong> Jongu tools will still be valuable without engaging with AI</li>
+                <li><strong>Evidence-Based:</strong> Grounded in research or personal experience (which is also evidence)</li>
+                <li><strong>Community-Driven:</strong> Share tools here or talk about your experience in our Discord channel</li>
+                <li><strong>Privacy-Focused:</strong> Self-hosted tools can be used without saving any data in our databases</li>
               </ul>
             </div>
             <p className="mb-4">
@@ -333,7 +333,7 @@ export default function HomePage() {
               We believe wellness tools should be gateways to growth, not gatekeepers behind paywalls.
             </p>
             <p className="text-sm text-gray-500">
-              <strong>Created by PlayfulProcess</strong> | <strong>Supported by the Jongu Community</strong>
+              <strong>Created by <a href="https://www.playfulprocess.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">PlayfulProcess</a></strong> | <strong>Supported by the Jongu Community</strong>
             </p>
           </div>
         </div>

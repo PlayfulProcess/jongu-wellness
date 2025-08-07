@@ -165,16 +165,15 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, isAuthenti
           <>
             <Image
               src={tool.thumbnail_url}
-              alt={tool.title || tool.name || 'Tool thumbnail'}
+              alt={tool.title || tool.name}
               width={400}
-              height={192}
-              className="w-full h-full object-cover"
+              height={300}
+              className="w-full h-full object-contain bg-gray-50"
             />
             {/* Category badge for images */}
             <div className="absolute top-3 left-3">
-              <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${design.gradient} ${design.textColor} shadow-lg`}>
-                <span className="text-sm">{design.icon}</span>
-                {design.name}
+              <span className={`inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/50 backdrop-blur-sm shadow-lg`}>
+                <span className="text-lg">{design.icon}</span>
               </span>
             </div>
           </>
@@ -215,10 +214,10 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, isAuthenti
           </div>
         </div>
 
-        {/* Description */}
+        {/* Description - pad to ensure consistent height */}
         <div className="flex-grow">
-          <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-            {tool.description}
+          <p className="text-gray-600 text-sm mb-4 min-h-[4.5rem] line-clamp-3">
+            {tool.description.padEnd(280, ' ')}
           </p>
         </div>
 

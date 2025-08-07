@@ -15,7 +15,7 @@ export function Header({ showAuthModal }: HeaderProps) {
   return (
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-28">
           {/* Logo and Navigation */}
           <div className="flex items-center space-x-8">
             <Link href="/" className="flex items-center space-x-2">
@@ -23,9 +23,9 @@ export function Header({ showAuthModal }: HeaderProps) {
                 <Image 
                   src="/Jongulogo.png" 
                   alt="Jongu"
-                  width={48}
-                  height={48}
-                  className="h-12 w-auto"
+                  width={96}
+                  height={96}
+                  className="h-24 w-auto"
                 />
                 <span className="text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full font-medium">BETA</span>
               </div>

@@ -113,6 +113,12 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
         method: 'POST'
       });
 
+      if (response.status === 409) {
+        // Tool already starred, update local state to reflect this
+        setStarredTools(prev => new Set([...prev, toolId]));
+        return;
+      }
+
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error || 'Failed to star tool');

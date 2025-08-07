@@ -199,7 +199,7 @@ export function CollaborationModal({ isOpen, onClose }: CollaborationModalProps)
             <div className="bg-blue-50 p-4 rounded-lg">
               <h4 className="font-semibold text-blue-900 mb-2">💡 Collaboration Ideas</h4>
               <ul className="text-sm text-blue-800 space-y-1">
-                <li>• Co-create therapeutic tools and exercises</li>
+                <li>• Co-create tools and exercises</li>
                 <li>• Research partnerships on tool effectiveness</li>
                 <li>• Guest content and cross-promotion</li>
                 <li>• Workshop and training collaborations</li>

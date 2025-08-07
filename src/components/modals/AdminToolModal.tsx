@@ -184,7 +184,7 @@ export function AdminToolModal({ isOpen, onClose }: AdminToolModalProps) {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   placeholder="Best Possible Self"
                   required
                 />
@@ -199,7 +199,7 @@ export function AdminToolModal({ isOpen, onClose }: AdminToolModalProps) {
                   type="text"
                   value={formData.url}
                   onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   placeholder="https://yourapp.vercel.app"
                   required
                 />
@@ -229,7 +229,7 @@ export function AdminToolModal({ isOpen, onClose }: AdminToolModalProps) {
                   type="text"
                   value={formData.icon}
                   onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   placeholder="🌟"
                 />
               </div>
@@ -241,7 +241,7 @@ export function AdminToolModal({ isOpen, onClose }: AdminToolModalProps) {
                 <select
                   value={formData.channel}
                   onChange={(e) => setFormData({ ...formData, channel: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 >
                   <option value="wellness">Wellness</option>
                   <option value="creativity">Creativity</option>

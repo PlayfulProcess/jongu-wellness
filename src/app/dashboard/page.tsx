@@ -157,8 +157,10 @@ export default function Dashboard() {
   };
 
   const handleDeleteTool = async (toolId: string) => {
-    if (!confirm('Are you sure you want to delete this tool?')) return;
     if (!user) return;
+
+    const confirmed = window.confirm('Are you sure you want to delete this tool? This action cannot be undone.');
+    if (!confirmed) return;
 
     try {
       const { error } = await supabase
@@ -170,6 +172,7 @@ export default function Dashboard() {
       if (error) throw error;
       
       setSubmittedTools(prev => prev.filter(tool => tool.id !== toolId));
+      alert('Tool deleted successfully.');
     } catch (error) {
       console.error('Error deleting tool:', error);
       alert('Error deleting tool. Please try again.');
@@ -232,7 +235,7 @@ export default function Dashboard() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <Link href="/" className="text-blue-600 hover:text-blue-800 font-medium">
-                ← Back to Tools
+                ← Back to Channel
               </Link>
               <h1 className="text-xl font-semibold text-gray-900">My Dashboard</h1>
             </div>

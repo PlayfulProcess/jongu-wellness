@@ -49,10 +49,14 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
   }, [isOpen, checkUser]);
 
   const categories = [
-    { value: 'mindfulness', label: '🧘 Mindfulness & Creativity' },
-    { value: 'distress-tolerance', label: '🛡️ Distress Tolerance' },
-    { value: 'emotion-regulation', label: '❤️ Emotion Regulation' },
-    { value: 'interpersonal-effectiveness', label: '🤝 Interpersonal Effectiveness' }
+    { value: 'mindfulness', label: '🧘 Mindfulness & Meditation' },
+    { value: 'journaling', label: '✍️ Journaling & Reflection' },
+    { value: 'stress-management', label: '🛡️ Stress Management' },
+    { value: 'emotion-regulation', label: '❤️ Emotional Wellbeing' },
+    { value: 'relationships', label: '🤝 Relationships & Communication' },
+    { value: 'goals-habits', label: '🎯 Goals & Habit Building' },
+    { value: 'creativity', label: '🎨 Creativity & Expression' },
+    { value: 'self-care', label: '🌱 Self-Care & Wellness' }
   ];
 
   const validateForm = () => {

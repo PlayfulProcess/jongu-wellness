@@ -15,11 +15,12 @@ export async function GET() {
       );
     }
     
-    // Get user's starred tools
+    // Get user's starred tools using the ultra minimal schema
     const { data, error } = await supabase
-      .from('tool_stars')
+      .from('user_documents')
       .select(`
         created_at,
+        document_data,
         tools!inner (
           id,
           name,
@@ -35,6 +36,9 @@ export async function GET() {
         )
       `)
       .eq('user_id', user.id)
+      .eq('document_type', 'interaction')
+      .eq('document_data->>interaction_type', 'star')
+      .eq('document_data->>target_type', 'tool')
       .eq('tools.active', true)
       .eq('tools.approved', true)
       .order('created_at', { ascending: false });
