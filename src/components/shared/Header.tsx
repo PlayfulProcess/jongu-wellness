@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/components/AuthProvider';
-import { LINKS } from '@/config/links';
 import JonguNav from '@/components/JonguNav';
 
 interface HeaderProps {
@@ -20,9 +20,11 @@ export function Header({ showAuthModal }: HeaderProps) {
           <div className="flex items-center space-x-8">
             <Link href="/" className="flex items-center space-x-2">
               <div className="flex items-center space-x-2">
-                <img 
+                <Image 
                   src="/Jongulogo.png" 
-                  alt="Jongu" 
+                  alt="Jongu"
+                  width={48}
+                  height={48}
                   className="h-12 w-auto"
                 />
                 <span className="text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full font-medium">BETA</span>

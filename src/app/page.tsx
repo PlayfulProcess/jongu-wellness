@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { LINKS } from '@/config/links';
 import { Header } from '@/components/shared/Header';
 import { AuthModal } from '@/components/modals/AuthModal';
@@ -239,9 +240,11 @@ export default function HomePage() {
                     }}
                     className="jongu-search-button inline-flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
                   >
-                    <img 
+                    <Image 
                       src="/Jongulogo.png" 
                       alt="Jongu" 
+                      width={16}
+                      height={16}
                       className="h-4 w-auto filter brightness-0 invert"
                     />
                     <span>View Jongu Tools</span>
@@ -313,7 +316,7 @@ export default function HomePage() {
           <div className="prose prose-lg mx-auto text-gray-600">
             <p className="mb-6">
               This channel brings together evidence-based wellness practices with interactive technology to make growth tools accessible to everyone. 
-              Starting with research-backed exercises from positive psychology, we're expanding to include contributions from therapists, coaches, and community members.
+              Starting with research-backed exercises from positive psychology, we&apos;re expanding to include contributions from therapists, coaches, and community members.
             </p>
             <div className="bg-blue-50 border-l-4 border-blue-400 p-6 text-left rounded-lg mb-6">
               <h3 className="text-xl font-semibold text-blue-900 mb-4">What makes this different?</h3>
@@ -341,9 +344,11 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
-              <img 
+              <Image 
                 src="/Jongulogo.png" 
                 alt="Jongu" 
+                width={128}
+                height={128}
                 className="h-32 w-auto filter brightness-0 invert"
               />
             </div>

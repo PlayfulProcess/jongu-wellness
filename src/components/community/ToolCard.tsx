@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 interface Tool {
   id: string;
@@ -162,9 +163,11 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, isAuthenti
       <div className="relative h-48">
         {tool.thumbnail_url ? (
           <>
-            <img
+            <Image
               src={tool.thumbnail_url}
               alt={tool.title}
+              width={400}
+              height={192}
               className="w-full h-full object-cover"
             />
             {/* Category badge for images */}

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { createAdminClient } from '@/lib/supabase-admin';
+import { useState } from 'react';
+import Image from 'next/image';
 
 interface Submission {
   id: string;
@@ -68,7 +68,7 @@ export default function AdminPage() {
       } else {
         setAuthError('Invalid password');
       }
-    } catch (error) {
+    } catch {
       setAuthError('Authentication failed');
     }
   };
@@ -335,9 +335,11 @@ export default function AdminPage() {
                               </div>
                               {submission.thumbnail_url && (
                                 <div className="ml-6">
-                                  <img 
+                                  <Image 
                                     src={submission.thumbnail_url} 
                                     alt={submission.title}
+                                    width={96}
+                                    height={96}
                                     className="w-24 h-24 object-cover rounded-lg"
                                   />
                                 </div>
