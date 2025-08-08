@@ -99,14 +99,32 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, isAuthenti
   const handleStarToggle = async () => {
     console.log('Debug - isAuthenticated:', isAuthenticated);
     console.log('Debug - Full props passed to ToolCard:', { isAuthenticated, isStarred, tool: tool.name });
-    if (!isAuthenticated) {
-      console.log('Debug - User not authenticated, showing sign in alert');
-      alert('Please sign in to star tools');
-      return;
-    }
-
+    
+    // Try making the API call even if client thinks user is not authenticated
+    // Let the server decide the authentication status
     setIsStarring(true);
     try {
+      const response = await fetch(`/api/community/tools/${tool.id}/star`, {
+        method: isStarred ? 'DELETE' : 'POST',
+        credentials: 'include', // Ensure cookies are sent
+      });
+
+      console.log('Debug - Star API response status:', response.status);
+      
+      if (response.status === 401) {
+        console.log('Debug - Server says user not authenticated');
+        alert('Please sign in to star tools');
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Debug - Star API error:', errorData);
+        alert('Failed to update star. Please try again.');
+        return;
+      }
+
+      // Success - call the appropriate handler
       if (isStarred) {
         onUnstar?.(tool.id);
       } else {
@@ -114,6 +132,7 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, isAuthenti
       }
     } catch (error) {
       console.error('Error toggling star:', error);
+      alert('Failed to update star. Please try again.');
     } finally {
       setIsStarring(false);
     }

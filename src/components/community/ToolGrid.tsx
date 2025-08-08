@@ -111,63 +111,30 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
   }, [user, fetchStarredTools]);
 
   const handleStar = async (toolId: string) => {
-    try {
-      const response = await fetch(`/api/community/tools/${toolId}/star`, {
-        method: 'POST'
-      });
-
-      if (response.status === 409) {
-        // Tool already starred, update local state to reflect this
-        setStarredTools(prev => new Set([...prev, toolId]));
-        return;
-      }
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to star tool');
-      }
-
-      // Update local state
-      setStarredTools(prev => new Set([...prev, toolId]));
-      
-      // Refresh tools to show updated star count
-      await fetchTools(true);
-      
-      if (onToolStar) {
-        onToolStar();
-      }
-    } catch (error) {
-      console.error('Error starring tool:', error);
-      alert('Failed to star tool. Please try again.');
+    // Update local state
+    setStarredTools(prev => new Set([...prev, toolId]));
+    
+    // Refresh tools to show updated star count
+    await fetchTools(true);
+    
+    if (onToolStar) {
+      onToolStar();
     }
   };
 
   const handleUnstar = async (toolId: string) => {
-    try {
-      const response = await fetch(`/api/community/tools/${toolId}/star`, {
-        method: 'DELETE'
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to unstar tool');
-      }
-
-      // Update local state
-      setStarredTools(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(toolId);
-        return newSet;
-      });
-      
-      // Refresh tools to show updated star count
-      await fetchTools(true);
-      
-      if (onToolStar) {
-        onToolStar();
-      }
-    } catch (error) {
-      console.error('Error unstarring tool:', error);
-      alert('Failed to unstar tool. Please try again.');
+    // Update local state
+    setStarredTools(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(toolId);
+      return newSet;
+    });
+    
+    // Refresh tools to show updated star count
+    await fetchTools(true);
+    
+    if (onToolStar) {
+      onToolStar();
     }
   };
 
