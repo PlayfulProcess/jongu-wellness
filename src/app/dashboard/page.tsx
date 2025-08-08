@@ -318,17 +318,11 @@ export default function Dashboard() {
 
         {activeTab === 'submitted' && (
           <div>
-            <div className="mb-6 flex justify-between items-start">
+            <div className="mb-6">
               <div>
                 <h2 className="text-lg font-medium text-gray-900 mb-2">Your Submitted Tools</h2>
                 <p className="text-gray-600">Tools you&apos;ve submitted to the community.</p>
               </div>
-              <Link
-                href="/submit"
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Submit New Tool
-              </Link>
             </div>
             
             {submittedTools.length === 0 ? (
@@ -337,15 +331,7 @@ export default function Dashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
                 <h3 className="mt-2 text-sm font-medium text-gray-900">No submitted tools</h3>
-                <p className="mt-1 text-sm text-gray-500">Get started by submitting your first tool!</p>
-                <div className="mt-6">
-                  <Link
-                    href="/submit"
-                    className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Submit a Tool
-                  </Link>
-                </div>
+                <p className="mt-1 text-sm text-gray-500">You haven't submitted any tools yet.</p>
               </div>
             ) : (
               <div className="space-y-4">
