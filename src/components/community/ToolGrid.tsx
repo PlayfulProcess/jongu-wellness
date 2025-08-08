@@ -13,7 +13,6 @@ interface Tool {
   description: string;
   submitted_by: string;
   star_count: number;
-  total_clicks: number;
   thumbnail_url?: string | null;
   created_at: string;
 }

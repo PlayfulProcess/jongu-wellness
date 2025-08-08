@@ -12,7 +12,6 @@ interface Tool {
   description: string;
   submitted_by: string;
   star_count: number;
-  total_clicks: number;
   thumbnail_url?: string | null;
   created_at: string;
 }
@@ -93,17 +92,7 @@ const getCategoryDesign = (category: string) => {
 export function ToolCard({ tool, onStar, onUnstar, isStarred = false, isAuthenticated = false }: ToolCardProps) {
   const [isStarring, setIsStarring] = useState(false);
 
-  const handleToolClick = async () => {
-    try {
-      await fetch('/api/community/tools/track-click', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ toolId: tool.id })
-      });
-    } catch (error) {
-      console.error('Error tracking click:', error);
-    }
-    
+  const handleToolClick = () => {
     window.open(tool.url, '_blank');
   };
 
@@ -165,7 +154,7 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, isAuthenti
           <>
             <Image
               src={tool.thumbnail_url}
-              alt={tool.title || tool.name}
+              alt={tool.title || tool.name || 'Tool thumbnail'}
               width={400}
               height={300}
               className="w-full h-full object-contain bg-gray-50"
@@ -217,7 +206,7 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, isAuthenti
         {/* Description - pad to ensure consistent height */}
         <div className="flex-grow">
           <p className="text-gray-600 text-sm mb-4 min-h-[4.5rem] line-clamp-3">
-            {tool.description.padEnd(280, ' ')}
+            {tool.description.padEnd(150, ' ')}
           </p>
         </div>
 
@@ -226,9 +215,6 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, isAuthenti
           <div className="flex-1">
             <p className="text-xs text-gray-500">Submitted by</p>
             <p className="text-sm font-medium text-gray-900">{tool.submitted_by}</p>
-          </div>
-          <div className="text-xs text-gray-500 text-right">
-            <div>{tool.total_clicks} clicks</div>
           </div>
         </div>
 

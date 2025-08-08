@@ -13,7 +13,7 @@ export function Header({ showAuthModal }: HeaderProps) {
   const { user, signOut } = useAuth();
 
   return (
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-sm border-b border-gray-200">
+    <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-28">
           {/* Logo and Navigation */}
@@ -34,34 +34,6 @@ export function Header({ showAuthModal }: HeaderProps) {
             <JonguNav currentChannel="wellness" />
             
             <nav className="hidden md:flex space-x-6">
-              <button 
-                onClick={() => {
-                  // First navigate to home page if not already there
-                  if (window.location.pathname !== '/') {
-                    window.location.href = '/#tools-search';
-                    return;
-                  }
-                  // Scroll to the tools search section
-                  const toolsSection = document.getElementById('tools-search');
-                  if (toolsSection) {
-                    toolsSection.scrollIntoView({ 
-                      behavior: 'smooth', 
-                      block: 'center'
-                    });
-                  }
-                }}
-                className="text-gray-600 hover:text-gray-900 font-medium cursor-pointer"
-              >
-                Browse Tools
-              </button>
-              
-              <Link
-                href="/#community-tools"
-                className="text-gray-600 hover:text-gray-900 font-medium"
-              >
-                Share Tool
-              </Link>
-
               <button 
                 onClick={() => {
                   // First navigate to home page if not already there
@@ -101,6 +73,34 @@ export function Header({ showAuthModal }: HeaderProps) {
               >
                 Featured Tool
               </button>
+
+              <button 
+                onClick={() => {
+                  // First navigate to home page if not already there
+                  if (window.location.pathname !== '/') {
+                    window.location.href = '/#tools-search';
+                    return;
+                  }
+                  // Scroll to the tools search section
+                  const toolsSection = document.getElementById('tools-search');
+                  if (toolsSection) {
+                    toolsSection.scrollIntoView({ 
+                      behavior: 'smooth', 
+                      block: 'center'
+                    });
+                  }
+                }}
+                className="text-gray-600 hover:text-gray-900 font-medium cursor-pointer"
+              >
+                Browse Tools
+              </button>
+              
+              <Link
+                href="/#community-tools"
+                className="text-gray-600 hover:text-gray-900 font-medium"
+              >
+                Share Tool
+              </Link>
               
               <Link 
                 href="/#about" 

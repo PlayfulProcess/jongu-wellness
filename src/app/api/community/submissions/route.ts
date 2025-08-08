@@ -39,7 +39,14 @@ export async function POST(request: NextRequest) {
     }
     
     // Protect "Jongu" brand - only admins can use it
-    if (!isAdmin(user.email || '') && (
+    const userEmail = user.email || '';
+    const isUserAdmin = isAdmin(userEmail);
+    
+    console.log(`Debug - User email: ${userEmail}, Is admin: ${isUserAdmin}`);
+    console.log(`Debug - Title contains Jongu: ${isJonguReservedName(title)}`);
+    console.log(`Debug - Creator contains Jongu: ${isJonguReservedName(creator_name)}`);
+    
+    if (!isUserAdmin && (
         isJonguReservedName(title) || 
         isJonguReservedName(creator_name) ||
         isJonguReservedName(description)
@@ -75,11 +82,16 @@ export async function POST(request: NextRequest) {
       stats: { views: 0, sessions: 0, stars: 0 }
     };
 
+    // Generate a unique slug
+    const baseSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
+    const uniqueSlug = `${baseSlug}-${timestamp}`;
+    
     // Insert directly into tools table with ultra minimal schema
     const { data, error } = await supabase
       .from('tools')
       .insert({
-        slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+        slug: uniqueSlug,
         channel_slug: 'community',
         tool_data: toolData
       })
@@ -88,7 +100,11 @@ export async function POST(request: NextRequest) {
     
     if (error) {
       console.error('Error creating submission:', error);
-      return NextResponse.json({ error: 'Failed to submit tool' }, { status: 500 });
+      console.error('Detailed error:', JSON.stringify(error, null, 2));
+      return NextResponse.json({ 
+        error: 'Database error: ' + (error.message || 'Failed to submit tool'),
+        details: error.details || null
+      }, { status: 500 });
     }
     
     // Send email notification

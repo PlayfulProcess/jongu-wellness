@@ -15,3 +15,8 @@ export function isJonguReservedName(name: string): boolean {
     lowerName === reserved.toLowerCase()
   );
 }
+
+export function canUseJonguName(userEmail: string): boolean {
+  // Allow admins to use Jongu branding
+  return isAdmin(userEmail);
+}

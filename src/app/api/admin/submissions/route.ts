@@ -5,11 +5,10 @@ export async function GET() {
   try {
     const adminClient = createAdminClient();
     
-    // Query tools table for community submissions (non-Jongu tools)
+    // Query tools table for community submissions (including Jongu tools)
     const { data: tools, error } = await adminClient
       .from('tools')
       .select('id, slug, tool_data, created_at, updated_at')
-      .not('tool_data->>submitted_by', 'eq', 'Jongu')
       .order('created_at', { ascending: false });
     
     if (error) {

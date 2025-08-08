@@ -106,7 +106,6 @@ export type Database = {
           approved: boolean
           active: boolean
           star_count: number
-          total_clicks: number
           created_at: string
           updated_at: string
         }
@@ -121,7 +120,6 @@ export type Database = {
           approved?: boolean
           active?: boolean
           star_count?: number
-          total_clicks?: number
           created_at?: string
           updated_at?: string
         }
@@ -136,7 +134,6 @@ export type Database = {
           approved?: boolean
           active?: boolean
           star_count?: number
-          total_clicks?: number
           created_at?: string
           updated_at?: string
         }
@@ -152,26 +149,6 @@ export type Database = {
           id?: string
           tool_id: string
           user_id: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          tool_id?: string
-          user_id?: string
-          created_at?: string
-        }
-      }
-      tool_clicks: {
-        Row: {
-          id: string
-          tool_id: string
-          user_id?: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          tool_id: string
-          user_id?: string
           created_at?: string
         }
         Update: {

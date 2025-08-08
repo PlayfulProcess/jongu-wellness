@@ -49,14 +49,10 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
   }, [isOpen, checkUser]);
 
   const categories = [
-    { value: 'mindfulness', label: '🧘 Mindfulness & Meditation' },
-    { value: 'journaling', label: '✍️ Journaling & Reflection' },
-    { value: 'stress-management', label: '🛡️ Stress Management' },
-    { value: 'emotion-regulation', label: '❤️ Emotional Wellbeing' },
-    { value: 'relationships', label: '🤝 Relationships & Communication' },
-    { value: 'goals-habits', label: '🎯 Goals & Habit Building' },
-    { value: 'creativity', label: '🎨 Creativity & Expression' },
-    { value: 'self-care', label: '🌱 Self-Care & Wellness' }
+    { value: 'mindfulness', label: '🧘 Mindfulness & Creativity' },
+    { value: 'distress-tolerance', label: '🛡️ Distress Tolerance' },
+    { value: 'emotion-regulation', label: '❤️ Emotion Regulation' },
+    { value: 'interpersonal-effectiveness', label: '🤝 Interpersonal Effectiveness' }
   ];
 
   const validateForm = () => {
@@ -68,16 +64,19 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
     if (!formData.description.trim()) newErrors.description = 'Description is required';
     if (!formData.creator_name.trim()) newErrors.creator_name = 'Creator name is required';
     
-    // Check for reserved "Jongu" name
-    const checkJonguName = (text: string) => text.toLowerCase().includes('jongu');
-    if (checkJonguName(formData.title)) {
-      newErrors.title = '🛡️ "Jongu" is reserved for official platform tools. Please choose a different name.';
-    }
-    if (checkJonguName(formData.creator_name)) {
-      newErrors.creator_name = '🛡️ "Jongu" is reserved for official platform tools. Please choose a different creator name.';
-    }
-    if (checkJonguName(formData.description)) {
-      newErrors.description = '🛡️ "Jongu" is reserved for official platform tools. Please use different wording.';
+    // Check for reserved "Jongu" name (skip for pp@playfulprocess.com)
+    const isPlayfulProcess = user?.email?.toLowerCase() === 'pp@playfulprocess.com';
+    if (!isPlayfulProcess) {
+      const checkJonguName = (text: string) => text.toLowerCase().includes('jongu');
+      if (checkJonguName(formData.title)) {
+        newErrors.title = '🛡️ "Jongu" is reserved for official platform tools. Please choose a different name.';
+      }
+      if (checkJonguName(formData.creator_name)) {
+        newErrors.creator_name = '🛡️ "Jongu" is reserved for official platform tools. Please choose a different creator name.';
+      }
+      if (checkJonguName(formData.description)) {
+        newErrors.description = '🛡️ "Jongu" is reserved for official platform tools. Please use different wording.';
+      }
     }
     
     // URL validation (allow any valid URL format)
@@ -175,8 +174,30 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
       });
       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to submit tool');
+        // Check if response is HTML (error page)
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("text/html") !== -1) {
+          console.error('Received HTML response instead of JSON. Status:', response.status);
+          throw new Error(`Server error (${response.status}): Unable to submit tool`);
+        }
+        
+        let errorMessage = `Server error (${response.status}): Failed to submit tool`;
+        try {
+          const errorData = await response.json();
+          console.error('Full error response:', errorData);
+          errorMessage = errorData.error || errorMessage;
+        } catch (jsonError) {
+          console.error('Failed to parse error response as JSON:', jsonError);
+          try {
+            const text = await response.text();
+            console.error('Response text:', text);
+            errorMessage = `Server error (${response.status}): ${text.slice(0, 100)}`;
+          } catch (textError) {
+            console.error('Failed to read response as text:', textError);
+            // Use the default error message
+          }
+        }
+        throw new Error(errorMessage);
       }
       
       // Reset form and close modal
@@ -316,27 +337,27 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
             {/* Description */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description * <span className="text-gray-500 text-xs">(max 280 characters)</span>
+                Description * <span className="text-gray-500 text-xs">(max 150 characters)</span>
               </label>
               <div className="relative">
                 <textarea
                   value={formData.description}
                   onChange={(e) => {
                     const value = e.target.value;
-                    if (value.length <= 280) {
+                    if (value.length <= 150) {
                       setFormData({ ...formData, description: value });
                     }
                   }}
-                  maxLength={280}
+                  maxLength={150}
                   rows={4}
                   className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Describe what your tool does and how it helps people..."
                 />
                 <div className={`absolute bottom-2 right-3 text-xs ${
-                  formData.description.length > 250 ? 'text-red-600' : 
-                  formData.description.length > 200 ? 'text-yellow-600' : 'text-gray-400'
+                  formData.description.length > 130 ? 'text-red-600' : 
+                  formData.description.length > 110 ? 'text-yellow-600' : 'text-gray-400'
                 }`}>
-                  {formData.description.length}/280
+                  {formData.description.length}/150
                 </div>
               </div>
               {errors.description && <p className="text-red-600 text-sm mt-1">{errors.description}</p>}

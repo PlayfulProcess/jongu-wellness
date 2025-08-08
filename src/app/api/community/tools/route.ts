@@ -16,9 +16,7 @@ interface DatabaseTool {
     thumbnail_url?: string;
     stats?: {
       stars?: string;
-      clicks?: string;
     };
-    click_count?: string;
     [key: string]: unknown;
   };
   created_at: string;
@@ -32,26 +30,16 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category');
     const sort = searchParams.get('sort') || 'stars';
     
+    // Get all tools first, then filter in JavaScript
     let query = supabase
       .from('tools')
-      .select('id, slug, channel_slug, tool_data, created_at, updated_at')
-      .eq('tool_data->>is_active', 'true');
+      .select('id, slug, channel_slug, tool_data, created_at, updated_at');
     
-    // Apply category filter
-    if (category && category !== 'all') {
-      query = query.eq('tool_data->>category', category);
-    }
-    
-    // Apply sorting
-    switch (sort) {
-      case 'stars':
-        query = query.order('tool_data->stats->>stars', { ascending: false });
-        break;
-      case 'newest':
-        query = query.order('created_at', { ascending: false });
-        break;
-      default:
-        query = query.order('tool_data->stats->>stars', { ascending: false });
+    // Simple sorting by created_at for now
+    if (sort === 'newest') {
+      query = query.order('created_at', { ascending: false });
+    } else {
+      query = query.order('created_at', { ascending: true });
     }
     
     const { data, error } = await query;
@@ -61,8 +49,19 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch tools' }, { status: 500 });
     }
     
+    // Filter active tools and by category in JavaScript
+    let filteredData = (data || []).filter((tool: DatabaseTool) => 
+      tool.tool_data?.is_active === 'true' || tool.tool_data?.is_active === true
+    );
+    
+    if (category && category !== 'all') {
+      filteredData = filteredData.filter((tool: DatabaseTool) => 
+        tool.tool_data?.category === category
+      );
+    }
+    
     // Transform JSONB data to match frontend expectations
-    const transformedTools = (data || []).map((tool: DatabaseTool) => ({
+    const transformedTools = filteredData.map((tool: DatabaseTool) => ({
       id: tool.id,
       name: tool.tool_data?.name || '',
       title: tool.tool_data?.title || tool.tool_data?.name || '', // Add title field for compatibility
@@ -72,11 +71,17 @@ export async function GET(request: NextRequest) {
       submitted_by: tool.tool_data?.submitted_by || tool.tool_data?.creator_name || 'Anonymous',
       star_count: parseInt(tool.tool_data?.stats?.stars || '0'),
       thumbnail_url: tool.tool_data?.thumbnail_url || null, // Add thumbnail_url mapping
-      total_clicks: parseInt(tool.tool_data?.stats?.clicks || tool.tool_data?.click_count || '0'), // Add clicks for ToolCard
       created_at: tool.created_at,
       approved: tool.tool_data?.is_active === 'true',
       active: tool.tool_data?.is_active === 'true'
     }));
+    
+    // Sort by stars if requested
+    if (sort === 'stars') {
+      transformedTools.sort((a, b) => b.star_count - a.star_count);
+    } else if (sort === 'newest') {
+      transformedTools.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    }
     
     return NextResponse.json(transformedTools);
   } catch (error) {

@@ -104,7 +104,6 @@ export async function GET() {
         avg_rating: parseFloat(toolData.avg_rating) || 0,
         total_ratings: parseInt(toolData.total_ratings) || 0,
         view_count: parseInt(toolData.stats?.views) || parseInt(toolData.view_count) || 0,
-        click_count: parseInt(toolData.stats?.clicks) || parseInt(toolData.click_count) || 0,
         thumbnail_url: toolData.thumbnail_url || null,
         approved: toolData.is_active === 'true' || toolData.is_active === true,
         created_at: tool.created_at

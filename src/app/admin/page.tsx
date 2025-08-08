@@ -27,7 +27,6 @@ interface Tool {
   avg_rating: number;
   total_ratings: number;
   view_count: number;
-  click_count: number;
   approved: boolean;
   created_at: string;
 }
@@ -380,7 +379,7 @@ export default function AdminPage() {
                                 <div><strong>Category:</strong> {tool.category}</div>
                                 <div><strong>Creator:</strong> {tool.creator_name}</div>
                                 <div><strong>Rating:</strong> {tool.avg_rating?.toFixed(1) || 'N/A'} ({tool.total_ratings} votes)</div>
-                                <div><strong>Views:</strong> {tool.view_count} | <strong>Clicks:</strong> {tool.click_count}</div>
+                                <div><strong>Views:</strong> {tool.view_count}</div>
                               </div>
                               <div className="text-sm text-gray-500 mt-1">
                                 Created: {new Date(tool.created_at).toLocaleDateString()}

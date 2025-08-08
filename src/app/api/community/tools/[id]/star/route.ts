@@ -130,13 +130,33 @@ export async function DELETE(
     }
     
     // Remove star using user_documents
+    // First, find the star record
+    const { data: starRecords, error: findError } = await supabase
+      .from('user_documents')
+      .select('id, document_data')
+      .eq('user_id', user.id)
+      .eq('document_type', 'interaction');
+    
+    if (findError) {
+      console.error('Error finding star record:', findError);
+      return NextResponse.json({ error: 'Failed to find star record' }, { status: 500 });
+    }
+    
+    // Find the specific star for this tool
+    const starRecord = starRecords?.find(record => 
+      record.document_data?.target_id === id && 
+      record.document_data?.interaction_type === 'star'
+    );
+    
+    if (!starRecord) {
+      return NextResponse.json({ error: 'Star not found' }, { status: 404 });
+    }
+    
+    // Delete the star record
     const { error: deleteError } = await supabase
       .from('user_documents')
       .delete()
-      .eq('user_id', user.id)
-      .eq('document_type', 'interaction')
-      .eq('document_data->>target_id', id)
-      .eq('document_data->>interaction_type', 'star');
+      .eq('id', starRecord.id);
     
     if (deleteError) {
       console.error('Error removing star:', deleteError);
