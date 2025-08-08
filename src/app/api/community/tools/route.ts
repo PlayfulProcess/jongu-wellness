@@ -12,7 +12,7 @@ interface DatabaseTool {
     description?: string;
     submitted_by?: string;
     creator_name?: string;
-    is_active?: string;
+    is_active?: string | boolean;
     thumbnail_url?: string;
     stats?: {
       stars?: string;

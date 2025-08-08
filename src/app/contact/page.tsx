@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { LINKS } from '@/config/links';
 
 export default function ContactPage() {
   return (
