@@ -68,11 +68,14 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
     try {
       const { data: { user }, error } = await supabase.auth.getUser();
       console.log('Debug - checkUser result:', { user, error });
-      if (!error) {
+      if (!error && user) {
         setUser(user);
+      } else {
+        setUser(null);
       }
     } catch (error) {
       console.error('Error checking user:', error);
+      setUser(null);
     }
   }, [supabase.auth]);
 
@@ -230,6 +233,8 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
     );
   }
 
+  console.log('Debug - ToolGrid render - user:', user, 'isAuthenticated:', !!user);
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {filteredTools.map((tool) => (
