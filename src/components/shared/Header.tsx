@@ -4,7 +4,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useAuth } from '@/components/AuthProvider';
-import JonguNav from '@/components/JonguNav';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 interface HeaderProps {
@@ -32,8 +31,6 @@ export function Header({ showAuthModal }: HeaderProps) {
                 <span className="text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full font-medium">BETA</span>
               </div>
             </Link>
-            
-            <JonguNav currentChannel="wellness" />
             
             <nav className="hidden md:flex space-x-6 items-center">
               {/* Channels Dropdown */}
