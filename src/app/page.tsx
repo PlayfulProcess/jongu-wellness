@@ -14,9 +14,7 @@ import { CategoryFilter } from '@/components/community/CategoryFilter';
 import { SortingControls } from '@/components/community/SortingControls';
 import { StatsDisplay } from '@/components/community/StatsDisplay';
 import { useAuth } from '@/components/AuthProvider';
-import { AdminToolModal } from '@/components/modals/AdminToolModal';
 import { createClient } from '@/lib/supabase-client';
-import { isAdmin } from '@/lib/admin-utils';
 
 export default function HomePage() {
   const { loading } = useAuth();
@@ -24,7 +22,6 @@ export default function HomePage() {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showNewsletterModal, setShowNewsletterModal] = useState(false);
-  const [showAdminModal, setShowAdminModal] = useState(false);
   const [user, setUser] = useState<{ email?: string } | null>(null);
   
   // Community tools state
@@ -297,17 +294,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Admin Button - Only visible to admins */}
-      {user && isAdmin(user.email || '') && (
-        <button
-          onClick={() => setShowAdminModal(true)}
-          className="fixed bottom-4 right-4 bg-purple-600 text-white p-4 rounded-full shadow-lg hover:bg-purple-700 transition-colors z-40"
-          title="Create Jongu Tool (Admin Only)"
-        >
-          <div className="text-2xl">🛡️</div>
-          <div className="text-xs mt-1">Admin</div>
-        </button>
-      )}
 
       {/* Section 3: About This Wellness Channel */}
       <section id="about" className="py-20 bg-gray-50">
@@ -405,10 +391,6 @@ export default function HomePage() {
         onClose={() => setShowNewsletterModal(false)}
       />
 
-      <AdminToolModal
-        isOpen={showAdminModal}
-        onClose={() => setShowAdminModal(false)}
-      />
     </div>
   );
 }
