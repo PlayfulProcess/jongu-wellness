@@ -331,7 +331,7 @@ export default function Dashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
                 <h3 className="mt-2 text-sm font-medium text-gray-900">No submitted tools</h3>
-                <p className="mt-1 text-sm text-gray-500">You haven't submitted any tools yet.</p>
+                <p className="mt-1 text-sm text-gray-500">You haven&apos;t submitted any tools yet.</p>
               </div>
             ) : (
               <div className="space-y-4">

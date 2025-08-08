@@ -67,6 +67,7 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
   const checkUser = useCallback(async () => {
     try {
       const { data: { user }, error } = await supabase.auth.getUser();
+      console.log('Debug - checkUser result:', { user, error });
       if (!error) {
         setUser(user);
       }

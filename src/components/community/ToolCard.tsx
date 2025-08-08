@@ -97,7 +97,9 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, isAuthenti
   };
 
   const handleStarToggle = async () => {
+    console.log('Debug - isAuthenticated:', isAuthenticated);
     if (!isAuthenticated) {
+      console.log('Debug - User not authenticated, showing sign in alert');
       alert('Please sign in to star tools');
       return;
     }

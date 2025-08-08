@@ -22,7 +22,7 @@ export default function HomePage() {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showNewsletterModal, setShowNewsletterModal] = useState(false);
-  const [user, setUser] = useState<{ email?: string } | null>(null);
+  const [, setUser] = useState<{ email?: string } | null>(null);
   
   // Community tools state
   const [selectedCategory, setSelectedCategory] = useState('all');
