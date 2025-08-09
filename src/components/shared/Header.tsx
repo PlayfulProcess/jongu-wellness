@@ -191,7 +191,7 @@ function ToolsDropdown() {
   const tools = [
     {
       name: "Best Possible Self",
-      url: "https://jongu-best-possible-self.vercel.app",
+      url: "https://wellness-tool.jongu.org",
       description: "Research-backed future visioning",
       icon: "🌟",
       featured: true
