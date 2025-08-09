@@ -31,7 +31,6 @@ export default function Dashboard() {
   const [starredTools, setStarredTools] = useState<StarredTool[]>([]);
   const [submittedTools, setSubmittedTools] = useState<Tool[]>([]);
   const [activeTab, setActiveTab] = useState<'starred' | 'submitted'>('starred');
-  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const supabase = createClient();
 

@@ -7,10 +7,10 @@ import { useAuth } from '@/components/AuthProvider';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 interface HeaderProps {
-  showAuthModal?: () => void;
+  // No longer need showAuthModal - auth redirects to /auth page
 }
 
-export function Header({ showAuthModal }: HeaderProps) {
+export function Header({}: HeaderProps) {
   const { user, signOut } = useAuth();
 
   return (
@@ -96,7 +96,7 @@ export function Header({ showAuthModal }: HeaderProps) {
               </div>
             ) : (
               <button
-                onClick={showAuthModal}
+                onClick={() => window.location.href = '/auth'}
                 className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Sign In

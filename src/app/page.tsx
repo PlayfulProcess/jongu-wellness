@@ -17,7 +17,6 @@ import { createClient } from '@/lib/supabase-client';
 
 export default function HomePage() {
   const { loading } = useAuth();
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showNewsletterModal, setShowNewsletterModal] = useState(false);
@@ -88,16 +87,7 @@ export default function HomePage() {
     fetchStats();
     checkUser();
     
-    // Listen for auth modal events from SubmitToolModal
-    const handleAuthModalEvent = () => {
-      setShowAuthModal(true);
-    };
-    
-    window.addEventListener('openAuthModal', handleAuthModalEvent);
-    
-    return () => {
-      window.removeEventListener('openAuthModal', handleAuthModalEvent);
-    };
+    // No longer need auth modal events - auth redirects to /auth page
   }, []);
 
   if (loading) {
@@ -114,9 +104,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <Header 
-        showAuthModal={() => setShowAuthModal(true)}
-      />
+      <Header />
 
       {/* Section 1: BPS Hero */}
       <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">

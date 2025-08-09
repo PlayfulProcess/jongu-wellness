@@ -16,7 +16,7 @@ export function AuthForm() {
     try {
       await signInWithEmail(email)
       setMessage('Check your email for a magic link!')
-    } catch (error) {
+    } catch {
       setMessage('Something went wrong. Please try again.')
     } finally {
       setLoading(false)
