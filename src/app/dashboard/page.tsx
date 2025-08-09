@@ -40,13 +40,15 @@ export default function Dashboard() {
       if (error) throw error;
       
       if (!user) {
-        setShowAuthModal(true);
+        window.location.href = '/auth';
+        return;
       } else {
         setUser(user);
       }
     } catch (error) {
       console.error('Error checking user:', error);
-      setShowAuthModal(true);
+      window.location.href = '/auth';
+      return;
     } finally {
       setLoading(false);
     }
