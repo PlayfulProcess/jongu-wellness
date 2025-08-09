@@ -6,11 +6,7 @@ import { useState } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
-interface HeaderProps {
-  // No longer need showAuthModal - auth redirects to /auth page
-}
-
-export function Header({}: HeaderProps) {
+export function Header() {
   const { user, signOut } = useAuth();
 
   return (
