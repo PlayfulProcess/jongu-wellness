@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { LINKS } from '@/config/links';
 import { Header } from '@/components/shared/Header';
-import { AuthModal } from '@/components/modals/AuthModal';
 import { SubmitToolModal } from '@/components/modals/SubmitToolModal';
 import { CollaborationModal } from '@/components/modals/CollaborationModal';
 import { NewsletterModal } from '@/components/modals/NewsletterModal';
@@ -370,11 +369,7 @@ export default function HomePage() {
         </div>
       </footer>
 
-      {/* Modals */}
-      <AuthModal 
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-      />
+      {/* Modals - AuthModal replaced with redirect to /auth */}
       
       <SubmitToolModal
         isOpen={showSubmitModal}

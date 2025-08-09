@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase-client';
 import { ToolCard } from '@/components/community/ToolCard';
-import { AuthModal } from '@/components/modals/AuthModal';
 import Link from 'next/link';
 
 interface Tool {
@@ -207,22 +206,13 @@ export default function Dashboard() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Sign In Required</h1>
           <p className="text-gray-600 mb-6">Please sign in to access your dashboard.</p>
-          <button
-            onClick={() => setShowAuthModal(true)}
+          <Link
+            href="/auth"
             className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
           >
             Sign In
-          </button>
+          </Link>
         </div>
-        {showAuthModal && (
-          <AuthModal
-            isOpen={showAuthModal}
-            onClose={() => {
-              setShowAuthModal(false);
-              checkUser();
-            }}
-          />
-        )}
       </div>
     );
   }
