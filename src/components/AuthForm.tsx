@@ -3,7 +3,11 @@
 import { useState } from 'react'
 import { signInWithEmail } from '@/lib/auth'
 
-export function AuthForm() {
+interface AuthFormProps {
+  returnTo?: string | null
+}
+
+export function AuthForm({ returnTo }: AuthFormProps) {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -14,7 +18,7 @@ export function AuthForm() {
     setMessage('')
 
     try {
-      await signInWithEmail(email)
+      await signInWithEmail(email, returnTo || undefined)
       setMessage('Check your email for a magic link!')
     } catch {
       setMessage('Something went wrong. Please try again.')

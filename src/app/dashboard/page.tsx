@@ -40,14 +40,14 @@ export default function Dashboard() {
       if (error) throw error;
       
       if (!user) {
-        window.location.href = '/auth';
+        window.location.href = `/auth?returnTo=${encodeURIComponent(window.location.href)}`;
         return;
       } else {
         setUser(user);
       }
     } catch (error) {
       console.error('Error checking user:', error);
-      window.location.href = '/auth';
+      window.location.href = `/auth?returnTo=${encodeURIComponent(window.location.href)}`;
       return;
     } finally {
       setLoading(false);

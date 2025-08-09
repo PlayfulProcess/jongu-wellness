@@ -92,7 +92,7 @@ export function Header() {
               </div>
             ) : (
               <button
-                onClick={() => window.location.href = '/auth'}
+                onClick={() => window.location.href = `/auth?returnTo=${encodeURIComponent(window.location.href)}`}
                 className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Sign In
