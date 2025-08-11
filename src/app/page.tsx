@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { LINKS } from '@/config/links';
 import { Header } from '@/components/shared/Header';
 import { AuthModal } from '@/components/modals/AuthModal';
-import { SubmitToolModal } from '@/components/modals/SubmitToolModal';
 import { CollaborationModal } from '@/components/modals/CollaborationModal';
 import { NewsletterModal } from '@/components/modals/NewsletterModal';
 import { ToolGrid } from '@/components/community/ToolGrid';
@@ -19,7 +18,6 @@ import { createClient } from '@/lib/supabase-client';
 export default function HomePage() {
   const { loading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showNewsletterModal, setShowNewsletterModal] = useState(false);
   const [, setUser] = useState<{ email?: string } | null>(null);
@@ -201,58 +199,19 @@ export default function HomePage() {
               Jongu Wellness Tool Garden
             </h2>
             
-            {/* Two-box layout for Community Tools vs Jongu Tools */}
-            <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto mb-8">
-              {/* Community Tools Box */}
-              <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-                <h3 className="text-xl font-semibold text-green-900 mb-3">🌍 Community Tools</h3>
-                <p className="text-gray-700 mb-4">
-                  Discover wellness tools. Journaling apps, creativity prompts, relationship boosters, and more. Created by the community for the community.
+            {/* Channel Creation Section */}
+            <div className="max-w-4xl mx-auto mb-8">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center">
+                <h3 className="text-2xl font-semibold text-blue-900 mb-4">📺 Create Your Channel</h3>
+                <p className="text-gray-700 mb-6">
+                  Start your own wellness channel and share tools with the community. Channel owners can curate and manage their own collection of tools.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <button
-                    onClick={() => setShowSubmitModal(true)}
-                    className="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                  >
-                    🔗 Share Tool
-                  </button>
-                </div>
-              </div>
-
-              {/* Jongu Tools Box */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-                <h3 className="text-xl font-semibold text-blue-900 mb-3">🛡️ Jongu Tools: Premium Experience</h3>
-                <p className="text-gray-700 mb-4">
-                  Our self-hosted tools are flexible enough so that everyone can make good use of them. Choose privacy mode or save versions. Use AI or leave it alone.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <button
-                    onClick={() => {
-                      setSearchQuery('jongu');
-                      // Scroll to tools section
-                      const toolsSection = document.querySelector('.tools-section');
-                      if (toolsSection) {
-                        toolsSection.scrollIntoView({ behavior: 'smooth' });
-                      }
-                    }}
-                    className="jongu-search-button inline-flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                  >
-                    <Image 
-                      src="/Jongulogo.png" 
-                      alt="Jongu" 
-                      width={16}
-                      height={16}
-                      className="h-4 w-auto filter brightness-0 invert"
-                    />
-                    <span>View Jongu Tools</span>
-                  </button>
-                  <button
-                    onClick={() => setShowCollabModal(true)}
-                    className="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
-                  >
-                    🤝 Suggest New Jongu Tool
-                  </button>
-                </div>
+                <button
+                  onClick={() => setShowCollabModal(true)}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg"
+                >
+                  🚀 Create New Channel
+                </button>
               </div>
             </div>
 
@@ -374,11 +333,6 @@ export default function HomePage() {
       <AuthModal 
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
-      />
-      
-      <SubmitToolModal
-        isOpen={showSubmitModal}
-        onClose={() => setShowSubmitModal(false)}
       />
       
       <CollaborationModal
