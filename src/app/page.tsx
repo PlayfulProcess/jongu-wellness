@@ -115,6 +115,7 @@ export default function HomePage() {
       {/* Header */}
       <Header 
         showAuthModal={() => setShowAuthModal(true)}
+        showCreateChannelModal={() => setShowCollabModal(true)}
       />
 
       {/* Section 1: BPS Hero */}
@@ -199,21 +200,6 @@ export default function HomePage() {
               Jongu Wellness Tool Garden
             </h2>
             
-            {/* Channel Creation Section */}
-            <div className="max-w-4xl mx-auto mb-8">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center">
-                <h3 className="text-2xl font-semibold text-blue-900 mb-4">📺 Create Your Channel</h3>
-                <p className="text-gray-700 mb-6">
-                  Start your own wellness channel and share tools with the community. Channel owners can curate and manage their own collection of tools.
-                </p>
-                <button
-                  onClick={() => setShowCollabModal(true)}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg"
-                >
-                  🚀 Create New Channel
-                </button>
-              </div>
-            </div>
 
           </div>
 
