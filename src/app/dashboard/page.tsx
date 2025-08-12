@@ -62,7 +62,7 @@ export default function Dashboard() {
       const { data: starData, error: starError } = await supabase
         .from('user_documents')
         .select('document_data, created_at')
-        .eq('user_id', user.id)
+        .eq('user_id', user.id as string)
         .eq('document_type', 'interaction')
         .eq('document_data->>interaction_type', 'star')
         .order('created_at', { ascending: false });
@@ -116,7 +116,7 @@ export default function Dashboard() {
       const { data, error } = await supabase
         .from('tools')
         .select('id, slug, tool_data, created_at')
-        .eq('tool_data->>creator_id', user.id)
+        .eq('tool_data->>creator_id', user.id as string)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -167,7 +167,7 @@ export default function Dashboard() {
         .from('tools')
         .delete()
         .eq('id', toolId)
-        .eq('tool_data->>creator_id', user.id);
+        .eq('tool_data->>creator_id', user.id as string);
 
       if (error) throw error;
       
