@@ -12,7 +12,7 @@ interface AuthModalProps {
   subtitle?: string;
 }
 
-export function AuthModal({ isOpen, onClose, title = "Welcome to Jongu Wellness", subtitle = "Enter your email to get instant access - no password needed" }: AuthModalProps) {
+export function AuthModal({ isOpen, onClose, title = "Welcome to Jongu Wellness", subtitle = "Sign in with your email and password" }: AuthModalProps) {
   const supabase = createClient();
 
   // Close modal on successful auth
@@ -98,18 +98,7 @@ export function AuthModal({ isOpen, onClose, title = "Welcome to Jongu Wellness"
             : undefined}
           onlyThirdPartyProviders={false}
           showLinks={false}
-          view="magic_link"
-          localization={{
-            variables: {
-              magic_link: {
-                email_input_placeholder: 'Enter your email',
-                button_label: 'Send magic link',
-                loading_button_label: 'Sending magic link...',
-                link_text: 'Send a magic link to your email',
-                confirmation_text: 'Check your email for the magic link'
-              }
-            }
-          }}
+          view="sign_in"
         />
       </div>
     </div>
