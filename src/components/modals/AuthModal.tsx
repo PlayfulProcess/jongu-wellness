@@ -12,7 +12,7 @@ interface AuthModalProps {
   subtitle?: string;
 }
 
-export function AuthModal({ isOpen, onClose, title = "Welcome to Jongu Wellness", subtitle = "Sign in to access community tools and resources" }: AuthModalProps) {
+export function AuthModal({ isOpen, onClose, title = "Welcome to Jongu Wellness", subtitle = "Enter your email to get instant access - no password needed" }: AuthModalProps) {
   const supabase = createClient();
 
   // Close modal on successful auth
@@ -77,18 +77,18 @@ export function AuthModal({ isOpen, onClose, title = "Welcome to Jongu Wellness"
             theme: ThemeSupa,
             style: {
               button: {
-                background: '#000000',
-                borderColor: '#000000',
+                background: '#2563eb',
+                borderColor: '#2563eb',
                 color: '#ffffff',
               },
               anchor: {
-                color: '#000000',
+                color: '#2563eb',
               },
               label: {
-                color: '#000000',
+                color: '#374151',
               },
               message: {
-                color: '#000000',
+                color: '#374151',
               },
             }
           }}
@@ -97,8 +97,19 @@ export function AuthModal({ isOpen, onClose, title = "Welcome to Jongu Wellness"
             `${window.location.protocol}//${window.location.host}/auth/callback?next=${encodeURIComponent(window.location.pathname)}`
             : undefined}
           onlyThirdPartyProviders={false}
-          showLinks={true}
-          view="sign_in"
+          showLinks={false}
+          view="magic_link"
+          localization={{
+            variables: {
+              magic_link: {
+                email_input_placeholder: 'Enter your email',
+                button_label: 'Send magic link',
+                loading_button_label: 'Sending magic link...',
+                link_text: 'Send a magic link to your email',
+                confirmation_text: 'Check your email for the magic link'
+              }
+            }
+          }}
         />
       </div>
     </div>
