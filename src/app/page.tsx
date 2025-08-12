@@ -293,6 +293,29 @@ export default function HomePage() {
               </div>
             </div>
             
+            {/* Privacy & Cookie Policy */}
+            <div className="bg-gray-800 p-6 rounded-lg mb-6 max-w-2xl mx-auto">
+              <h3 className="text-lg font-semibold mb-3 text-white">🔒 Privacy & Cookie Policy</h3>
+              <div className="text-sm text-gray-300 space-y-2 text-left">
+                <p>
+                  <strong>Session-Only Cookies:</strong> We use only essential authentication cookies that expire when you close your browser. 
+                  No persistent tracking, no analytics cookies, no third-party cookies.
+                </p>
+                <p>
+                  <strong>Separate Sign-ins:</strong> Each Jongu tool requires its own sign-in for maximum privacy. 
+                  Your sessions are isolated - no cross-site tracking or data sharing between tools.
+                </p>
+                <p>
+                  <strong>Your Data, Your Control:</strong> Use the same password across all Jongu tools, but consciously choose 
+                  which tools to sign into and what data to share with each one.
+                </p>
+                <p className="text-xs text-gray-400 pt-2 italic">
+                  Note: As a solopreneur building this alone, I&apos;ve chosen privacy-first architecture over convenience features 
+                  like single sign-on. This means more sign-ins for you, but also more control over your data. Thank you for understanding. - Fernando
+                </p>
+              </div>
+            </div>
+            
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-6">
               <Link href="/contact" className="text-gray-400 hover:text-white">
                 Contact Us

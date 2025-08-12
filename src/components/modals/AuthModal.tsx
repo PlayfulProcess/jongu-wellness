@@ -12,7 +12,7 @@ interface AuthModalProps {
   subtitle?: string;
 }
 
-export function AuthModal({ isOpen, onClose, title = "Welcome to Jongu Wellness", subtitle = "Enter your email to get instant access - no password needed" }: AuthModalProps) {
+export function AuthModal({ isOpen, onClose, title = "Welcome to Jongu Wellness", subtitle = "Sign in or create your account" }: AuthModalProps) {
   const supabase = createClient();
 
   // Close modal on successful auth
@@ -68,6 +68,14 @@ export function AuthModal({ isOpen, onClose, title = "Welcome to Jongu Wellness"
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">{title}</h2>
           <p className="text-gray-600 text-sm">{subtitle}</p>
+          
+          {/* Privacy Notice */}
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-xs text-blue-800">
+              🔒 <strong>Privacy First:</strong> Your password works across all Jongu tools, but each tool requires separate sign-in. 
+              We use only essential session cookies that expire when you close your browser. No tracking, no cross-site data sharing.
+            </p>
+          </div>
         </div>
 
         {/* Auth Form */}
@@ -97,19 +105,8 @@ export function AuthModal({ isOpen, onClose, title = "Welcome to Jongu Wellness"
             `${window.location.protocol}//${window.location.host}/auth/callback?next=${encodeURIComponent(window.location.pathname)}`
             : undefined}
           onlyThirdPartyProviders={false}
-          showLinks={false}
-          view="magic_link"
-          localization={{
-            variables: {
-              magic_link: {
-                email_input_placeholder: 'Enter your email',
-                button_label: 'Send magic link',
-                loading_button_label: 'Sending magic link...',
-                link_text: 'Send a magic link to your email',
-                confirmation_text: 'Check your email for the magic link'
-              }
-            }
-          }}
+          showLinks={true}
+          view="sign_in"
         />
       </div>
     </div>
