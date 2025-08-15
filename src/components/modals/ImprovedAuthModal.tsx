@@ -20,7 +20,7 @@ export function ImprovedAuthModal({
   subtitle = "Choose your preferred sign-in method" 
 }: ImprovedAuthModalProps) {
   const supabase = createClient();
-  const [authMode, setAuthMode] = useState<AuthMode>('password');
+  const [authMode, setAuthMode] = useState<AuthMode>('magic-link');
   const [authView, setAuthView] = useState<AuthView>('sign-in');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -94,10 +94,12 @@ export function ImprovedAuthModal({
     setMessage(null);
 
     try {
-      // Using resetPasswordForEmail as magic link login (same method that was working before)
-      // This sends an email that logs the user in directly without password change
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.protocol}//${window.location.host}/auth/callback`
+      // Use proper magic link method that works for both existing and new users
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.protocol}//${window.location.host}/auth/callback`
+        }
       });
       if (error) throw error;
       setMessage({ type: 'success', text: 'Magic link sent! Check your email.' });
@@ -252,7 +254,7 @@ export function ImprovedAuthModal({
                 onClick={() => setAuthView(authView === 'sign-in' ? 'sign-up' : 'sign-in')}
                 className="text-blue-600 hover:text-blue-700"
               >
-                {authView === 'sign-in' ? "Don&apos;t have an account? Sign up" : 'Already have an account? Sign in'}
+                {authView === 'sign-in' ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
               </button>
             </div>
 
@@ -261,7 +263,7 @@ export function ImprovedAuthModal({
               onClick={() => setAuthMode('magic-link')}
               className="w-full text-sm text-gray-600 hover:text-gray-800"
             >
-              Forgot your password? Log in using magic link
+              Forgot your password? Use magic link instead
             </button>
           </form>
         )}
@@ -293,7 +295,7 @@ export function ImprovedAuthModal({
             </button>
 
             <p className="text-sm text-gray-600 text-center">
-              We&apos;ll send you a secure link to sign in instantly without a password.
+              We'll send you a secure link to sign in instantly without a password.
             </p>
           </form>
         )}
@@ -304,7 +306,7 @@ export function ImprovedAuthModal({
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Reset Your Password</h3>
               <p className="text-sm text-gray-600 mt-1">
-                Enter your email and we&apos;ll send you a link to reset your password.
+                Enter your email and we'll send you a link to reset your password.
               </p>
             </div>
 

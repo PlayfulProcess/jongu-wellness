@@ -20,7 +20,7 @@ export function StarErrorModal({ isOpen, onClose, onRefresh }: StarErrorModalPro
         <h3 className="text-lg font-semibold mb-3">⭐ Already Starred</h3>
         
         <p className="text-gray-600 mb-4">
-          You&apos;ve already starred this tool. The page may need refreshing to show your current stars.
+          You've already starred this tool. The page may need refreshing to show your current stars.
         </p>
         
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
