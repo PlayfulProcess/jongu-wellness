@@ -81,8 +81,8 @@ export function ImprovedAuthModal({
         });
         if (error) throw error;
       }
-    } catch (error: any) {
-      setMessage({ type: 'error', text: error.message });
+    } catch (error) {
+      setMessage({ type: 'error', text: (error as Error).message });
     } finally {
       setLoading(false);
     }
@@ -101,8 +101,8 @@ export function ImprovedAuthModal({
       });
       if (error) throw error;
       setMessage({ type: 'success', text: 'Magic link sent! Check your email.' });
-    } catch (error: any) {
-      setMessage({ type: 'error', text: error.message });
+    } catch (error) {
+      setMessage({ type: 'error', text: (error as Error).message });
     } finally {
       setLoading(false);
     }
@@ -119,8 +119,8 @@ export function ImprovedAuthModal({
       });
       if (error) throw error;
       setMessage({ type: 'success', text: 'Password reset link sent! Check your email.' });
-    } catch (error: any) {
-      setMessage({ type: 'error', text: error.message });
+    } catch (error) {
+      setMessage({ type: 'error', text: (error as Error).message });
     } finally {
       setLoading(false);
     }
@@ -252,7 +252,7 @@ export function ImprovedAuthModal({
                 onClick={() => setAuthView(authView === 'sign-in' ? 'sign-up' : 'sign-in')}
                 className="text-blue-600 hover:text-blue-700"
               >
-                {authView === 'sign-in' ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+                {authView === 'sign-in' ? "Don&apos;t have an account? Sign up" : 'Already have an account? Sign in'}
               </button>
             </div>
 
@@ -304,7 +304,7 @@ export function ImprovedAuthModal({
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Reset Your Password</h3>
               <p className="text-sm text-gray-600 mt-1">
-                Enter your email and we'll send you a link to reset your password.
+                Enter your email and we&apos;ll send you a link to reset your password.
               </p>
             </div>
 

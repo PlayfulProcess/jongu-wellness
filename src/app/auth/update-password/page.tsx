@@ -59,8 +59,8 @@ export default function UpdatePasswordPage() {
       setTimeout(() => {
         router.push('/');
       }, 2000);
-    } catch (error: any) {
-      setMessage({ type: 'error', text: error.message });
+    } catch (error) {
+      setMessage({ type: 'error', text: (error as Error).message });
     } finally {
       setLoading(false);
     }

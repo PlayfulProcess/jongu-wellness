@@ -76,8 +76,8 @@ export default function AccountSettingsPage() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (error: any) {
-      setMessage({ type: 'error', text: error.message });
+    } catch (error) {
+      setMessage({ type: 'error', text: (error as Error).message });
     } finally {
       setUpdating(false);
     }
