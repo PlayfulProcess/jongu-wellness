@@ -295,7 +295,7 @@ export function ImprovedAuthModal({
             </button>
 
             <p className="text-sm text-gray-600 text-center">
-              We'll send you a secure link to sign in instantly without a password.
+              {`We'll send you a secure link to sign in instantly without a password.`}
             </p>
           </form>
         )}
@@ -306,7 +306,7 @@ export function ImprovedAuthModal({
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Reset Your Password</h3>
               <p className="text-sm text-gray-600 mt-1">
-                Enter your email and we'll send you a link to reset your password.
+                {`Enter your email and we'll send you a link to reset your password.`}
               </p>
             </div>
 
