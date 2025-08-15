@@ -293,7 +293,7 @@ export function ImprovedAuthModal({
             </button>
 
             <p className="text-sm text-gray-600 text-center">
-              We'll send you a secure link to sign in instantly without a password.
+              We&apos;ll send you a secure link to sign in instantly without a password.
             </p>
           </form>
         )}
