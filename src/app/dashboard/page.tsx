@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase-client';
 import { ToolCard } from '@/components/community/ToolCard';
-import { AuthModal } from '@/components/modals/AuthModal';
+import { ImprovedAuthModal as AuthModal } from '@/components/modals/ImprovedAuthModal';
 import Link from 'next/link';
 
 interface Tool {

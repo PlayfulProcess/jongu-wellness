@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { LINKS } from '@/config/links';
 import { Header } from '@/components/shared/Header';
-import { AuthModal } from '@/components/modals/AuthModal';
+import { ImprovedAuthModal as AuthModal } from '@/components/modals/ImprovedAuthModal';
 import { CollaborationModal } from '@/components/modals/CollaborationModal';
 import { NewsletterModal } from '@/components/modals/NewsletterModal';
 import { ToolGrid } from '@/components/community/ToolGrid';
