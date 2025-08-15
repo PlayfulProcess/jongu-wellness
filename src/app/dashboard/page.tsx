@@ -31,8 +31,15 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [starredTools, setStarredTools] = useState<StarredTool[]>([]);
   const [submittedTools, setSubmittedTools] = useState<Tool[]>([]);
-  const [activeTab, setActiveTab] = useState<'starred' | 'submitted'>('starred');
+  const [activeTab, setActiveTab] = useState<'starred' | 'submitted' | 'settings'>('starred');
   const [showAuthModal, setShowAuthModal] = useState(false);
+  
+  // Account settings state
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [updating, setUpdating] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   const supabase = createClient();
 
@@ -179,6 +186,53 @@ export default function Dashboard() {
     }
   };
 
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (newPassword !== confirmPassword) {
+      setMessage({ type: 'error', text: 'New passwords do not match' });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setMessage({ type: 'error', text: 'Password must be at least 6 characters' });
+      return;
+    }
+
+    setUpdating(true);
+    setMessage(null);
+
+    try {
+      // First verify current password by trying to sign in
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user?.email || '',
+        password: currentPassword
+      });
+
+      if (signInError) {
+        throw new Error('Current password is incorrect');
+      }
+
+      // Update the password
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (updateError) throw updateError;
+
+      setMessage({ type: 'success', text: 'Password updated successfully!' });
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      
+      setTimeout(() => setMessage(null), 5000);
+    } catch (error) {
+      setMessage({ type: 'error', text: (error as Error).message });
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   useEffect(() => {
     checkUser();
   }, [checkUser]);
@@ -271,6 +325,16 @@ export default function Dashboard() {
                 }`}
               >
                 My Submissions ({submittedTools.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'settings'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Account Settings
               </button>
             </nav>
           </div>
@@ -376,6 +440,100 @@ export default function Dashboard() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {activeTab === 'settings' && (
+          <div>
+            <div className="mb-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-2">Account Settings</h2>
+              <p className="text-gray-600">Manage your account preferences and security settings.</p>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="mb-6">
+                <h3 className="text-md font-medium text-gray-900 mb-4">Account Information</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <div className="text-sm text-gray-900 p-2 bg-gray-50 rounded border">
+                      {user.email}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-gray-200 pt-6">
+                <h3 className="text-md font-medium text-gray-900 mb-4">Change Password</h3>
+                
+                {message && (
+                  <div className={`mb-4 p-3 rounded-lg text-sm ${
+                    message.type === 'success' 
+                      ? 'bg-green-50 border border-green-200 text-green-800' 
+                      : 'bg-red-50 border border-red-200 text-red-800'
+                  }`}>
+                    {message.text}
+                  </div>
+                )}
+
+                <form onSubmit={handlePasswordChange} className="space-y-4">
+                  <div>
+                    <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                      Current Password
+                    </label>
+                    <input
+                      id="currentPassword"
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                      placeholder="Enter your current password"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                      New Password
+                    </label>
+                    <input
+                      id="newPassword"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                      placeholder="Enter new password (min 6 characters)"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                      Confirm New Password
+                    </label>
+                    <input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                      placeholder="Confirm new password"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={updating || !currentPassword || !newPassword || !confirmPassword}
+                    className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {updating ? 'Updating...' : 'Update Password'}
+                  </button>
+                </form>
+              </div>
+            </div>
           </div>
         )}
       </div>
