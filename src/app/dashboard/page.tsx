@@ -40,6 +40,7 @@ export default function Dashboard() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [updating, setUpdating] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [downloadingData, setDownloadingData] = useState(false);
 
   const supabase = createClient();
 
@@ -183,6 +184,68 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Error deleting tool:', error);
       alert('Error deleting tool. Please try again.');
+    }
+  };
+
+  const handleDownloadData = async () => {
+    if (!user) return;
+
+    setDownloadingData(true);
+    setMessage(null);
+
+    try {
+      // Fetch all user data
+      const { data: documents, error: docsError } = await supabase
+        .from('user_documents')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (docsError) throw docsError;
+
+      // Fetch user's submitted tools
+      const { data: tools, error: toolsError } = await supabase
+        .from('tools')
+        .select('*')
+        .eq('tool_data->>creator_id', user.id as string)
+        .order('created_at', { ascending: false });
+
+      if (toolsError) console.warn('Could not fetch tools:', toolsError);
+
+      // Create a comprehensive data export
+      const exportData = {
+        export_date: new Date().toISOString(),
+        user_info: {
+          email: user.email,
+          user_id: user.id,
+          created_at: user.created_at
+        },
+        starred_tools: documents?.filter(d => d.document_type === 'interaction' && d.document_data?.interaction_type === 'star') || [],
+        interactions: documents?.filter(d => d.document_type === 'interaction') || [],
+        submitted_tools: tools || [],
+        all_documents: documents || []
+      };
+
+      // Convert to JSON string with nice formatting
+      const jsonString = JSON.stringify(exportData, null, 2);
+      
+      // Create a blob and download
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `wellness-channel-data-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      setMessage({ type: 'success', text: 'Your data has been downloaded successfully!' });
+      setTimeout(() => setMessage(null), 5000);
+    } catch (error) {
+      setMessage({ type: 'error', text: `Failed to download data: ${(error as Error).message}` });
+    } finally {
+      setDownloadingData(false);
     }
   };
 
@@ -450,8 +513,9 @@ export default function Dashboard() {
               <p className="text-gray-600">Manage your account preferences and security settings.</p>
             </div>
             
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div className="mb-6">
+            <div className="space-y-6">
+              {/* Account Information */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h3 className="text-md font-medium text-gray-900 mb-4">Account Information</h3>
                 <div className="space-y-4">
                   <div>
@@ -463,7 +527,33 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="border-t border-gray-200 pt-6">
+              {/* Data Management */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-md font-medium text-gray-900 mb-4">Data Management</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Download or manage your data according to European data protection standards.
+                </p>
+                
+                <div className="border border-green-200 rounded-lg p-4 bg-green-50">
+                  <h4 className="text-sm font-medium text-green-800 mb-2">
+                    Download My Data
+                  </h4>
+                  <p className="text-xs text-green-700 mb-3">
+                    Download all your personal data including starred tools, submitted tools, and interactions in JSON format. 
+                    GDPR Article 20: Right to data portability.
+                  </p>
+                  <button
+                    onClick={handleDownloadData}
+                    disabled={downloadingData}
+                    className="px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+                  >
+                    {downloadingData ? 'Preparing Download...' : '📥 Download My Data'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Change Password */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h3 className="text-md font-medium text-gray-900 mb-4">Change Password</h3>
                 
                 {message && (
