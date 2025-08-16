@@ -10,7 +10,7 @@ interface DiscordButtonProps {
 
 export function CalmDiscordButton({ className = '', text = 'Discord', compact = false }: DiscordButtonProps) {
   const handleDiscord = () => {
-    window.open('https://discord.gg/qn69cSbDez', '_blank', 'noopener,noreferrer');
+    window.open('https://discord.com/invite/qn69cSbDez', '_blank', 'noopener,noreferrer');
   };
 
   if (compact) {
