@@ -2,6 +2,8 @@
 
 Community-driven wellness channel app (Next.js + Supabase). Focused on tool sharing, discovery, and profiles.
 
+Featured as the www.jongu.org channels.
+
 ## Features
 
 - Community tool discovery and sharing
