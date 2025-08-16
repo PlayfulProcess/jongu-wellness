@@ -2,62 +2,102 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { LINKS } from '@/config/links';
 import { Header } from '@/components/shared/Header';
-import { AuthModal } from '@/components/modals/AuthModal';
-import { SubmitToolModal } from '@/components/modals/SubmitToolModal';
+import { ImprovedAuthModal as AuthModal } from '@/components/modals/ImprovedAuthModal';
 import { CollaborationModal } from '@/components/modals/CollaborationModal';
-import { NewsletterModal } from '@/components/modals/NewsletterModal';
 import { ToolGrid } from '@/components/community/ToolGrid';
 import { CategoryFilter } from '@/components/community/CategoryFilter';
 import { SortingControls } from '@/components/community/SortingControls';
 import { StatsDisplay } from '@/components/community/StatsDisplay';
 import { useAuth } from '@/components/AuthProvider';
+import { createClient } from '@/lib/supabase-client';
+import { CalmDonateButton } from '@/components/CalmDonateButton';
+import { CalmDiscordButton } from '@/components/CalmDiscordButton';
 
 export default function HomePage() {
   const { loading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
-  const [showNewsletterModal, setShowNewsletterModal] = useState(false);
+  const [, setUser] = useState<{ email?: string } | null>(null);
   
   // Community tools state
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [sortBy, setSortBy] = useState('rating');
+  const [sortBy, setSortBy] = useState('stars');
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryStats, setCategoryStats] = useState({});
   const [totalTools, setTotalTools] = useState(0);
-  const [averageRating, setAverageRating] = useState(0);
+  const [averageStars, setAverageStars] = useState(0);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
+  const checkUser = async () => {
+    const supabase = createClient();
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (!error) {
+        setUser(user);
+      }
+    } catch (error) {
+      console.error('Error checking user:', error);
+    }
+  };
 
   const fetchStats = async () => {
     try {
       const response = await fetch('/api/community/tools');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const tools = await response.json();
+      
+      // Ensure tools is an array
+      if (!Array.isArray(tools)) {
+        console.error('Expected array but got:', typeof tools, tools);
+        return;
+      }
       
       // Calculate stats
       const stats: {[key: string]: number} = {};
-      let totalRating = 0;
-      let ratedToolsCount = 0;
+      let totalStars = 0;
+      let starredToolsCount = 0;
 
-      tools.forEach((tool: { category: string; total_ratings: number; avg_rating: number }) => {
+      tools.forEach((tool: { category: string; star_count: number }) => {
         stats[tool.category] = (stats[tool.category] || 0) + 1;
-        if (tool.total_ratings > 0) {
-          totalRating += tool.avg_rating;
-          ratedToolsCount++;
+        if (tool.star_count > 0) {
+          totalStars += tool.star_count;
+          starredToolsCount++;
         }
       });
 
       setCategoryStats(stats);
       setTotalTools(tools.length);
-      setAverageRating(ratedToolsCount > 0 ? totalRating / ratedToolsCount : 0);
+      setAverageStars(starredToolsCount > 0 ? totalStars / starredToolsCount : 0);
     } catch (error) {
       console.error('Error fetching stats:', error);
+      // Set default values on error
+      setCategoryStats({});
+      setTotalTools(0);
+      setAverageStars(0);
     }
   };
+
+  useEffect(() => {
+    fetchStats();
+    checkUser();
+    
+    // Listen for auth modal events from SubmitToolModal
+    const handleAuthModalEvent = () => {
+      setShowAuthModal(true);
+    };
+    
+    window.addEventListener('openAuthModal', handleAuthModalEvent);
+    
+    return () => {
+      window.removeEventListener('openAuthModal', handleAuthModalEvent);
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -75,6 +115,7 @@ export default function HomePage() {
       {/* Header */}
       <Header 
         showAuthModal={() => setShowAuthModal(true)}
+        showCreateChannelModal={() => setShowCollabModal(true)}
       />
 
       {/* Section 1: BPS Hero */}
@@ -82,11 +123,11 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-5xl font-bold text-gray-900 mb-6">
-              Jongu, Interactive Tools
-              <span className="block text-blue-600">for a Better Life</span>
+              Jongu wellness channel:
+              <span className="block text-blue-600">Interactive Tools for a better life</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Discover science-backed wellness practices and reflection tools. 
+              Discover evidence-based wellness practices and reflection tools. 
               Keep a record of your progress, use AI help for deeper insights, and connect with the amazing people who created these tools.
             </p>
             <div className="text-sm text-gray-500 mb-8">
@@ -99,13 +140,11 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
           <div className="bg-white rounded-xl shadow-xl p-8">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Tool</h2>
-              <p className="text-gray-600">Try our flagship tool to see how the platform works</p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Tool: Best Possible Self</h2>
             </div>
             
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Best Possible Self</h3>
                 <p className="text-gray-600 mb-6">
                   A research-backed reflection practice from <a 
                     href="https://ggia.berkeley.edu/practice/best_possible_self" 
@@ -158,59 +197,9 @@ export default function HomePage() {
           {/* Section Header */}
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Community Wellness Tool Garden
+              Jongu Wellness Tool Garden
             </h2>
             
-            {/* Two-box layout for Community Tools vs Jongu Tools */}
-            <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto mb-8">
-              {/* Community Tools Box */}
-              <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-                <h3 className="text-xl font-semibold text-green-900 mb-3">🌍 Community Tools</h3>
-                <p className="text-gray-700 mb-4">
-                  Discover wellness tools. Journaling apps, creativity prompts, relationship boosters, and therapeutic exercises. Created by the community for the community.
-                </p>
-                <button
-                  onClick={() => setShowSubmitModal(true)}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                >
-                  🔗 Share Tool
-                </button>
-              </div>
-
-              {/* Jongu Tools Box */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-                <h3 className="text-xl font-semibold text-blue-900 mb-3">🛡️ Jongu Tools: Premium Experience</h3>
-                <p className="text-gray-700 mb-4">
-                  Our self-hosted tools are flexible enough so that everyone can make good use of them. Choose privacy mode or save versions. Use AI or leave it alone.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <button
-                    onClick={() => {
-                      setSearchQuery('jongu');
-                      // Scroll to tools section
-                      const toolsSection = document.querySelector('.tools-section');
-                      if (toolsSection) {
-                        toolsSection.scrollIntoView({ behavior: 'smooth' });
-                      }
-                    }}
-                    className="jongu-search-button inline-flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                  >
-                    <img 
-                      src="/Jongulogo.png" 
-                      alt="Jongu" 
-                      className="h-4 w-auto filter brightness-0 invert"
-                    />
-                    <span>View Jongu Tools</span>
-                  </button>
-                  <button
-                    onClick={() => setShowCollabModal(true)}
-                    className="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
-                  >
-                    🤝 Suggest New Jongu Tool
-                  </button>
-                </div>
-              </div>
-            </div>
 
           </div>
 
@@ -218,7 +207,7 @@ export default function HomePage() {
           <div id="tools-search">
             <StatsDisplay 
               totalTools={totalTools} 
-              averageRating={averageRating}
+              averageRating={averageStars}
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
             />
@@ -243,37 +232,56 @@ export default function HomePage() {
               selectedCategory={selectedCategory}
               sortBy={sortBy}
               searchQuery={searchQuery}
-              onToolRate={fetchStats}
+              onToolStar={fetchStats}
             />
           </div>
 
         </div>
       </section>
 
-      {/* Section 3: About This Platform */}
+
+      {/* Section 3: About This Channel */}
       <section id="about" className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">About This Platform</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-8">About this Channel</h2>
           <div className="prose prose-lg mx-auto text-gray-600">
             <p className="mb-6">
-              This platform was inspired by Dialectical Behavior Therapy (DBT) skills, but we&apos;ve added our own 
-              PlayfulProcess touch to make wellness more accessible and creative.
+              This channel brings together evidence-based wellness practices with interactive technology to make growth tools accessible to everyone. 
+              Starting with research-backed exercises from positive psychology, we&apos;re expanding to include contributions from therapists, coaches, and community members.
             </p>
-            <p className="mb-6">
-              We believe in building gateways, not gatekeepers. Founded by PlayfulProcess, this community-driven 
-              platform welcomes tools that help people grow, heal, and connect—whether through creative approaches to healing, 
-              creative expression, or innovative approaches to wellness.
-            </p>
-            <div className="bg-blue-50 border-l-4 border-blue-400 p-6 text-left rounded-lg">
-              <h3 className="text-xl font-semibold text-blue-900 mb-4">Our Philosophy</h3>
+            <div className="bg-blue-50 border-l-4 border-blue-400 p-6 text-left rounded-lg mb-6">
+              <h3 className="text-xl font-semibold text-blue-900 mb-4">What makes this different?</h3>
               <ul className="list-disc list-inside space-y-2 text-blue-800">
-                <li>Open source and transparent development</li>
-                <li>Community-driven content creation</li>
-                <li>Evidence-based but accessible tools</li>
-                <li>Creative approaches to healing</li>
-                <li>Building bridges between helpers and seekers</li>
+                <li><strong>Open Access:</strong> All tools are completely free, supported by community donations</li>
+                <li><strong>Inclusive:</strong> Jongu tools will still be valuable without engaging with AI</li>
+                <li><strong>Evidence-Based:</strong> Grounded in research or personal experience (which is also evidence)</li>
+                <li><strong>Community-Driven:</strong> Share tools here or talk about your experience in our Discord channel</li>
+                <li><strong>Privacy-Focused:</strong> Self-hosted tools can be used without saving any data in our databases</li>
               </ul>
             </div>
+            <p className="mb-4">
+              This channel is part of the broader Jongu experiment in reclaiming human connection in the digital age. 
+              We believe wellness tools should be gateways to growth, not gatekeepers behind paywalls.
+            </p>
+            <p className="text-sm text-gray-500">
+              <strong>Created by <a href="https://www.playfulprocess.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">PlayfulProcess</a></strong> | <strong>Supported by the Jongu Community</strong>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Support Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Support Our Community</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Help keep this platform free and accessible while connecting with our growing community of wellness enthusiasts.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8">
+            <CalmDonateButton />
+            <CalmDiscordButton />
           </div>
         </div>
       </section>
@@ -283,13 +291,14 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
-              <img 
+              <Image 
                 src="/Jongulogo.png" 
                 alt="Jongu" 
+                width={128}
+                height={128}
                 className="h-32 w-auto filter brightness-0 invert"
               />
             </div>
-            <p className="text-gray-400 mb-6">Community-powered open source wellness tool garden. Building gateways, not gatekeepers</p>
             
             
             <div className="bg-amber-800 text-amber-200 p-4 rounded-lg mb-6">
@@ -299,6 +308,7 @@ export default function HomePage() {
               </div>
             </div>
             
+            
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-6">
               <Link href="/contact" className="text-gray-400 hover:text-white">
                 Contact Us
@@ -306,16 +316,18 @@ export default function HomePage() {
               <a href="https://github.com/PlayfulProcess" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
                 GitHub
               </a>
-              <button 
-                onClick={() => setShowNewsletterModal(true)}
+              <a 
+                href="https://blog.jongu.org/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                📧 Newsletter
-              </button>
+                📧 Subscribe
+              </a>
             </div>
             
             <div className="mt-8 pt-8 border-t border-gray-800 text-gray-500 text-sm">
-              © 2025 Jongu. Community-powered open source wellness tool garden.
+              © 2025 Jongu. Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white underline">Creative Commons BY-SA 4.0</a>
             </div>
           </div>
         </div>
@@ -327,20 +339,12 @@ export default function HomePage() {
         onClose={() => setShowAuthModal(false)}
       />
       
-      <SubmitToolModal
-        isOpen={showSubmitModal}
-        onClose={() => setShowSubmitModal(false)}
-      />
-      
       <CollaborationModal
         isOpen={showCollabModal}
         onClose={() => setShowCollabModal(false)}
       />
 
-      <NewsletterModal
-        isOpen={showNewsletterModal}
-        onClose={() => setShowNewsletterModal(false)}
-      />
+
     </div>
   );
 }

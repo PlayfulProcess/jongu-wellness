@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LINKS } from '@/config/links';
+import Image from 'next/image';
 
 export default function ContactPage() {
   return (
@@ -13,6 +13,16 @@ export default function ContactPage() {
           >
             ← Back to Home
           </Link>
+          {/* Header with logo */}
+          <div className="flex items-center justify-center mb-4">
+            <Image 
+              src="/Jongulogo.png" 
+              alt="Jongu" 
+              width={96}
+              height={96}
+              className="h-24 w-auto"
+            />
+          </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Contact Us</h1>
           <p className="text-lg text-gray-600">
             Get in touch with the PlayfulProcess team
@@ -95,23 +105,6 @@ export default function ContactPage() {
           </p>
         </div>
 
-        {/* Quick Actions */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Link
-            href="/#community-tools"
-            className="bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 transition-colors text-center font-medium"
-          >
-            🌱 Browse Community Tools
-          </Link>
-          <a
-            href={LINKS.BEST_POSSIBLE_SELF_APP}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 transition-colors text-center font-medium"
-          >
-            ✍️ Try Featured Tool
-          </a>
-        </div>
       </div>
     </div>
   );

@@ -37,7 +37,7 @@ export async function POST(
     }
     
     // Insert or update rating
-    const { data: ratingData, error: ratingError } = await supabase
+    const { error: ratingError } = await supabase
       .from('ratings')
       .upsert({
         tool_id: id,

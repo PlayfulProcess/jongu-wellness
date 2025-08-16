@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { createAdminClient } from '@/lib/supabase-admin';
+import { useState } from 'react';
+import Image from 'next/image';
 
 interface Submission {
   id: string;
@@ -27,7 +27,6 @@ interface Tool {
   avg_rating: number;
   total_ratings: number;
   view_count: number;
-  click_count: number;
   approved: boolean;
   created_at: string;
 }
@@ -68,7 +67,7 @@ export default function AdminPage() {
       } else {
         setAuthError('Invalid password');
       }
-    } catch (error) {
+    } catch {
       setAuthError('Authentication failed');
     }
   };
@@ -335,9 +334,11 @@ export default function AdminPage() {
                               </div>
                               {submission.thumbnail_url && (
                                 <div className="ml-6">
-                                  <img 
+                                  <Image 
                                     src={submission.thumbnail_url} 
                                     alt={submission.title}
+                                    width={96}
+                                    height={96}
                                     className="w-24 h-24 object-cover rounded-lg"
                                   />
                                 </div>
@@ -378,7 +379,7 @@ export default function AdminPage() {
                                 <div><strong>Category:</strong> {tool.category}</div>
                                 <div><strong>Creator:</strong> {tool.creator_name}</div>
                                 <div><strong>Rating:</strong> {tool.avg_rating?.toFixed(1) || 'N/A'} ({tool.total_ratings} votes)</div>
-                                <div><strong>Views:</strong> {tool.view_count} | <strong>Clicks:</strong> {tool.click_count}</div>
+                                <div><strong>Views:</strong> {tool.view_count}</div>
                               </div>
                               <div className="text-sm text-gray-500 mt-1">
                                 Created: {new Date(tool.created_at).toLocaleDateString()}

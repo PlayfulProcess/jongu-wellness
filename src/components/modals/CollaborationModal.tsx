@@ -39,7 +39,9 @@ export function CollaborationModal({ isOpen, onClose }: CollaborationModalProps)
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit collaboration request');
+        const errorData = await response.json();
+        console.error('Server error response:', errorData);
+        throw new Error(errorData.details || errorData.error || 'Failed to submit collaboration request');
       }
 
       alert(
@@ -62,7 +64,10 @@ export function CollaborationModal({ isOpen, onClose }: CollaborationModalProps)
       onClose();
     } catch (error) {
       console.error('Error submitting collaboration request:', error);
-      alert('❌ Failed to submit request. Please email us directly at pp@playfulprocess.com');
+      if (error instanceof Error) {
+        console.error('Error message:', error.message);
+      }
+      alert(`❌ Failed to submit request: ${error instanceof Error ? error.message : 'Unknown error'}. Please email us directly at pp@playfulprocess.com`);
     } finally {
       setIsSubmitting(false);
     }
@@ -194,7 +199,7 @@ export function CollaborationModal({ isOpen, onClose }: CollaborationModalProps)
             <div className="bg-blue-50 p-4 rounded-lg">
               <h4 className="font-semibold text-blue-900 mb-2">💡 Collaboration Ideas</h4>
               <ul className="text-sm text-blue-800 space-y-1">
-                <li>• Co-create therapeutic tools and exercises</li>
+                <li>• Co-create tools and exercises</li>
                 <li>• Research partnerships on tool effectiveness</li>
                 <li>• Guest content and cross-promotion</li>
                 <li>• Workshop and training collaborations</li>

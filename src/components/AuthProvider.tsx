@@ -26,7 +26,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       setLoading(false)
+    }).catch((error) => {
+      console.error('Error getting session:', error)
+      setLoading(false) // Still set loading to false on error
     })
+
+    // Add a timeout fallback in case auth check hangs
+    const timeout = setTimeout(() => {
+      setLoading(false)
+    }, 3000) // 3 second timeout
 
     // Listen for auth changes
     const {
@@ -36,7 +44,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false)
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      subscription.unsubscribe()
+      clearTimeout(timeout)
+    }
   }, [supabase.auth])
 
   const signOut = async () => {

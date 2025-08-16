@@ -6,9 +6,8 @@ interface SortingControlsProps {
 }
 
 const sortOptions = [
-  { key: 'rating', name: 'By Rating', icon: '⭐' },
-  { key: 'newest', name: 'Newest', icon: '🕒' },
-  { key: 'popular', name: 'Popular', icon: '🔥' }
+  { key: 'stars', name: 'Most Starred', icon: '⭐' },
+  { key: 'newest', name: 'Newest', icon: '🕒' }
 ];
 
 export function SortingControls({ sortBy, onSortChange }: SortingControlsProps) {

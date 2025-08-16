@@ -2,34 +2,36 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { ToolCard } from './ToolCard';
+import { createClient } from '@/lib/supabase-client';
 
 interface Tool {
   id: string;
-  title: string;
-  claude_url: string;
+  name: string;
+  title?: string;
+  url: string;
   category: string;
   description: string;
-  creator_name: string;
-  creator_link?: string;
-  creator_background?: string;
-  thumbnail_url?: string;
-  avg_rating: number;
-  total_ratings: number;
-  view_count: number;
-  click_count: number;
+  submitted_by: string;
+  star_count: number;
+  thumbnail_url?: string | null;
+  created_at: string;
 }
 
 interface ToolGridProps {
   selectedCategory: string;
   sortBy: string;
   searchQuery?: string;
-  onToolRate?: (toolId: string, rating: number, review?: string) => void;
+  onToolStar?: () => void;
 }
 
-export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolRate }: ToolGridProps) {
+export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolStar }: ToolGridProps) {
   const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
+  const [starredTools, setStarredTools] = useState<Set<string>>(new Set());
+  
+  const supabase = createClient();
 
   const fetchTools = useCallback(async (forceRefresh = false) => {
     try {
@@ -45,7 +47,12 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolRat
       }
       
       const response = await fetch(`/api/community/tools?${params}`, {
-        cache: forceRefresh ? 'no-cache' : 'default'
+        cache: forceRefresh ? 'no-cache' : 'default',
+        headers: forceRefresh ? {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        } : {}
       });
       if (!response.ok) {
         throw new Error('Failed to fetch tools');
@@ -62,40 +69,90 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolRat
     }
   }, [selectedCategory, sortBy]);
 
-  useEffect(() => {
-    fetchTools();
-  }, [fetchTools]);
-
-  const handleToolRate = async (toolId: string, rating: number, review?: string) => {
+  const checkUser = useCallback(async () => {
     try {
-      const response = await fetch(`/api/community/tools/${toolId}/rate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rating, review })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit rating');
-      }
-
-      // Refresh tools to show updated rating
-      await fetchTools(true);
-      
-      if (onToolRate) {
-        onToolRate(toolId, rating, review);
+      const { data: { user }, error } = await supabase.auth.getUser();
+      console.log('Debug - checkUser result:', { user, error });
+      if (!error && user) {
+        setUser(user);
+      } else {
+        setUser(null);
       }
     } catch (error) {
-      console.error('Error submitting rating:', error);
-      alert('Failed to submit rating. Please try again.');
+      console.error('Error checking user:', error);
+      setUser(null);
+    }
+  }, [supabase.auth]);
+
+  const fetchStarredTools = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('user_documents')
+        .select('document_data')
+        .eq('user_id', user.id)
+        .eq('document_type', 'interaction')
+        .eq('document_data->>interaction_type', 'star');
+
+      if (!error && data) {
+        const toolIds = data.map(item => item.document_data?.target_id).filter(Boolean);
+        setStarredTools(new Set(toolIds));
+      }
+    } catch (error) {
+      console.error('Error fetching starred tools:', error);
+    }
+  }, [user, supabase]);
+
+  useEffect(() => {
+    fetchTools();
+    checkUser();
+  }, [fetchTools, checkUser]);
+
+  useEffect(() => {
+    if (user) {
+      fetchStarredTools();
+    }
+  }, [user, fetchStarredTools]);
+
+  const handleStar = async (toolId: string) => {
+    // Update local state
+    setStarredTools(prev => new Set([...prev, toolId]));
+    
+    // Small delay then refresh tools to show updated star count
+    setTimeout(async () => {
+      await fetchTools(true);
+    }, 100);
+    
+    if (onToolStar) {
+      onToolStar();
+    }
+  };
+
+  const handleUnstar = async (toolId: string) => {
+    // Update local state
+    setStarredTools(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(toolId);
+      return newSet;
+    });
+    
+    // Small delay then refresh tools to show updated star count
+    setTimeout(async () => {
+      await fetchTools(true);
+    }, 100);
+    
+    if (onToolStar) {
+      onToolStar();
     }
   };
 
   // Filter tools by search query
   const filteredTools = tools.filter(tool =>
     searchQuery === '' ||
-    tool.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     tool.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    tool.creator_name.toLowerCase().includes(searchQuery.toLowerCase())
+    tool.submitted_by.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (loading) {
@@ -152,13 +209,18 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolRat
     );
   }
 
+  console.log('Debug - ToolGrid render - user:', user, 'isAuthenticated:', !!user);
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {filteredTools.map((tool) => (
         <ToolCard
           key={tool.id}
           tool={tool}
-          onRate={handleToolRate}
+          onStar={handleStar}
+          onUnstar={handleUnstar}
+          isStarred={starredTools.has(tool.id)}
+          isAuthenticated={!!user}
         />
       ))}
     </div>

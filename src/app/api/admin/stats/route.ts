@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase-admin';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const adminClient = createAdminClient();
     
@@ -10,22 +10,25 @@ export async function GET(request: NextRequest) {
       .from('tools')
       .select('*', { count: 'exact', head: true });
     
-    // Get total submissions
+    // Get total submissions (community tools, non-Jongu)
     const { count: totalSubmissions } = await adminClient
-      .from('submissions')
-      .select('*', { count: 'exact', head: true });
+      .from('tools')
+      .select('*', { count: 'exact', head: true })
+      .not('tool_data->>submitted_by', 'eq', 'Jongu');
     
-    // Get pending submissions
+    // Get pending submissions (community tools that haven't been reviewed)
     const { count: pendingSubmissions } = await adminClient
-      .from('submissions')
+      .from('tools')
       .select('*', { count: 'exact', head: true })
-      .eq('reviewed', false);
+      .not('tool_data->>submitted_by', 'eq', 'Jongu')
+      .not('tool_data->>reviewed', 'eq', 'true');
     
-    // Get total collaborations (submissions with category 'collaboration')
+    // Get total collaborations from user_documents table
     const { count: totalCollaborations } = await adminClient
-      .from('submissions')
+      .from('user_documents')
       .select('*', { count: 'exact', head: true })
-      .eq('category', 'collaboration');
+      .eq('document_type', 'transaction')
+      .eq('tool_slug', 'collaboration-request');
     
     const stats = {
       totalTools: totalTools || 0,

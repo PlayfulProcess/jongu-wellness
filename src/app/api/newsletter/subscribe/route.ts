@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase-admin';
 export async function POST(request: NextRequest) {
   try {
     const adminClient = createAdminClient();
-    const { email } = await request.json();
+    const { email, channel } = await request.json();
     
     if (!email || !email.trim()) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
@@ -17,49 +17,42 @@ export async function POST(request: NextRequest) {
     }
 
     const cleanEmail = email.trim().toLowerCase();
+    const subscribedFrom = channel || 'wellness'; // Default to wellness if not provided
 
-    // Check if email already exists
-    const { data: existingSubscriber, error: checkError } = await adminClient
+    // Check if already subscribed
+    const { data: existing, error: checkError } = await adminClient
       .from('newsletter_subscribers')
       .select('email')
       .eq('email', cleanEmail)
       .single();
 
-    if (checkError && checkError.code !== 'PGRST116') { // PGRST116 is "not found" which is expected
-      console.error('Error checking existing subscriber:', checkError);
+    if (checkError && checkError.code !== 'PGRST116') { 
+      console.error('Database check error:', checkError);
       return NextResponse.json({ error: 'Database error occurred' }, { status: 500 });
     }
 
-    if (existingSubscriber) {
+    if (existing) {
       return NextResponse.json({ error: 'This email is already subscribed!' }, { status: 409 });
     }
 
-    // Get subscriber info
-    const subscriberIP = request.headers.get('x-forwarded-for') || 
-                        request.headers.get('x-real-ip') || 
-                        'unknown';
-
     // Insert new subscriber
-    const { data, error } = await adminClient
+    const { error } = await adminClient
       .from('newsletter_subscribers')
       .insert({
         email: cleanEmail,
-        subscribed_at: new Date().toISOString(),
-        ip_address: subscriberIP,
-        status: 'active'
-      })
-      .select()
-      .single();
+        subscribed_from: subscribedFrom,
+        subscribed: true
+      });
 
     if (error) {
-      console.error('Error creating newsletter subscriber:', error);
+      console.error('Insert error:', error);
       return NextResponse.json({ error: 'Failed to subscribe. Please try again.' }, { status: 500 });
     }
 
     return NextResponse.json({ 
       success: true, 
       message: 'Successfully subscribed to newsletter!',
-      data: { email: data.email }
+      data: { email: cleanEmail, channel: subscribedFrom }
     }, { status: 201 });
 
   } catch (error) {
