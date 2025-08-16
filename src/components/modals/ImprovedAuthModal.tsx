@@ -94,11 +94,35 @@ export function ImprovedAuthModal({
     setMessage(null);
 
     try {
+      // Smart domain-aware redirect logic
+      const currentDomain = window.location.host;
+      let redirectUrl;
+      
+      if (currentDomain.includes('localhost')) {
+        // Development - use localhost
+        redirectUrl = `${window.location.protocol}//${window.location.host}/auth/callback`;
+      } else if (currentDomain.includes('bps-preview')) {
+        // BPS Preview deployment
+        redirectUrl = 'https://bps-preview.jongu.org/auth/callback';
+      } else if (currentDomain.includes('bps')) {
+        // BPS Production
+        redirectUrl = 'https://bps.jongu.org/auth/callback';
+      } else if (currentDomain.includes('wellness-preview')) {
+        // Wellness Preview deployment  
+        redirectUrl = 'https://wellness-preview.jongu.org/auth/callback';
+      } else if (currentDomain.includes('wellness')) {
+        // Wellness Production
+        redirectUrl = 'https://wellness.jongu.org/auth/callback';
+      } else {
+        // Fallback - use current domain
+        redirectUrl = `${window.location.protocol}//${window.location.host}/auth/callback`;
+      }
+      
       // Use proper magic link method that works for both existing and new users
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.protocol}//${window.location.host}/auth/callback`
+          emailRedirectTo: redirectUrl
         }
       });
       if (error) throw error;
