@@ -7,7 +7,6 @@ import { LINKS } from '@/config/links';
 import { Header } from '@/components/shared/Header';
 import { ImprovedAuthModal as AuthModal } from '@/components/modals/ImprovedAuthModal';
 import { CollaborationModal } from '@/components/modals/CollaborationModal';
-import { NewsletterModal } from '@/components/modals/NewsletterModal';
 import { ToolGrid } from '@/components/community/ToolGrid';
 import { CategoryFilter } from '@/components/community/CategoryFilter';
 import { SortingControls } from '@/components/community/SortingControls';
@@ -21,7 +20,6 @@ export default function HomePage() {
   const { loading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
-  const [showNewsletterModal, setShowNewsletterModal] = useState(false);
   const [, setUser] = useState<{ email?: string } | null>(null);
   
   // Community tools state
@@ -318,12 +316,14 @@ export default function HomePage() {
               <a href="https://github.com/PlayfulProcess" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
                 GitHub
               </a>
-              <button 
-                onClick={() => setShowNewsletterModal(true)}
+              <a 
+                href="https://blog.jongu.org/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                📧 Newsletter
-              </button>
+                📧 Subscribe
+              </a>
             </div>
             
             <div className="mt-8 pt-8 border-t border-gray-800 text-gray-500 text-sm">
@@ -344,10 +344,6 @@ export default function HomePage() {
         onClose={() => setShowCollabModal(false)}
       />
 
-      <NewsletterModal
-        isOpen={showNewsletterModal}
-        onClose={() => setShowNewsletterModal(false)}
-      />
 
     </div>
   );
