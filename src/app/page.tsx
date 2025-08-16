@@ -5,23 +5,21 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { LINKS } from '@/config/links';
 import { Header } from '@/components/shared/Header';
-import { AuthModal } from '@/components/modals/AuthModal';
-import { SubmitToolModal } from '@/components/modals/SubmitToolModal';
+import { ImprovedAuthModal as AuthModal } from '@/components/modals/ImprovedAuthModal';
 import { CollaborationModal } from '@/components/modals/CollaborationModal';
-import { NewsletterModal } from '@/components/modals/NewsletterModal';
 import { ToolGrid } from '@/components/community/ToolGrid';
 import { CategoryFilter } from '@/components/community/CategoryFilter';
 import { SortingControls } from '@/components/community/SortingControls';
 import { StatsDisplay } from '@/components/community/StatsDisplay';
 import { useAuth } from '@/components/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
+import { CalmDonateButton } from '@/components/CalmDonateButton';
+import { CalmDiscordButton } from '@/components/CalmDiscordButton';
 
 export default function HomePage() {
   const { loading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
-  const [showNewsletterModal, setShowNewsletterModal] = useState(false);
   const [, setUser] = useState<{ email?: string } | null>(null);
   
   // Community tools state
@@ -117,6 +115,7 @@ export default function HomePage() {
       {/* Header */}
       <Header 
         showAuthModal={() => setShowAuthModal(true)}
+        showCreateChannelModal={() => setShowCollabModal(true)}
       />
 
       {/* Section 1: BPS Hero */}
@@ -201,60 +200,6 @@ export default function HomePage() {
               Jongu Wellness Tool Garden
             </h2>
             
-            {/* Two-box layout for Community Tools vs Jongu Tools */}
-            <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto mb-8">
-              {/* Community Tools Box */}
-              <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-                <h3 className="text-xl font-semibold text-green-900 mb-3">🌍 Community Tools</h3>
-                <p className="text-gray-700 mb-4">
-                  Discover wellness tools. Journaling apps, creativity prompts, relationship boosters, and more. Created by the community for the community.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <button
-                    onClick={() => setShowSubmitModal(true)}
-                    className="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                  >
-                    🔗 Share Tool
-                  </button>
-                </div>
-              </div>
-
-              {/* Jongu Tools Box */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-                <h3 className="text-xl font-semibold text-blue-900 mb-3">🛡️ Jongu Tools: Premium Experience</h3>
-                <p className="text-gray-700 mb-4">
-                  Our self-hosted tools are flexible enough so that everyone can make good use of them. Choose privacy mode or save versions. Use AI or leave it alone.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <button
-                    onClick={() => {
-                      setSearchQuery('jongu');
-                      // Scroll to tools section
-                      const toolsSection = document.querySelector('.tools-section');
-                      if (toolsSection) {
-                        toolsSection.scrollIntoView({ behavior: 'smooth' });
-                      }
-                    }}
-                    className="jongu-search-button inline-flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                  >
-                    <Image 
-                      src="/Jongulogo.png" 
-                      alt="Jongu" 
-                      width={16}
-                      height={16}
-                      className="h-4 w-auto filter brightness-0 invert"
-                    />
-                    <span>View Jongu Tools</span>
-                  </button>
-                  <button
-                    onClick={() => setShowCollabModal(true)}
-                    className="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
-                  >
-                    🤝 Suggest New Jongu Tool
-                  </button>
-                </div>
-              </div>
-            </div>
 
           </div>
 
@@ -295,10 +240,10 @@ export default function HomePage() {
       </section>
 
 
-      {/* Section 3: About This Wellness Channel */}
+      {/* Section 3: About This Channel */}
       <section id="about" className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">About This Wellness Channel</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-8">About this Channel</h2>
           <div className="prose prose-lg mx-auto text-gray-600">
             <p className="mb-6">
               This channel brings together evidence-based wellness practices with interactive technology to make growth tools accessible to everyone. 
@@ -325,6 +270,22 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Support Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Support Our Community</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Help keep this platform free and accessible while connecting with our growing community of wellness enthusiasts.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8">
+            <CalmDonateButton />
+            <CalmDiscordButton />
+          </div>
+        </div>
+      </section>
+
       {/* Section 4: Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -338,15 +299,15 @@ export default function HomePage() {
                 className="h-32 w-auto filter brightness-0 invert"
               />
             </div>
-            <p className="text-gray-400 mb-6">Community-powered open source wellness tool garden. Building gateways, not gatekeepers</p>
             
             
             <div className="bg-amber-800 text-amber-200 p-4 rounded-lg mb-6">
               <div className="text-lg font-semibold mb-2">🚧 Beta Version</div>
               <div className="text-sm">
-                We&apos;re constantly improving and adding new features. Your feedback helps us grow!
+                {`We're constantly improving and adding new features. Your contributions with time, money and feedback helps us grow!`}
               </div>
             </div>
+            
             
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-6">
               <Link href="/contact" className="text-gray-400 hover:text-white">
@@ -355,16 +316,18 @@ export default function HomePage() {
               <a href="https://github.com/PlayfulProcess" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
                 GitHub
               </a>
-              <button 
-                onClick={() => setShowNewsletterModal(true)}
+              <a 
+                href="https://blog.jongu.org/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                📧 Newsletter
-              </button>
+                📧 Subscribe
+              </a>
             </div>
             
             <div className="mt-8 pt-8 border-t border-gray-800 text-gray-500 text-sm">
-              © 2025 Jongu. Community-powered open source wellness tool garden.
+              © 2025 Jongu. Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white underline">Creative Commons BY-SA 4.0</a>
             </div>
           </div>
         </div>
@@ -376,20 +339,11 @@ export default function HomePage() {
         onClose={() => setShowAuthModal(false)}
       />
       
-      <SubmitToolModal
-        isOpen={showSubmitModal}
-        onClose={() => setShowSubmitModal(false)}
-      />
-      
       <CollaborationModal
         isOpen={showCollabModal}
         onClose={() => setShowCollabModal(false)}
       />
 
-      <NewsletterModal
-        isOpen={showNewsletterModal}
-        onClose={() => setShowNewsletterModal(false)}
-      />
 
     </div>
   );

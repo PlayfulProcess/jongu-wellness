@@ -74,4 +74,4 @@ No coding required! Just edit the JSON file and deploy.
 
 ## Deployment
 
-Deploy on Vercel by connecting your repository and setting the environment variables in the Vercel dashboard.
+Deploy on Vercel by connecting your repository and setting the environment variables in the Vercel dashboard.# Clean stable version restored

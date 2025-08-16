@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { StarErrorModal } from './StarErrorModal';
 
 interface Tool {
   id: string;
@@ -91,6 +92,7 @@ const getCategoryDesign = (category: string) => {
 
 export function ToolCard({ tool, onStar, onUnstar, isStarred = false, isAuthenticated = false }: ToolCardProps) {
   const [isStarring, setIsStarring] = useState(false);
+  const [showStarError, setShowStarError] = useState(false);
 
   const handleToolClick = () => {
     window.open(tool.url, '_blank');
@@ -127,8 +129,17 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, isAuthenti
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Star API error:', errorData);
-        alert('Failed to update star. Please try again.');
+        console.error('Debug - Star API error:', errorData);
+        
+        // Handle specific error cases with better UX
+        if (response.status === 409 || errorData.error?.includes('already starred')) {
+          // Tool already starred - likely a sync issue
+          setShowStarError(true);
+          return;
+        }
+        
+        // Generic error
+        alert('Failed to update star. Please try refreshing the page and trying again.');
         return;
       }
 
@@ -259,6 +270,13 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, isAuthenti
           {renderStarButton()}
         </div>
       </div>
+      
+      {/* Star Error Modal */}
+      <StarErrorModal 
+        isOpen={showStarError}
+        onClose={() => setShowStarError(false)}
+        onRefresh={() => window.location.reload()}
+      />
     </div>
   );
 }

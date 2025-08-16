@@ -47,7 +47,12 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
       }
       
       const response = await fetch(`/api/community/tools?${params}`, {
-        cache: forceRefresh ? 'no-cache' : 'default'
+        cache: forceRefresh ? 'no-cache' : 'default',
+        headers: forceRefresh ? {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        } : {}
       });
       if (!response.ok) {
         throw new Error('Failed to fetch tools');
@@ -110,8 +115,10 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
     // Update local state
     setStarredTools(prev => new Set([...prev, toolId]));
     
-    // Refresh tools to show updated star count
-    await fetchTools(true);
+    // Small delay then refresh tools to show updated star count
+    setTimeout(async () => {
+      await fetchTools(true);
+    }, 100);
     
     if (onToolStar) {
       onToolStar();
@@ -126,8 +133,10 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
       return newSet;
     });
     
-    // Refresh tools to show updated star count
-    await fetchTools(true);
+    // Small delay then refresh tools to show updated star count
+    setTimeout(async () => {
+      await fetchTools(true);
+    }, 100);
     
     if (onToolStar) {
       onToolStar();

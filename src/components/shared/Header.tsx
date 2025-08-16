@@ -8,9 +8,10 @@ import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 interface HeaderProps {
   showAuthModal?: () => void;
+  showCreateChannelModal?: () => void;
 }
 
-export function Header({ showAuthModal }: HeaderProps) {
+export function Header({ showAuthModal, showCreateChannelModal }: HeaderProps) {
   const { user, signOut } = useAuth();
 
   return (
@@ -19,7 +20,7 @@ export function Header({ showAuthModal }: HeaderProps) {
         <div className="flex justify-between items-center h-28">
           {/* Logo and Navigation */}
           <div className="flex items-center space-x-8">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="https://www.jongu.org" className="flex items-center space-x-2">
               <div className="flex items-center space-x-2">
                 <Image 
                   src="/Jongulogo.png" 
@@ -39,40 +40,12 @@ export function Header({ showAuthModal }: HeaderProps) {
               {/* Tools Dropdown */}
               <ToolsDropdown />
               
-              <button 
-                onClick={() => {
-                  // First navigate to home page if not already there
-                  if (window.location.pathname !== '/') {
-                    window.location.href = '/#community-tools';
-                    return;
-                  }
-                  // Scroll to the community tools section
-                  const toolsSection = document.getElementById('community-tools');
-                  if (toolsSection) {
-                    toolsSection.scrollIntoView({ 
-                      behavior: 'smooth', 
-                      block: 'start'
-                    });
-                  }
-                }}
-                className="text-gray-600 hover:text-gray-900 font-medium cursor-pointer"
+              <button
+                onClick={showCreateChannelModal}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
               >
-                Browse Tools
+                🚀 Create Channel
               </button>
-              
-              <Link
-                href="/#community-tools"
-                className="text-gray-600 hover:text-gray-900 font-medium"
-              >
-                Share Tool
-              </Link>
-              
-              <Link 
-                href="/#about" 
-                className="text-gray-600 hover:text-gray-900 font-medium"
-              >
-                About
-              </Link>
             </nav>
           </div>
 
@@ -191,7 +164,7 @@ function ToolsDropdown() {
   const tools = [
     {
       name: "Best Possible Self",
-      url: "https://wellness-tool.jongu.org/",
+      url: "https://wellness-tool.jongu.org",
       description: "Research-backed future visioning",
       icon: "🌟",
       featured: true
