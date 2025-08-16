@@ -5,21 +5,21 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { LINKS } from '@/config/links';
 import { Header } from '@/components/shared/Header';
-import { AuthModal } from '@/components/modals/AuthModal';
+import { ImprovedAuthModal as AuthModal } from '@/components/modals/ImprovedAuthModal';
 import { CollaborationModal } from '@/components/modals/CollaborationModal';
-import { NewsletterModal } from '@/components/modals/NewsletterModal';
 import { ToolGrid } from '@/components/community/ToolGrid';
 import { CategoryFilter } from '@/components/community/CategoryFilter';
 import { SortingControls } from '@/components/community/SortingControls';
 import { StatsDisplay } from '@/components/community/StatsDisplay';
 import { useAuth } from '@/components/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
+import { CalmDonateButton } from '@/components/CalmDonateButton';
+import { CalmDiscordButton } from '@/components/CalmDiscordButton';
 
 export default function HomePage() {
   const { loading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
-  const [showNewsletterModal, setShowNewsletterModal] = useState(false);
   const [, setUser] = useState<{ email?: string } | null>(null);
   
   // Community tools state
@@ -240,10 +240,10 @@ export default function HomePage() {
       </section>
 
 
-      {/* Section 3: About This Wellness Channel */}
+      {/* Section 3: About This Channel */}
       <section id="about" className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">About This Wellness Channel</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-8">About this Channel</h2>
           <div className="prose prose-lg mx-auto text-gray-600">
             <p className="mb-6">
               This channel brings together evidence-based wellness practices with interactive technology to make growth tools accessible to everyone. 
@@ -270,6 +270,22 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Support Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Support Our Community</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Help keep this platform free and accessible while connecting with our growing community of wellness enthusiasts.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8">
+            <CalmDonateButton />
+            <CalmDiscordButton />
+          </div>
+        </div>
+      </section>
+
       {/* Section 4: Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -283,15 +299,15 @@ export default function HomePage() {
                 className="h-32 w-auto filter brightness-0 invert"
               />
             </div>
-            <p className="text-gray-400 mb-6">Community-powered open source wellness tool garden. Building gateways, not gatekeepers</p>
             
             
             <div className="bg-amber-800 text-amber-200 p-4 rounded-lg mb-6">
               <div className="text-lg font-semibold mb-2">🚧 Beta Version</div>
               <div className="text-sm">
-                We&apos;re constantly improving and adding new features. Your feedback helps us grow!
+                {`We're constantly improving and adding new features. Your contributions with time, money and feedback helps us grow!`}
               </div>
             </div>
+            
             
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-6">
               <Link href="/contact" className="text-gray-400 hover:text-white">
@@ -300,16 +316,18 @@ export default function HomePage() {
               <a href="https://github.com/PlayfulProcess" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
                 GitHub
               </a>
-              <button 
-                onClick={() => setShowNewsletterModal(true)}
+              <a 
+                href="https://blog.jongu.org/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                📧 Newsletter
-              </button>
+                📧 Subscribe
+              </a>
             </div>
             
             <div className="mt-8 pt-8 border-t border-gray-800 text-gray-500 text-sm">
-              © 2025 Jongu. Community-powered open source wellness tool garden.
+              © 2025 Jongu. Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white underline">Creative Commons BY-SA 4.0</a>
             </div>
           </div>
         </div>
@@ -326,10 +344,6 @@ export default function HomePage() {
         onClose={() => setShowCollabModal(false)}
       />
 
-      <NewsletterModal
-        isOpen={showNewsletterModal}
-        onClose={() => setShowNewsletterModal(false)}
-      />
 
     </div>
   );

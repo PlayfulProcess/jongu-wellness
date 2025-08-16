@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
+import { createAdminClient } from '@/lib/supabase-admin';
 
 export async function POST(
   request: NextRequest,
@@ -71,33 +72,47 @@ export async function POST(
       return NextResponse.json({ error: 'Failed to star tool' }, { status: 500 });
     }
 
-    // Update star count in tool
-    try {
-      // Get current tool data
-      const { data: currentTool, error: fetchError } = await supabase
+    // Update star count in tool (increment by 1)
+    console.log(`Updating star count for tool ${id}`);
+    
+    // Use admin client to bypass RLS for reading and updating
+    const adminClient = createAdminClient();
+    
+    const { data: currentTool, error: fetchError } = await adminClient
+      .from('tools')
+      .select('tool_data')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) {
+      console.error('Error fetching tool for star update:', fetchError);
+      return NextResponse.json({ error: 'Failed to fetch tool' }, { status: 500 });
+    } else if (currentTool) {
+      const currentStarCount = parseInt(String(currentTool.tool_data?.stats?.stars || '0'));
+      const newStarCount = currentStarCount + 1;
+      console.log(`Current star count: ${currentStarCount}, incrementing to ${newStarCount}`);
+      
+      const updatedToolData = {
+        ...currentTool.tool_data,
+        stats: {
+          ...currentTool.tool_data?.stats,
+          stars: newStarCount.toString()
+        }
+      };
+      
+      console.log('Updated tool data:', JSON.stringify(updatedToolData.stats, null, 2));
+
+      const { error: updateError } = await adminClient
         .from('tools')
-        .select('tool_data')
-        .eq('id', id)
-        .single();
-
-      if (!fetchError && currentTool) {
-        const currentStarCount = parseInt(currentTool.tool_data?.stats?.stars || '0');
-        const updatedToolData = {
-          ...currentTool.tool_data,
-          stats: {
-            ...currentTool.tool_data?.stats,
-            stars: (currentStarCount + 1).toString()
-          }
-        };
-
-        await supabase
-          .from('tools')
-          .update({ tool_data: updatedToolData })
-          .eq('id', id);
+        .update({ tool_data: updatedToolData })
+        .eq('id', id);
+        
+      if (updateError) {
+        console.error('Failed to increment star count:', updateError);
+        return NextResponse.json({ error: 'Failed to update star count' }, { status: 500 });
+      } else {
+        console.log('Successfully updated star count');
       }
-    } catch (error) {
-      console.error('Error updating star count:', error);
-      // Don't fail the request if star count update fails
     }
     
     return NextResponse.json({ 
@@ -163,33 +178,38 @@ export async function DELETE(
       return NextResponse.json({ error: 'Failed to unstar tool' }, { status: 500 });
     }
 
-    // Update star count in tool
-    try {
-      // Get current tool data
-      const { data: currentTool, error: fetchError } = await supabase
+    // Update star count in tool (decrement by 1)
+    // Use admin client to bypass RLS
+    const adminClient = createAdminClient();
+    
+    const { data: currentTool, error: fetchError } = await adminClient
+      .from('tools')
+      .select('tool_data')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) {
+      console.error('Error fetching tool for unstar update:', fetchError);
+    } else if (currentTool) {
+      const currentStarCount = parseInt(String(currentTool.tool_data?.stats?.stars || '0'));
+      const newStarCount = Math.max(0, currentStarCount - 1);
+      const updatedToolData = {
+        ...currentTool.tool_data,
+        stats: {
+          ...currentTool.tool_data?.stats,
+          stars: newStarCount.toString()
+        }
+      };
+
+      const { error: updateError } = await adminClient
         .from('tools')
-        .select('tool_data')
-        .eq('id', id)
-        .single();
-
-      if (!fetchError && currentTool) {
-        const currentStarCount = parseInt(currentTool.tool_data?.stats?.stars || '0');
-        const updatedToolData = {
-          ...currentTool.tool_data,
-          stats: {
-            ...currentTool.tool_data?.stats,
-            stars: Math.max(0, currentStarCount - 1).toString() // Ensure it doesn't go negative
-          }
-        };
-
-        await supabase
-          .from('tools')
-          .update({ tool_data: updatedToolData })
-          .eq('id', id);
+        .update({ tool_data: updatedToolData })
+        .eq('id', id);
+        
+      if (updateError) {
+        console.error('Failed to decrement star count:', updateError);
+        return NextResponse.json({ error: 'Failed to update star count' }, { status: 500 });
       }
-    } catch (error) {
-      console.error('Error updating star count:', error);
-      // Don't fail the request if star count update fails
     }
     
     return NextResponse.json({ 

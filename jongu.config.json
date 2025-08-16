@@ -8,14 +8,14 @@
   },
   "features": {
     "discord": {
-      "enabled": true,
+      "enabled": false,
       "serverId": "1234567890",
-      "showWidget": true
+      "showWidget": false
     },
     "donations": {
-      "enabled": true,
+      "enabled": false,
       "stripeLink": "https://buy.stripe.com/test_placeholder",
-      "buttonText": "Support Wellness Channel"
+      "buttonText": "Support"
     },
     "newsletter": {
       "enabled": true,
@@ -38,7 +38,7 @@
   },
   "links": {
     "github": "https://github.com/PlayfulProcess/jongu-wellness",
-    "discord": "https://discord.gg/jongu",
+    "discord": "https://discord.com/invite/qn69cSbDez",
     "twitter": "https://twitter.com/jongu"
   }
 }

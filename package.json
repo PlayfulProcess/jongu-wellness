@@ -2,6 +2,7 @@
   "name": "jongu-wellness",
   "version": "0.1.1",
   "private": true,
+  "license": "CC-BY-SA-4.0",
   "scripts": {
     "dev": "next dev --port 3003",
     "build": "next build",
@@ -11,8 +12,6 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
-    "@supabase/auth-ui-react": "^0.4.7",
-    "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.52.1",
     "next": "15.4.3",

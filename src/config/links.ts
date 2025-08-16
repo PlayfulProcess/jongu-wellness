@@ -17,7 +17,7 @@ export const LINKS = {
   GITHUB_REPO: 'https://github.com/PlayfulProcess/jongu-wellness', // Added missing GITHUB_REPO
   
   // Social links
-  DISCORD: 'https://discord.gg/jongu',
+  DISCORD: 'https://discord.com/invite/qn69cSbDez',
   TWITTER: 'https://twitter.com/jongu',
   
   // API endpoints (if shared across apps)

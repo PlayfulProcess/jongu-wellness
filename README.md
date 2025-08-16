@@ -1,8 +1,6 @@
-# Jongu Wellness Platform
+# Jongu MVP Channel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/PlayfulProcess/jongu-wellness&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY,RESEND_API_KEY,ADMIN_PASSWORD&envDescription=Required%20environment%20variables&envLink=https://github.com/PlayfulProcess/jongu-wellness%23environment-variables)
-
-Community-driven wellness tool discovery platform. This is the wellness component of the Jongu ecosystem, focused on tool sharing, discovery, and community building around mental health and wellness resources.
+Community-driven wellness channel app (Next.js + Supabase). Focused on tool sharing, discovery, and profiles.
 
 ## Features
 
@@ -15,19 +13,19 @@ Community-driven wellness tool discovery platform. This is the wellness componen
 
 ## Getting Started
 
-First, install dependencies:
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-Then, run the development server:
+Run the development server:
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3002](http://localhost:3002) with your browser to see the result.
+Open http://localhost:3003 in your browser.
 
 ## Environment Variables
 
@@ -40,10 +38,10 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 OPENAI_API_KEY=your_openai_key (if using AI features)
 ```
 
-## Related Projects
+## Related
 
-- **Best Possible Self App**: The wellness journaling tool that's featured on this platform
-- **Supabase Backend**: Shared database and authentication system
+- Best Possible Self Tool (separate app)
+- Shared Supabase project for auth and data
 
 ## Architecture
 
@@ -51,27 +49,12 @@ This app shares the same Supabase backend with the Best Possible Self wellness a
 
 ## Customization
 
-### Quick Start for Therapists & Creators
-
-1. **Fork this repository** 
-2. **Edit `jongu.config.json`** to customize:
-   - Channel name and description
-   - Discord server ID
-   - Stripe donation link
-   - Colors and theme
-
-3. **Deploy with one click** using the button at the top
-
-### What You Can Customize
-
-- **Channel Info**: Name, tagline, description
-- **Social Links**: Discord, Twitter, donation links  
-- **Features**: Toggle Discord widget, donations, newsletter
-- **Theme**: Colors and styling
-- **Content**: All text is in `jongu.config.json`
-
-No coding required! Just edit the JSON file and deploy.
+Edit `jongu.config.json` to change channel name, description, links, and feature flags. No code changes required.
 
 ## Deployment
 
-Deploy on Vercel by connecting your repository and setting the environment variables in the Vercel dashboard.# Clean stable version restored
+Deploy on Vercel and add the same environment variables. Make sure the auth callback URL is whitelisted in Supabase.
+
+## License
+
+Creative Commons Attribution-ShareAlike 4.0. See `LICENSE`.
