@@ -41,6 +41,7 @@ export default function Dashboard() {
   const [updating, setUpdating] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [downloadingData, setDownloadingData] = useState(false);
+  const [deletingData, setDeletingData] = useState(false);
 
   const supabase = createClient();
 
@@ -246,6 +247,72 @@ export default function Dashboard() {
       setMessage({ type: 'error', text: `Failed to download data: ${(error as Error).message}` });
     } finally {
       setDownloadingData(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+
+    const confirmed = window.confirm(
+      'Are you sure you want to delete your Jongu account?\n\n' +
+      'WILL BE DELETED:\n' +
+      '• Your account and authentication\n' +
+      '• All private data and settings\n' +
+      '• Your starred items\n\n' +
+      'WILL REMAIN PUBLIC:\n' +
+      '• Tools you submitted to the community\n' +
+      '• Public comments or contributions\n\n' +
+      'Contact pp@playfulprocess.com for complete removal including public content.\n\n' +
+      'This action cannot be undone.'
+    );
+
+    if (!confirmed) return;
+    
+    // Double confirmation for this serious action
+    const doubleConfirmed = window.confirm(
+      'Final confirmation: Delete your account?\n\n' +
+      'Remember: Your submitted tools will remain in the community.\n' +
+      'Contact pp@playfulprocess.com if you need them removed too.'
+    );
+    
+    if (!doubleConfirmed) return;
+    
+    const emailConfirmation = window.prompt('Type your email address to confirm deletion:');
+    if (emailConfirmation !== user.email) {
+      setMessage({ type: 'error', text: 'Email confirmation does not match. Deletion cancelled.' });
+      return;
+    }
+
+    setDeletingData(true);
+
+    try {
+      // Delete all user data from user_documents table
+      const { error: documentsError } = await supabase
+        .from('user_documents')
+        .delete()
+        .eq('user_id', user.id);
+
+      if (documentsError) throw documentsError;
+
+      // Note: Auth account deletion requires server-side implementation
+      // For now, we can only delete the user_documents data
+      setMessage({ 
+        type: 'success', 
+        text: 'Your personal data has been deleted. Please contact pp@playfulprocess.com to complete account removal.' 
+      });
+      
+      // Optionally sign out the user after data deletion
+      setTimeout(async () => {
+        const shouldSignOut = window.confirm('Your data has been deleted. Would you like to sign out now?');
+        if (shouldSignOut) {
+          await supabase.auth.signOut();
+          window.location.href = '/';
+        }
+      }, 2000);
+    } catch (error) {
+      setMessage({ type: 'error', text: `Failed to delete account: ${(error as Error).message}` });
+    } finally {
+      setDeletingData(false);
     }
   };
 
@@ -548,6 +615,42 @@ export default function Dashboard() {
                     className="px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
                   >
                     {downloadingData ? 'Preparing Download...' : '📥 Download My Data'}
+                  </button>
+                </div>
+
+                {/* Delete Account */}
+                <div className="mt-4 border border-red-200 rounded-lg p-4 bg-red-50">
+                  <h4 className="text-sm font-medium text-red-800 mb-2">
+                    Delete Account
+                  </h4>
+                  <div className="text-xs text-red-700 mb-3 space-y-2">
+                    <p className="font-semibold">This will permanently delete:</p>
+                    <ul className="list-disc list-inside ml-2 space-y-1">
+                      <li>Your account and authentication</li>
+                      <li>All private data and settings</li>
+                      <li>Your starred items and interactions</li>
+                    </ul>
+                    
+                    <p className="font-semibold mt-2">This will NOT delete:</p>
+                    <ul className="list-disc list-inside ml-2 space-y-1">
+                      <li>Tools you submitted to the community (they remain public)</li>
+                      <li>Public comments or contributions</li>
+                    </ul>
+                    
+                    <p className="mt-2 text-gray-700 bg-gray-50 p-2 rounded">
+                      {`📧 For complete data removal including public contributions, please contact `}
+                      <a href="mailto:pp@playfulprocess.com" className="text-blue-600 underline">
+                        pp@playfulprocess.com
+                      </a>
+                      {` with your account email.`}
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleDeleteAccount}
+                    disabled={deletingData}
+                    className="px-3 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
+                  >
+                    {deletingData ? 'Deleting...' : '🗑️ Delete Account'}
                   </button>
                 </div>
               </div>

@@ -14,6 +14,8 @@ import { SortingControls } from '@/components/community/SortingControls';
 import { StatsDisplay } from '@/components/community/StatsDisplay';
 import { useAuth } from '@/components/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
+import { CalmDonateButton } from '@/components/CalmDonateButton';
+import { CalmDiscordButton } from '@/components/CalmDiscordButton';
 
 export default function HomePage() {
   const { loading } = useAuth();
@@ -240,10 +242,10 @@ export default function HomePage() {
       </section>
 
 
-      {/* Section 3: About This Wellness Channel */}
+      {/* Section 3: About This Channel */}
       <section id="about" className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">About This Wellness Channel</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-8">About this Channel</h2>
           <div className="prose prose-lg mx-auto text-gray-600">
             <p className="mb-6">
               This channel brings together evidence-based wellness practices with interactive technology to make growth tools accessible to everyone. 
@@ -270,6 +272,22 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Support Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Support Our Community</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Help keep this platform free and accessible while connecting with our growing community of wellness enthusiasts.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8">
+            <CalmDonateButton />
+            <CalmDiscordButton />
+          </div>
+        </div>
+      </section>
+
       {/* Section 4: Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -283,38 +301,15 @@ export default function HomePage() {
                 className="h-32 w-auto filter brightness-0 invert"
               />
             </div>
-            <p className="text-gray-400 mb-6">Community-powered open source wellness tool garden. Building gateways, not gatekeepers</p>
             
             
             <div className="bg-amber-800 text-amber-200 p-4 rounded-lg mb-6">
               <div className="text-lg font-semibold mb-2">🚧 Beta Version</div>
               <div className="text-sm">
-                We&apos;re constantly improving and adding new features. Your feedback helps us grow!
+                {`We're constantly improving and adding new features. Your contributions with time, money and feedback helps us grow!`}
               </div>
             </div>
             
-            {/* Privacy & Cookie Policy */}
-            <div className="bg-gray-800 p-6 rounded-lg mb-6 max-w-2xl mx-auto">
-              <h3 className="text-lg font-semibold mb-3 text-white">🔒 Privacy & Cookie Policy</h3>
-              <div className="text-sm text-gray-300 space-y-2 text-left">
-                <p>
-                  <strong>Session-Only Cookies:</strong> We use only essential authentication cookies that expire when you close your browser. 
-                  No persistent tracking, no analytics cookies, no third-party cookies.
-                </p>
-                <p>
-                  <strong>Separate Sign-ins:</strong> Each Jongu tool requires its own sign-in for maximum privacy. 
-                  Your sessions are isolated - no cross-site tracking or data sharing between tools.
-                </p>
-                <p>
-                  <strong>Your Data, Your Control:</strong> Use the same password across all Jongu tools, but consciously choose 
-                  which tools to sign into and what data to share with each one.
-                </p>
-                <p className="text-xs text-gray-400 pt-2 italic">
-                  Note: As a solopreneur building this alone, I&apos;ve chosen privacy-first architecture over convenience features 
-                  like single sign-on. This means more sign-ins for you, but also more control over your data. Thank you for understanding. - Fernando
-                </p>
-              </div>
-            </div>
             
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-6">
               <Link href="/contact" className="text-gray-400 hover:text-white">
@@ -332,7 +327,7 @@ export default function HomePage() {
             </div>
             
             <div className="mt-8 pt-8 border-t border-gray-800 text-gray-500 text-sm">
-              © 2025 Jongu. Community-powered open source wellness tool garden.
+              © 2025 Jongu. Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white underline">Creative Commons BY-SA 4.0</a>
             </div>
           </div>
         </div>
