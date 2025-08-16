@@ -295,7 +295,7 @@ export default function HomePage() {
             <div className="bg-amber-800 text-amber-200 p-4 rounded-lg mb-6">
               <div className="text-lg font-semibold mb-2">🚧 Beta Version</div>
               <div className="text-sm">
-                We&apos;re constantly improving and adding new features. Your feedback helps us grow!
+                {`We're constantly improving and adding new features. Your contributions with time, money and feedback helps us grow!`}
               </div>
             </div>
             
