@@ -327,7 +327,7 @@ export default function HomePage() {
             </div>
             
             <div className="mt-8 pt-8 border-t border-gray-800 text-gray-500 text-sm">
-              © 2025 Jongu. Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white underline">Creative Commons BY-SA 4.0</a>
+              © 2025 Jongu by PlayfulProcess LLC. Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white underline">Creative Commons BY-SA 4.0</a>
             </div>
           </div>
         </div>
