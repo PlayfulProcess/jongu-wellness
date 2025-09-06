@@ -16,8 +16,8 @@ export default function ContactPage() {
           {/* Header with logo */}
           <div className="flex items-center justify-center mb-4">
             <Image 
-              src="/Jongulogo.png" 
-              alt="Jongu" 
+              src="/recursive-logo-1756153260128.png" 
+              alt="Recursive.eco" 
               width={96}
               height={96}
               className="h-24 w-auto"

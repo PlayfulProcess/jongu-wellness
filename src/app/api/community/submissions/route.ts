@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { sendToolSubmissionNotification } from '@/lib/email';
-import { isAdmin, isJonguReservedName } from '@/lib/admin-utils';
+import { isAdmin, isRecursiveEcoReservedName } from '@/lib/admin-utils';
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,21 +38,21 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Protect "Jongu" brand - only admins can use it
+    // Protect "Recursive.eco" brand - only admins can use it
     const userEmail = user.email || '';
     const isUserAdmin = isAdmin(userEmail);
     
     console.log(`Debug - User email: ${userEmail}, Is admin: ${isUserAdmin}`);
-    console.log(`Debug - Title contains Jongu: ${isJonguReservedName(title)}`);
-    console.log(`Debug - Creator contains Jongu: ${isJonguReservedName(creator_name)}`);
+    console.log(`Debug - Title contains Recursive.eco: ${isRecursiveEcoReservedName(title)}`);
+    console.log(`Debug - Creator contains Recursive.eco: ${isRecursiveEcoReservedName(creator_name)}`);
     
     if (!isUserAdmin && (
-        isJonguReservedName(title) || 
-        isJonguReservedName(creator_name) ||
-        isJonguReservedName(description)
+        isRecursiveEcoReservedName(title) || 
+        isRecursiveEcoReservedName(creator_name) ||
+        isRecursiveEcoReservedName(description)
       )) {
       return NextResponse.json(
-        { error: 'The name "Jongu" is reserved for official tools. Please choose a different name.' },
+        { error: 'The name "Recursive.eco" is reserved for official tools. Please choose a different name.' },
         { status: 400 }
       );
     }

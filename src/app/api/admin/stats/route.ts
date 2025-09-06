@@ -10,17 +10,17 @@ export async function GET() {
       .from('tools')
       .select('*', { count: 'exact', head: true });
     
-    // Get total submissions (community tools, non-Jongu)
+    // Get total submissions (community tools, non-Recursive.eco)
     const { count: totalSubmissions } = await adminClient
       .from('tools')
       .select('*', { count: 'exact', head: true })
-      .not('tool_data->>submitted_by', 'eq', 'Jongu');
+      .not('tool_data->>submitted_by', 'eq', 'Recursive.eco');
     
     // Get pending submissions (community tools that haven't been reviewed)
     const { count: pendingSubmissions } = await adminClient
       .from('tools')
       .select('*', { count: 'exact', head: true })
-      .not('tool_data->>submitted_by', 'eq', 'Jongu')
+      .not('tool_data->>submitted_by', 'eq', 'Recursive.eco')
       .not('tool_data->>reviewed', 'eq', 'true');
     
     // Get total collaborations from user_documents table
