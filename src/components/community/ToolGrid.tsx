@@ -214,7 +214,6 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
           onStar={handleStar}
           onUnstar={handleUnstar}
           isStarred={starredTools.has(tool.id)}
-          isAuthenticated={!!user}
         />
       ))}
     </div>

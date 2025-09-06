@@ -502,7 +502,6 @@ export default function Dashboard() {
                     tool={tool}
                     onUnstar={handleUnstar}
                     isStarred={true}
-                    isAuthenticated={true}
                   />
                 ))}
               </div>
