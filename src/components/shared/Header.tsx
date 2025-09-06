@@ -206,8 +206,8 @@ function ToolsDropdown() {
               <a
                 key={tool.name}
                 href={tool.url}
-                target={tool.internal ? undefined : "_blank"}
-                rel={tool.internal ? undefined : "noopener noreferrer"}
+                target="_blank"
+                rel="noopener noreferrer"
                 className={`block px-4 py-3 hover:bg-gray-50 transition-colors ${
                   tool.featured ? 'bg-blue-50 border-l-4 border-blue-500' : ''
                 }`}

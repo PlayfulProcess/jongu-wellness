@@ -22,7 +22,6 @@ interface ToolCardProps {
   onStar?: (toolId: string) => void;
   onUnstar?: (toolId: string) => void;
   isStarred?: boolean;
-  isAuthenticated?: boolean;
 }
 
 const getCategoryDesign = (category: string) => {
@@ -90,7 +89,7 @@ const getCategoryDesign = (category: string) => {
   };
 };
 
-export function ToolCard({ tool, onStar, onUnstar, isStarred = false, isAuthenticated = false }: ToolCardProps) {
+export function ToolCard({ tool, onStar, onUnstar, isStarred = false }: ToolCardProps) {
   const [isStarring, setIsStarring] = useState(false);
   const [showStarError, setShowStarError] = useState(false);
 

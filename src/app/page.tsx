@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { LINKS } from '@/config/links';
 import { Header } from '@/components/shared/Header';
 import { ImprovedAuthModal as AuthModal } from '@/components/modals/ImprovedAuthModal';
@@ -13,8 +12,6 @@ import { SortingControls } from '@/components/community/SortingControls';
 import { StatsDisplay } from '@/components/community/StatsDisplay';
 import { useAuth } from '@/components/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
-import { CalmDonateButton } from '@/components/CalmDonateButton';
-import { CalmDiscordButton } from '@/components/CalmDiscordButton';
 
 export default function HomePage() {
   const { loading } = useAuth();
