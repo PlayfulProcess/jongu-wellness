@@ -4,7 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import DiscordWidget from "@/components/DiscordWidget";
 import DonateButton from "@/components/DonateButton";
-import { config } from "@/lib/jongu-config";
+import { config } from "@/lib/recursiveeco-config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const adminClient = createAdminClient();
     
-    // Query tools table for community submissions (including Jongu tools)
+    // Query tools table for community submissions (including Recursive.eco tools)
     const { data: tools, error } = await adminClient
       .from('tools')
       .select('id, slug, tool_data, created_at, updated_at')

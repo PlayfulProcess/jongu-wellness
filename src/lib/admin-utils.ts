@@ -6,8 +6,8 @@ export function isAdmin(userEmail: string): boolean {
   return adminEmails.includes(userEmail.toLowerCase());
 }
 
-export function isJonguReservedName(name: string): boolean {
-  const reservedNames = ['jongu', 'Jongu', 'JONGU'];
+export function isRecursiveEcoReservedName(name: string): boolean {
+  const reservedNames = ['recursiveeco', 'Recursive.eco', 'RECURSIVEECO', 'recursive.eco'];
   const lowerName = name.toLowerCase();
   
   return reservedNames.some(reserved => 
@@ -16,7 +16,7 @@ export function isJonguReservedName(name: string): boolean {
   );
 }
 
-export function canUseJonguName(userEmail: string): boolean {
-  // Allow admins to use Jongu branding
+export function canUseRecursiveEcoName(userEmail: string): boolean {
+  // Allow admins to use Recursive.eco branding
   return isAdmin(userEmail);
 }

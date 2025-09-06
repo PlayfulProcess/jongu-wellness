@@ -254,7 +254,7 @@ export default function Dashboard() {
     if (!user) return;
 
     const confirmed = window.confirm(
-      'Are you sure you want to delete your Jongu account?\n\n' +
+      'Are you sure you want to delete your Recursive.eco account?\n\n' +
       'WILL BE DELETED:\n' +
       '• Your account and authentication\n' +
       '• All private data and settings\n' +

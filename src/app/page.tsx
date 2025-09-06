@@ -123,7 +123,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-5xl font-bold text-gray-900 mb-6">
-              Jongu wellness channel:
+              Recursive.eco wellness channel:
               <span className="block text-blue-600">Interactive Tools for a better life</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
@@ -187,7 +187,7 @@ export default function HomePage() {
           // Clear search if clicking outside search-related elements
           const target = e.target as Element;
           if (!target.closest('.search-container') && 
-              !target.closest('.jongu-search-button') && 
+              !target.closest('.recursiveeco-search-button') && 
               searchQuery.trim()) {
             setSearchQuery('');
           }
@@ -197,7 +197,7 @@ export default function HomePage() {
           {/* Section Header */}
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Jongu Wellness Tool Garden
+              Recursive.eco Wellness Tool Garden
             </h2>
             
 
@@ -253,81 +253,47 @@ export default function HomePage() {
               <h3 className="text-xl font-semibold text-blue-900 mb-4">What makes this different?</h3>
               <ul className="list-disc list-inside space-y-2 text-blue-800">
                 <li><strong>Open Access:</strong> All tools are completely free, supported by community donations</li>
-                <li><strong>Inclusive:</strong> Jongu tools will still be valuable without engaging with AI</li>
+                <li><strong>Inclusive:</strong> Recursive.eco tools will still be valuable without engaging with AI</li>
                 <li><strong>Evidence-Based:</strong> Grounded in research or personal experience (which is also evidence)</li>
                 <li><strong>Community-Driven:</strong> Share tools here or talk about your experience in our Discord channel</li>
                 <li><strong>Privacy-Focused:</strong> Self-hosted tools can be used without saving any data in our databases</li>
               </ul>
             </div>
             <p className="mb-4">
-              This channel is part of the broader Jongu experiment in reclaiming human connection in the digital age. 
+              This channel is part of the broader Recursive.eco experiment in recursive virtuous meaning-making. 
               We believe wellness tools should be gateways to growth, not gatekeepers behind paywalls.
             </p>
             <p className="text-sm text-gray-500">
-              <strong>Created by <a href="https://www.playfulprocess.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">PlayfulProcess</a></strong> | <strong>Supported by the Jongu Community</strong>
+              <strong>Created by <a href="https://www.playfulprocess.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">PlayfulProcess</a></strong> | <strong>Supported by the Recursive.eco Community</strong>
             </p>
           </div>
         </div>
       </section>
 
-      {/* Support Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Support Our Community</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Help keep this platform free and accessible while connecting with our growing community of wellness enthusiasts.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-8">
-            <CalmDonateButton />
-            <CalmDiscordButton />
-          </div>
-        </div>
-      </section>
 
       {/* Section 4: Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="flex items-center justify-center mb-4">
-              <Image 
-                src="/Jongulogo.png" 
-                alt="Jongu" 
-                width={128}
-                height={128}
-                className="h-32 w-auto filter brightness-0 invert"
-              />
+            <div className="bg-amber-800 text-amber-200 p-4 rounded-lg mb-6 max-w-2xl mx-auto">
+              <div className="text-lg font-semibold mb-2">🧪 Active experiment in recursive virtuous meaning-making</div>
             </div>
             
             
-            <div className="bg-amber-800 text-amber-200 p-4 rounded-lg mb-6">
-              <div className="text-lg font-semibold mb-2">🚧 Beta Version</div>
-              <div className="text-sm">
-                {`We're constantly improving and adding new features. Your contributions with time, money and feedback helps us grow!`}
-              </div>
-            </div>
-            
-            
-            <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-6">
-              <Link href="/contact" className="text-gray-400 hover:text-white">
-                Contact Us
-              </Link>
-              <a href="https://github.com/PlayfulProcess" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
+            <div className="flex flex-wrap justify-center items-center space-x-6">
+              <a href="https://www.playfulprocess.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                Subscribe to PlayfulProcess Blog
+              </a>
+              <a href="https://github.com/PlayfulProcess" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
                 GitHub
               </a>
-              <a 
-                href="https://blog.jongu.org/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                📧 Subscribe
-              </a>
+              <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
+                Contact Us
+              </Link>
             </div>
             
             <div className="mt-8 pt-8 border-t border-gray-800 text-gray-500 text-sm">
-              © 2025 Jongu. Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white underline">Creative Commons BY-SA 4.0</a>
+              <p className="mb-2 text-center">Platform under <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-300 underline">CC BY-SA 4.0</a> | User content remains with creators | © 2025 Recursive.eco by PlayfulProcess LLC</p>
             </div>
           </div>
         </div>

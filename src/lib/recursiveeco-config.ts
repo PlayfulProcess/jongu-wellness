@@ -1,6 +1,6 @@
-import jonguConfig from '../../jongu.config.json';
+import recursiveEcoConfig from '../../recursiveeco.config.json';
 
-export interface JonguConfig {
+export interface RecursiveEcoConfig {
   channel: {
     name: string;
     tagline: string;
@@ -46,17 +46,17 @@ export interface JonguConfig {
 }
 
 // Merge environment variables with config
-export const config: JonguConfig = {
-  ...jonguConfig,
+export const config: RecursiveEcoConfig = {
+  ...recursiveEcoConfig,
   features: {
-    ...jonguConfig.features,
+    ...recursiveEcoConfig.features,
     discord: {
-      ...jonguConfig.features.discord,
-      serverId: process.env.NEXT_PUBLIC_DISCORD_SERVER_ID || jonguConfig.features.discord.serverId,
+      ...recursiveEcoConfig.features.discord,
+      serverId: process.env.NEXT_PUBLIC_DISCORD_SERVER_ID || recursiveEcoConfig.features.discord.serverId,
     },
     donations: {
-      ...jonguConfig.features.donations,
-      stripeLink: process.env.NEXT_PUBLIC_STRIPE_DONATION_LINK || jonguConfig.features.donations.stripeLink,
+      ...recursiveEcoConfig.features.donations,
+      stripeLink: process.env.NEXT_PUBLIC_STRIPE_DONATION_LINK || recursiveEcoConfig.features.donations.stripeLink,
     },
   },
 };

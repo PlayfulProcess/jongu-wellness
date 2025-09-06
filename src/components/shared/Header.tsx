@@ -15,19 +15,19 @@ export function Header({ showAuthModal, showCreateChannelModal }: HeaderProps) {
   const { user, signOut } = useAuth();
 
   return (
-    <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-sm border-b border-gray-200">
+    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-28">
+        <div className="flex justify-between items-center h-16">
           {/* Logo and Navigation */}
           <div className="flex items-center space-x-8">
-            <Link href="https://www.jongu.org" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2">
               <div className="flex items-center space-x-2">
                 <Image 
-                  src="/Jongulogo.png" 
-                  alt="Jongu"
-                  width={96}
-                  height={96}
-                  className="h-24 w-auto"
+                  src="/recursive-logo-1756153260128.png" 
+                  alt="Recursive.eco"
+                  width={60}
+                  height={60}
+                  className="h-12 w-auto"
                 />
                 <span className="text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full font-medium">BETA</span>
               </div>
@@ -89,19 +89,19 @@ function ChannelsDropdown() {
   const channels = [
     {
       name: "Wellness",
-      url: "https://wellness.jongu.org",
+      url: "https://channels.recursive.eco/",
       description: "Mental health & wellness tools",
       active: true
     },
     {
       name: "Parents",
-      url: "https://parents.jongu.org", 
+      url: "https://parents.recursive.eco", 
       description: "Parenting support & resources",
       comingSoon: true
     },
     {
       name: "Developers",
-      url: "https://developers.jongu.org",
+      url: "https://developers.recursive.eco",
       description: "Code with purpose",
       comingSoon: true
     }
@@ -164,17 +164,24 @@ function ToolsDropdown() {
   const tools = [
     {
       name: "Best Possible Self",
-      url: "https://wellness-tool.jongu.org",
+      url: "https://journal.recursive.eco/",
       description: "Research-backed future visioning",
       icon: "🌟",
       featured: true
     },
     {
-      name: "More Tools",
-      url: "/#community-tools",
-      description: "Browse community wellness tools",
-      icon: "🔍",
-      internal: true
+      name: "Spiral Generator",
+      url: "https://recursive.eco/spiral/logo-generator.html",
+      description: "Interactive spiral logo generator",
+      icon: "🌀",
+      featured: false
+    },
+    {
+      name: "Recursive Patterns",
+      url: "https://patterns.recursive.eco",
+      description: "Mathematical beauty & patterns",
+      icon: "♾️",
+      featured: false
     }
   ];
 

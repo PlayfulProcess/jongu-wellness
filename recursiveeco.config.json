@@ -1,10 +1,10 @@
 {
   "channel": {
-    "name": "Jongu Wellness",
+    "name": "Recursive.eco Wellness",
     "tagline": "Your mental health journey starts here",
     "description": "Discover science-backed wellness tools organized by DBT skills. Community-driven platform for mindfulness, emotion regulation, distress tolerance, and interpersonal effectiveness.",
-    "author": "Jongu Collective",
-    "authorLink": "https://twitter.com/jongu"
+    "author": "Recursive.eco Collective",
+    "authorLink": "https://recursive.eco"
   },
   "features": {
     "discord": {
@@ -32,13 +32,13 @@
     "style": "wellness"
   },
   "seo": {
-    "title": "Jongu Tool Garden - Community Wellness Tools",
+    "title": "Recursive.eco Tool Garden - Community Wellness Tools",
     "description": "Discover science-backed wellness tools organized by DBT skills",
     "keywords": ["wellness", "mental health", "DBT", "mindfulness", "community tools"]
   },
   "links": {
-    "github": "https://github.com/PlayfulProcess/jongu-wellness",
+    "github": "https://github.com/PlayfulProcess/recursive-eco-wellness",
     "discord": "https://discord.com/invite/qn69cSbDez",
-    "twitter": "https://twitter.com/jongu"
+    "twitter": "https://recursive.eco"
   }
 }
