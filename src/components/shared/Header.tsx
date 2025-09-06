@@ -20,7 +20,7 @@ export function Header({ showAuthModal, showCreateChannelModal }: HeaderProps) {
         <div className="flex justify-between items-center h-16">
           {/* Logo and Navigation */}
           <div className="flex items-center space-x-8">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="https://www.recursive.eco/" className="flex items-center space-x-2">
               <div className="flex items-center space-x-2">
                 <Image 
                   src="/recursive-logo-1756153260128.png" 
