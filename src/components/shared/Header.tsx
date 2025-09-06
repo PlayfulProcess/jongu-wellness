@@ -20,7 +20,7 @@ export function Header({ showAuthModal, showCreateChannelModal }: HeaderProps) {
         <div className="flex justify-between items-center h-16">
           {/* Logo and Navigation */}
           <div className="flex items-center space-x-8">
-            <Link href="https://recursive.eco" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2">
               <div className="flex items-center space-x-2">
                 <Image 
                   src="/recursive-logo-1756153260128.png" 
@@ -89,7 +89,7 @@ function ChannelsDropdown() {
   const channels = [
     {
       name: "Wellness",
-      url: "https://wellness.recursive.eco",
+      url: "https://channels.recursive.eco/",
       description: "Mental health & wellness tools",
       active: true
     },
@@ -164,17 +164,24 @@ function ToolsDropdown() {
   const tools = [
     {
       name: "Best Possible Self",
-      url: "https://wellness-tool.recursive.eco",
+      url: "https://journal.recursive.eco/",
       description: "Research-backed future visioning",
       icon: "🌟",
       featured: true
     },
     {
-      name: "More Tools",
-      url: "/#community-tools",
-      description: "Browse community wellness tools",
-      icon: "🔍",
-      internal: true
+      name: "Spiral Generator",
+      url: "https://recursive.eco/spiral/logo-generator.html",
+      description: "Interactive spiral logo generator",
+      icon: "🌀",
+      featured: false
+    },
+    {
+      name: "Recursive Patterns",
+      url: "https://patterns.recursive.eco",
+      description: "Mathematical beauty & patterns",
+      icon: "♾️",
+      featured: false
     }
   ];
 
