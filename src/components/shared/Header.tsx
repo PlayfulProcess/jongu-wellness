@@ -6,6 +6,15 @@ import { useState } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
+interface Tool {
+  name: string;
+  url: string;
+  description: string;
+  icon: string;
+  featured: boolean;
+  internal?: boolean;
+}
+
 interface HeaderProps {
   showAuthModal?: () => void;
   showCreateChannelModal?: () => void;
@@ -160,6 +169,22 @@ function ChannelsDropdown() {
 // Tools Dropdown Component  
 function ToolsDropdown() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
+
+  const handleInternalToolClick = (tool: Tool) => {
+    setIsOpen(false);
+    
+    if (tool.internal && user) {
+      // For internal tools when user is authenticated, pass auth info
+      const url = new URL(tool.url);
+      url.searchParams.set('from', 'channels');
+      url.searchParams.set('auth_hint', 'true');
+      window.open(url.toString(), '_blank');
+    } else {
+      // Standard navigation for external tools or when not authenticated
+      window.open(tool.url, '_blank');
+    }
+  };
 
   const tools = [
     {
@@ -167,7 +192,8 @@ function ToolsDropdown() {
       url: "https://journal.recursive.eco/",
       description: "Research-backed future visioning",
       icon: "🌟",
-      featured: true
+      featured: true,
+      internal: true // This indicates it's our internal tool that can share auth
     },
     {
       name: "Spiral Generator",
@@ -203,15 +229,12 @@ function ToolsDropdown() {
           />
           <div className="absolute top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-20 overflow-hidden">
             {tools.map((tool) => (
-              <a
+              <button
                 key={tool.name}
-                href={tool.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`block px-4 py-3 hover:bg-gray-50 transition-colors ${
+                onClick={() => handleInternalToolClick(tool)}
+                className={`w-full text-left block px-4 py-3 hover:bg-gray-50 transition-colors ${
                   tool.featured ? 'bg-blue-50 border-l-4 border-blue-500' : ''
                 }`}
-                onClick={() => setIsOpen(false)}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-lg">{tool.icon}</span>
@@ -224,7 +247,7 @@ function ToolsDropdown() {
                     </div>
                   </div>
                 </div>
-              </a>
+              </button>
             ))}
           </div>
         </>
