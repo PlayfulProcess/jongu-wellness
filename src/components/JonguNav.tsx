@@ -10,36 +10,41 @@ interface NetworkChannel {
   comingSoon?: boolean;
 }
 
-export const JONGU_NETWORK: Record<string, NetworkChannel> = {
+export const RECURSIVE_NETWORK: Record<string, NetworkChannel> = {
   main: {
     name: "Home",
-    url: "https://jongu.org",
+    url: "https://www.recursive.eco",
     description: "Gateway to wellness channels"
   },
   wellness: {
-    name: "Wellness",
-    url: "https://wellness.jongu.org",
+    name: "Channels",
+    url: "https://channels.recursive.eco",
     description: "Mental health resources"
+  },
+  journal: {
+    name: "Journal",
+    url: "https://journal.recursive.eco",
+    description: "Best Possible Self tool"
   },
   parents: {
     name: "Parents",
-    url: "https://parents.jongu.org",
+    url: "https://parents.recursive.eco",
     description: "Parenting support",
     comingSoon: true
   },
   developers: {
     name: "Developers",
-    url: "https://developers.jongu.org",
+    url: "https://developers.recursive.eco",
     description: "Code with purpose",
     comingSoon: true
   }
 };
 
-interface JonguNavProps {
-  currentChannel?: keyof typeof JONGU_NETWORK;
+interface RecursiveNavProps {
+  currentChannel?: keyof typeof RECURSIVE_NETWORK;
 }
 
-export default function JonguNav({ currentChannel }: JonguNavProps) {
+export default function RecursiveNav({ currentChannel }: RecursiveNavProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -48,8 +53,8 @@ export default function JonguNav({ currentChannel }: JonguNavProps) {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
       >
-        <span className="hidden sm:inline">Jongu</span>
-        <span className="sm:hidden">Jongu</span>
+        <span className="hidden sm:inline">Recursive.eco</span>
+        <span className="sm:hidden">Recursive</span>
         <ChevronDownIcon className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       
@@ -60,7 +65,7 @@ export default function JonguNav({ currentChannel }: JonguNavProps) {
             onClick={() => setIsOpen(false)}
           />
           <div className="absolute top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-20 overflow-hidden">
-            {Object.entries(JONGU_NETWORK).map(([key, channel]) => (
+            {Object.entries(RECURSIVE_NETWORK).map(([key, channel]) => (
               <a
                 key={key}
                 href={channel.url}

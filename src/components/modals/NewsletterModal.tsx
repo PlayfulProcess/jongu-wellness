@@ -126,7 +126,7 @@ export function NewsletterModal({ isOpen, onClose }: NewsletterModalProps) {
             </div>
 
             <div className="text-xs text-gray-500 text-center mt-4">
-              We respect your privacy. Your email will only be used for newsletter updates.
+              Your email will only be used for newsletter updates.
             </div>
           </form>
         </div>

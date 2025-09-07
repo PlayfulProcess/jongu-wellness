@@ -6,6 +6,7 @@ import { LINKS } from '@/config/links';
 import { Header } from '@/components/shared/Header';
 import { ImprovedAuthModal as AuthModal } from '@/components/modals/ImprovedAuthModal';
 import { CollaborationModal } from '@/components/modals/CollaborationModal';
+import { SubmitToolModal } from '@/components/modals/SubmitToolModal';
 import { ToolGrid } from '@/components/community/ToolGrid';
 import { CategoryFilter } from '@/components/community/CategoryFilter';
 import { SortingControls } from '@/components/community/SortingControls';
@@ -17,6 +18,7 @@ export default function HomePage() {
   const { loading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
+  const [showSubmitToolModal, setShowSubmitToolModal] = useState(false);
   const [, setUser] = useState<{ email?: string } | null>(null);
   
   // Community tools state
@@ -135,40 +137,63 @@ export default function HomePage() {
 
         {/* Featured Tool Preview */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-          <div className="bg-white rounded-xl shadow-xl p-8">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Tool: Best Possible Self</h2>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div>
-                <p className="text-gray-600 mb-6">
-                  A research-backed reflection practice from <a 
-                    href="https://ggia.berkeley.edu/practice/best_possible_self" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 underline"
-                  >Berkeley&apos;s Greater Good Science Center</a> that helps you envision your brightest future through guided journaling.
-                </p>
-                <div className="flex items-center space-x-4 text-sm text-gray-500 mb-6">
-                  <span className="bg-gray-100 px-3 py-1 rounded">🕐 15 minutes</span>
-                  <span className="bg-gray-100 px-3 py-1 rounded">📊 Beginner</span>
-                  <span className="bg-gray-100 px-3 py-1 rounded">🧠 Positive Psychology</span>
-                </div>
-                <a 
-                  href={LINKS.BEST_POSSIBLE_SELF_APP}
-                  className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Start Your Journey →
-                </a>
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Featured Tool */}
+            <div className="lg:col-span-2 bg-white rounded-xl shadow-xl p-8">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Tool: Best Possible Self</h2>
               </div>
-              <div className="bg-gradient-to-br from-blue-100 to-indigo-200 rounded-lg p-8 text-center">
-                <div className="text-6xl mb-4">🌟</div>
-                <h4 className="text-lg font-semibold text-gray-800 mb-2">Evidence-Based</h4>
-                <p className="text-gray-600 text-sm">
-                  Backed by positive psychology research and proven to increase optimism and life satisfaction.
+              
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                  <p className="text-gray-600 mb-6">
+                    A research-backed reflection practice from <a 
+                      href="https://ggia.berkeley.edu/practice/best_possible_self" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 underline"
+                    >Berkeley&apos;s Greater Good Science Center</a> that helps you envision your brightest future through guided journaling.
+                  </p>
+                  <div className="flex items-center space-x-4 text-sm text-gray-500 mb-6">
+                    <span className="bg-gray-100 px-3 py-1 rounded">🕐 15 minutes</span>
+                    <span className="bg-gray-100 px-3 py-1 rounded">📊 Beginner</span>
+                    <span className="bg-gray-100 px-3 py-1 rounded">🧠 Positive Psychology</span>
+                  </div>
+                  <a 
+                    href={LINKS.JOURNAL_APP}
+                    className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Start Your Journey →
+                  </a>
+                </div>
+                <div className="bg-gradient-to-br from-blue-100 to-indigo-200 rounded-lg p-8 text-center">
+                  <div className="text-6xl mb-4">🌟</div>
+                  <h4 className="text-lg font-semibold text-gray-800 mb-2">Evidence-Based</h4>
+                  <p className="text-gray-600 text-sm">
+                    Backed by positive psychology research and proven to increase optimism and life satisfaction.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Share a Tool */}
+            <div className="bg-white rounded-xl shadow-xl p-8 flex flex-col justify-center">
+              <div className="text-center">
+                <div className="text-6xl mb-4">🌱</div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Share a Tool</h3>
+                <p className="text-gray-600 mb-6">
+                  Have a wellness tool, resource, or practice that helps you? Share it with our community!
+                </p>
+                <button
+                  onClick={() => setShowSubmitToolModal(true)}
+                  className="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                >
+                  🚀 Submit Your Tool
+                </button>
+                <p className="text-xs text-gray-500 mt-3">
+                  All submissions are reviewed before appearing in the community garden
                 </p>
               </div>
             </div>
@@ -251,9 +276,9 @@ export default function HomePage() {
               <ul className="list-disc list-inside space-y-2 text-blue-800">
                 <li><strong>Open Access:</strong> All tools are completely free, supported by community donations</li>
                 <li><strong>Inclusive:</strong> Recursive.eco tools will still be valuable without engaging with AI</li>
-                <li><strong>Evidence-Based:</strong> Grounded in research or personal experience (which is also evidence)</li>
+                <li><strong>Evidence-Based:</strong> Grounded in science or personal experience (which is also evidence)</li>
                 <li><strong>Community-Driven:</strong> Share tools here or talk about your experience in our Discord channel</li>
-                <li><strong>Privacy-Focused:</strong> Self-hosted tools can be used without saving any data in our databases</li>
+                <li><strong>Self-Hosted:</strong> Many tools can be used without creating accounts or saving personal data</li>
               </ul>
             </div>
             <p className="mb-4">
@@ -305,6 +330,11 @@ export default function HomePage() {
       <CollaborationModal
         isOpen={showCollabModal}
         onClose={() => setShowCollabModal(false)}
+      />
+
+      <SubmitToolModal
+        isOpen={showSubmitToolModal}
+        onClose={() => setShowSubmitToolModal(false)}
       />
 
 

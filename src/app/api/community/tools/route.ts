@@ -12,6 +12,7 @@ interface DatabaseTool {
     description?: string;
     submitted_by?: string;
     creator_name?: string;
+    creator_link?: string;
     is_active?: string | boolean;
     thumbnail_url?: string;
     stats?: {
@@ -69,6 +70,7 @@ export async function GET(request: NextRequest) {
       category: tool.tool_data?.category || 'uncategorized',
       description: tool.tool_data?.description || '',
       submitted_by: tool.tool_data?.submitted_by || tool.tool_data?.creator_name || 'Anonymous',
+      creator_link: tool.tool_data?.creator_link || null,
       star_count: parseInt(tool.tool_data?.stats?.stars || '0'),
       thumbnail_url: tool.tool_data?.thumbnail_url || null, // Add thumbnail_url mapping
       created_at: tool.created_at,
@@ -111,7 +113,8 @@ export async function POST(request: NextRequest) {
       url,
       category,
       description,
-      submitted_by
+      submitted_by,
+      creator_link
     } = body;
     
     // Validate required fields
@@ -129,6 +132,7 @@ export async function POST(request: NextRequest) {
       category,
       description,
       submitted_by,
+      creator_link: creator_link || null,
       creator_id: user.id,
       is_active: 'false', // Require approval for user-submitted tools
       is_featured: 'false',

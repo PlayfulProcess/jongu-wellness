@@ -28,7 +28,7 @@ interface CollaborationData {
 export async function sendToolSubmissionNotification(data: ToolSubmissionData) {
   try {
     const { data: emailResult, error } = await resend.emails.send({
-      from: 'Jongu Social Media <noreply@playfulprocess.com>',
+      from: 'Recursive.eco <noreply@playfulprocess.com>',
       to: [NOTIFICATION_EMAIL],
       subject: `New Tool Submission: ${data.title}`,
       html: `
@@ -131,7 +131,7 @@ export async function sendToolSubmissionNotification(data: ToolSubmissionData) {
 export async function sendCollaborationNotification(data: CollaborationData) {
   try {
     const { data: emailResult, error } = await resend.emails.send({
-      from: 'Jongu Social Media <noreply@playfulprocess.com>',
+      from: 'Recursive.eco <noreply@playfulprocess.com>',
       to: [NOTIFICATION_EMAIL],
       subject: `New Collaboration Request: ${data.collaboration_type}`,
       html: `

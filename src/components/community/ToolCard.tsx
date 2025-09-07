@@ -12,6 +12,7 @@ interface Tool {
   category: string;
   description: string;
   submitted_by: string;
+  creator_link?: string | null;
   star_count: number;
   thumbnail_url?: string | null;
   created_at: string;
@@ -254,7 +255,18 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false }: ToolCard
         <div className="flex items-center mb-4">
           <div className="flex-1">
             <p className="text-xs text-gray-500">Submitted by</p>
-            <p className="text-sm font-medium text-gray-900">{tool.submitted_by}</p>
+            {tool.creator_link ? (
+              <a
+                href={tool.creator_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors underline"
+              >
+                {tool.submitted_by}
+              </a>
+            ) : (
+              <p className="text-sm font-medium text-gray-900">{tool.submitted_by}</p>
+            )}
           </div>
         </div>
 
