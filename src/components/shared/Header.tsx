@@ -21,16 +21,14 @@ export function Header({ showAuthModal, showCreateChannelModal }: HeaderProps) {
           {/* Logo and Navigation */}
           <div className="flex items-center space-x-8">
             <Link href="https://www.recursive.eco/" className="flex items-center space-x-2">
-              <div className="flex items-center space-x-2">
-                <Image 
-                  src="/recursive-logo-1756153260128.png" 
-                  alt="Recursive.eco"
-                  width={60}
-                  height={60}
-                  className="h-12 w-auto"
-                />
-                <span className="text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full font-medium">BETA</span>
-              </div>
+              <Image 
+                src="/recursive-logo-1756153260128.png" 
+                alt="Recursive.eco"
+                width={60}
+                height={60}
+                className="h-12 w-auto"
+                style={{ transform: 'rotate(200deg)' }}
+              />
             </Link>
             
             <nav className="hidden md:flex space-x-6 items-center">
