@@ -8,13 +8,14 @@ export async function middleware(request: NextRequest) {
 
   const host = request.headers.get('host') || ''
   const isProd = process.env.NODE_ENV === 'production'
-  const isJongu = /\.?jongu\.org$/i.test(host)
+  const isRecursive = /\.?recursive\.eco$/i.test(host)
+  const isDevPreview = /^dev-.*\.recursive\.eco$/i.test(host)
   
   // Debug logging
   console.log('🔍 Middleware Debug:', {
     host,
     isProd,
-    isJongu,
+    isRecursive,
     url: request.url
   })
 
@@ -36,12 +37,12 @@ export async function middleware(request: NextRequest) {
             const isSbAuth = name.startsWith('sb-') && name.endsWith('-auth-token')
             const isSbRefresh = name.startsWith('sb-') && name.endsWith('-refresh-token')
             
-            if (isProd && isJongu && isSbAuth) {
-              console.log('🎯 Setting cross-domain cookie:', { name, domain: '.jongu.org' })
+            if ((isProd || isDevPreview) && isRecursive && isSbAuth) {
+              console.log('🎯 Setting cross-domain cookie:', { name, domain: '.recursive.eco' })
               supabaseResponse.cookies.set({
                 name,
                 value,
-                domain: '.jongu.org',
+                domain: '.recursive.eco',
                 httpOnly: true,
                 secure: true,
                 sameSite: 'lax',
