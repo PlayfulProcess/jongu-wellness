@@ -36,9 +36,8 @@ export function Header({ showAuthModal, showCreateChannelModal }: HeaderProps) {
                   alt="Recursive.eco"
                   width={60}
                   height={60}
-                  className="h-12 w-auto"
+                  className="h-12 w-auto rotate-[240deg]"
                 />
-                <span className="text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full font-medium">BETA</span>
               </div>
             </Link>
             
