@@ -156,7 +156,7 @@ export default function HomePage() {
                   <span className="bg-gray-100 px-3 py-1 rounded">🧠 Positive Psychology</span>
                 </div>
                 <a 
-                  href={LINKS.BEST_POSSIBLE_SELF_APP}
+                  href={LINKS.JOURNAL_APP}
                   className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
