@@ -5,6 +5,7 @@ export const LINKS = {
   // App URLs
   WELLNESS_APP: 'https://channels.recursive.eco',
   BEST_POSSIBLE_SELF_APP: 'https://journal.recursive.eco',
+  JOURNAL_APP: 'https://journal.recursive.eco',
   
   // Future apps
   PARENTS_APP: 'https://parents.recursive.eco',
