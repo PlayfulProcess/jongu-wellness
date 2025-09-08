@@ -73,6 +73,10 @@ export function ImprovedAuthModal({
               const currentDomain = window.location.host;
               if (currentDomain.includes('localhost')) {
                 return `${window.location.protocol}//${window.location.host}/auth/callback`;
+              } else if (currentDomain.includes('dev-channels.recursive.eco')) {
+                return 'https://dev-channels.recursive.eco/auth/callback';
+              } else if (currentDomain.includes('dev-journal.recursive.eco')) {
+                return 'https://dev-journal.recursive.eco/auth/callback';
               } else if (currentDomain.includes('channels.recursive.eco')) {
                 return 'https://channels.recursive.eco/auth/callback';
               } else if (currentDomain.includes('journal.recursive.eco')) {
@@ -114,11 +118,17 @@ export function ImprovedAuthModal({
       if (currentDomain.includes('localhost')) {
         // Development - use localhost
         redirectUrl = `${window.location.protocol}//${window.location.host}/auth/callback`;
+      } else if (currentDomain.includes('dev-channels.recursive.eco')) {
+        // Dev channels domain
+        redirectUrl = 'https://dev-channels.recursive.eco/auth/callback';
+      } else if (currentDomain.includes('dev-journal.recursive.eco')) {
+        // Dev journal domain
+        redirectUrl = 'https://dev-journal.recursive.eco/auth/callback';
       } else if (currentDomain.includes('channels.recursive.eco')) {
-        // New recursive.eco channels domain
+        // Production channels domain
         redirectUrl = 'https://channels.recursive.eco/auth/callback';
       } else if (currentDomain.includes('journal.recursive.eco')) {
-        // New recursive.eco journal domain
+        // Production journal domain
         redirectUrl = 'https://journal.recursive.eco/auth/callback';
       } else if (currentDomain.includes('recursive.eco')) {
         // Main recursive.eco domain
@@ -167,6 +177,10 @@ export function ImprovedAuthModal({
           const currentDomain = window.location.host;
           if (currentDomain.includes('localhost')) {
             return `${window.location.protocol}//${window.location.host}/auth/callback?type=recovery`;
+          } else if (currentDomain.includes('dev-channels.recursive.eco')) {
+            return 'https://dev-channels.recursive.eco/auth/callback?type=recovery';
+          } else if (currentDomain.includes('dev-journal.recursive.eco')) {
+            return 'https://dev-journal.recursive.eco/auth/callback?type=recovery';
           } else if (currentDomain.includes('channels.recursive.eco')) {
             return 'https://channels.recursive.eco/auth/callback?type=recovery';
           } else if (currentDomain.includes('journal.recursive.eco')) {
