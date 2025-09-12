@@ -387,7 +387,6 @@ export default function Dashboard() {
             isOpen={showAuthModal}
             onClose={() => {
               setShowAuthModal(false);
-              checkUser();
             }}
           />
         )}
