@@ -81,7 +81,7 @@ export function MagicLinkAuth({ isOpen, onClose }: MagicLinkAuthProps) {
             Sign in to Recursive.eco
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            We'll send you a magic link to sign in instantly
+            We&apos;ll send you a magic link to sign in instantly
           </p>
         </div>
 

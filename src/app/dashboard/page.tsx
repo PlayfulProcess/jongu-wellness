@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase-client';
 import { ToolCard } from '@/components/community/ToolCard';
 import { MagicLinkAuth } from '@/components/MagicLinkAuth';
