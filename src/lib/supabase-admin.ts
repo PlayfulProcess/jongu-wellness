@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import type { Database } from './supabase'
+import type { Database } from '@/types/database.types'
 
 // Admin client with service role key - bypasses RLS
 export function createAdminClient() {
