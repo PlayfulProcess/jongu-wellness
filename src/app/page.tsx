@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { LINKS } from '@/config/links';
 import { Header } from '@/components/shared/Header';
-import { ImprovedAuthModal as AuthModal } from '@/components/modals/ImprovedAuthModal';
+import { MagicLinkAuth } from '@/components/MagicLinkAuth';
 import { CollaborationModal } from '@/components/modals/CollaborationModal';
 import { SubmitToolModal } from '@/components/modals/SubmitToolModal';
 import { ToolGrid } from '@/components/community/ToolGrid';
@@ -15,7 +15,7 @@ import { useAuth } from '@/components/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
 
 export default function HomePage() {
-  const { loading } = useAuth();
+  const { status } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showSubmitToolModal, setShowSubmitToolModal] = useState(false);
@@ -98,7 +98,7 @@ export default function HomePage() {
     };
   }, []);
 
-  if (loading) {
+  if (status === 'loading') {
     return (
       <main className="min-h-screen bg-gray-50 py-8 flex items-center justify-center">
         <div className="text-center">
@@ -322,7 +322,7 @@ export default function HomePage() {
       </footer>
 
       {/* Modals */}
-      <AuthModal 
+      <MagicLinkAuth 
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
       />

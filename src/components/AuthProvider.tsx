@@ -1,53 +1,55 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase-client'
 import type { User } from '@supabase/supabase-js'
 
+type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated'
+
 interface AuthContextType {
   user: User | null
-  loading: boolean
+  status: AuthStatus
   signOut: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  loading: true,
+  status: 'loading',
   signOut: async () => {},
 })
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [status, setStatus] = useState<AuthStatus>('loading')
   const supabase = createClient()
+  
+  // StrictMode duplicate event protection
+  const handledInitial = useRef(false)
 
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
-      setLoading(false)
-    }).catch((error) => {
-      console.error('Error getting session:', error)
-      setLoading(false) // Still set loading to false on error
+      setStatus(session?.user ? 'authenticated' : 'unauthenticated')
     })
-
-    // Add a timeout fallback in case auth check hangs
-    const timeout = setTimeout(() => {
-      setLoading(false)
-    }, 3000) // 3 second timeout
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      // Handle StrictMode duplicate INITIAL_SESSION events
+      if (event === 'INITIAL_SESSION' && handledInitial.current) {
+        return
+      }
+      if (event === 'INITIAL_SESSION') {
+        handledInitial.current = true
+      }
+
       setUser(session?.user ?? null)
-      setLoading(false)
+      setStatus(session?.user ? 'authenticated' : 'unauthenticated')
     })
 
-    return () => {
-      subscription.unsubscribe()
-      clearTimeout(timeout)
-    }
+    return () => subscription.unsubscribe()
   }, [supabase.auth])
 
   const signOut = async () => {
@@ -55,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, signOut }}>
+    <AuthContext.Provider value={{ user, status, signOut }}>
       {children}
     </AuthContext.Provider>
   )

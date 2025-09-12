@@ -4,7 +4,8 @@ import { useEffect, useState, useCallback } from 'react';
 import { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase-client';
 import { ToolCard } from '@/components/community/ToolCard';
-import { ImprovedAuthModal as AuthModal } from '@/components/modals/ImprovedAuthModal';
+import { MagicLinkAuth } from '@/components/MagicLinkAuth';
+import { useAuth } from '@/components/AuthProvider';
 import Link from 'next/link';
 
 interface Tool {
@@ -27,8 +28,7 @@ interface StarredTool extends Tool {
 }
 
 export default function Dashboard() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, status } = useAuth();
   const [starredTools, setStarredTools] = useState<StarredTool[]>([]);
   const [submittedTools, setSubmittedTools] = useState<Tool[]>([]);
   const [activeTab, setActiveTab] = useState<'starred' | 'submitted' | 'settings'>('starred');
@@ -45,23 +45,6 @@ export default function Dashboard() {
 
   const supabase = createClient();
 
-  const checkUser = useCallback(async () => {
-    try {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error) throw error;
-      
-      if (!user) {
-        setShowAuthModal(true);
-      } else {
-        setUser(user);
-      }
-    } catch (error) {
-      console.error('Error checking user:', error);
-      setShowAuthModal(true);
-    } finally {
-      setLoading(false);
-    }
-  }, [supabase.auth]);
 
   const fetchStarredTools = useCallback(async () => {
     if (!user) return;
@@ -364,8 +347,10 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    checkUser();
-  }, [checkUser]);
+    if (status === 'unauthenticated') {
+      setShowAuthModal(true);
+    }
+  }, [status]);
 
   useEffect(() => {
     if (user) {
@@ -374,7 +359,7 @@ export default function Dashboard() {
     }
   }, [user, fetchStarredTools, fetchSubmittedTools]);
 
-  if (loading) {
+  if (status === 'loading') {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -399,7 +384,7 @@ export default function Dashboard() {
           </button>
         </div>
         {showAuthModal && (
-          <AuthModal
+          <MagicLinkAuth
             isOpen={showAuthModal}
             onClose={() => {
               setShowAuthModal(false);
