@@ -34,10 +34,6 @@ export default function Dashboard() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   
   // Account settings state
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [updating, setUpdating] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [downloadingData, setDownloadingData] = useState(false);
   const [deletingData, setDeletingData] = useState(false);
@@ -298,52 +294,6 @@ export default function Dashboard() {
     }
   };
 
-  const handlePasswordChange = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (newPassword !== confirmPassword) {
-      setMessage({ type: 'error', text: 'New passwords do not match' });
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      setMessage({ type: 'error', text: 'Password must be at least 6 characters' });
-      return;
-    }
-
-    setUpdating(true);
-    setMessage(null);
-
-    try {
-      // First verify current password by trying to sign in
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: user?.email || '',
-        password: currentPassword
-      });
-
-      if (signInError) {
-        throw new Error('Current password is incorrect');
-      }
-
-      // Update the password
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-
-      if (updateError) throw updateError;
-
-      setMessage({ type: 'success', text: 'Password updated successfully!' });
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      
-      setTimeout(() => setMessage(null), 5000);
-    } catch (error) {
-      setMessage({ type: 'error', text: (error as Error).message });
-    } finally {
-      setUpdating(false);
-    }
-  };
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -637,9 +587,9 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Change Password */}
+              {/* Account Actions */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-md font-medium text-gray-900 mb-4">Change Password</h3>
+                <h3 className="text-md font-medium text-gray-900 mb-4">Account Actions</h3>
                 
                 {message && (
                   <div className={`mb-4 p-3 rounded-lg text-sm ${
@@ -651,62 +601,22 @@ export default function Dashboard() {
                   </div>
                 )}
 
-                <form onSubmit={handlePasswordChange} className="space-y-4">
-                  <div>
-                    <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                      Current Password
-                    </label>
-                    <input
-                      id="currentPassword"
-                      type="password"
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                      placeholder="Enter your current password"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                      New Password
-                    </label>
-                    <input
-                      id="newPassword"
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      required
-                      minLength={6}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                      placeholder="Enter new password (min 6 characters)"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                      Confirm New Password
-                    </label>
-                    <input
-                      id="confirmPassword"
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
-                      minLength={6}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                      placeholder="Confirm new password"
-                    />
-                  </div>
-
+                <div className="space-y-4">
+                  <p className="text-sm text-gray-600">
+                    You are signed in with magic link authentication. 
+                    To change your email or manage your account, use the magic link sent to your email.
+                  </p>
+                  
                   <button
-                    type="submit"
-                    disabled={updating || !currentPassword || !newPassword || !confirmPassword}
-                    className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    onClick={async () => {
+                      await supabase.auth.signOut();
+                      window.location.href = '/';
+                    }}
+                    className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
                   >
-                    {updating ? 'Updating...' : 'Update Password'}
+                    Sign Out
                   </button>
-                </form>
+                </div>
               </div>
             </div>
           </div>
