@@ -138,22 +138,23 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
         const fileExt = selectedImage.name.split('.').pop();
         const fileName = `${Math.random()}.${fileExt}`;
         
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from('thumbnails')
           .upload(fileName, selectedImage);
         
         if (uploadError) {
           console.error('Error uploading image:', uploadError);
           alert('Failed to upload image. Please try again.');
+          setIsSubmitting(false);
           return;
         }
         
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
+        // Get public URL - using the correct syntax from the reference
+        const { data } = supabase.storage
           .from('thumbnails')
           .getPublicUrl(fileName);
         
-        thumbnail_url = publicUrl;
+        thumbnail_url = data.publicUrl;
       }
       
       // Submit tool with thumbnail_url
@@ -171,6 +172,9 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
         console.error('Server error response:', errorData);
         throw new Error(errorData.error || 'Failed to submit tool');
       }
+      
+      const result = await response.json();
+      console.log('Tool submitted successfully:', result);
       
       // Reset form and close modal
       setFormData({
