@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useAuth } from '@/components/AuthProvider';
+import { isAdmin } from '@/lib/admin-utils';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 interface HeaderProps {
@@ -57,6 +58,14 @@ export function Header({ showAuthModal, showCreateChannelModal }: HeaderProps) {
                 >
                   Dashboard
                 </Link>
+                {isAdmin(user.email || '') && (
+                  <Link
+                    href="/admin"
+                    className="text-sm text-orange-600 hover:text-orange-800 font-medium"
+                  >
+                    Admin
+                  </Link>
+                )}
                 <span className="text-sm text-gray-600">Welcome, {user.email}</span>
                 <button
                   onClick={signOut}

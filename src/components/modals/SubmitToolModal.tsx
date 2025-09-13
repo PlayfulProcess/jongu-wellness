@@ -18,7 +18,8 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
     category: '',
     description: '',
     submitted_by: '',
-    creator_link: ''
+    creator_link: '',
+    thumbnail_url: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
@@ -105,6 +106,26 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
         newErrors.creator_link = 'Please provide a valid website URL';
       }
     }
+
+    // Optional thumbnail URL validation
+    if (formData.thumbnail_url && formData.thumbnail_url.trim()) {
+      let imageToTest = formData.thumbnail_url.trim();
+      
+      // Auto-add https:// if no protocol is provided
+      if (!imageToTest.startsWith('http://') && !imageToTest.startsWith('https://')) {
+        imageToTest = 'https://' + imageToTest;
+      }
+      
+      try {
+        new URL(imageToTest);
+        // URL is valid, but make sure original has protocol
+        if (!formData.thumbnail_url.startsWith('http://') && !formData.thumbnail_url.startsWith('https://')) {
+          newErrors.thumbnail_url = 'Please include http:// or https:// in your image URL';
+        }
+      } catch {
+        newErrors.thumbnail_url = 'Please provide a valid image URL';
+      }
+    }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -138,7 +159,8 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
         category: '',
         description: '',
         submitted_by: '',
-        creator_link: ''
+        creator_link: '',
+        thumbnail_url: ''
       });
       setErrors({});
       
@@ -236,6 +258,24 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
                 placeholder="https://your-tool-url.com"
               />
               {errors.url && <p className="text-red-600 text-sm mt-1">{errors.url}</p>}
+            </div>
+
+            {/* Tool Image */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tool Image (optional)
+              </label>
+              <input
+                type="text"
+                value={formData.thumbnail_url}
+                onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
+                className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="https://example.com/image.png"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Upload your image to a service like imgur.com or use a direct image URL. This will appear as a thumbnail for your tool.
+              </p>
+              {errors.thumbnail_url && <p className="text-red-600 text-sm mt-1">{errors.thumbnail_url}</p>}
             </div>
 
             {/* Category */}
