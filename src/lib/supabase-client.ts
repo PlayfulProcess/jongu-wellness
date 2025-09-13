@@ -1,5 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr'
-import type { Database } from './supabase'
+import type { Database } from '@/types/database.types'
 
 export function createClient() {
   // Ensures session is persisted (not just in-memory)
