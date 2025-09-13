@@ -18,9 +18,9 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
     category: '',
     description: '',
     submitted_by: '',
-    creator_link: '',
-    thumbnail_url: ''
+    creator_link: ''
   });
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
@@ -107,23 +107,15 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
       }
     }
 
-    // Optional thumbnail URL validation
-    if (formData.thumbnail_url && formData.thumbnail_url.trim()) {
-      let imageToTest = formData.thumbnail_url.trim();
-      
-      // Auto-add https:// if no protocol is provided
-      if (!imageToTest.startsWith('http://') && !imageToTest.startsWith('https://')) {
-        imageToTest = 'https://' + imageToTest;
+    // Optional image validation
+    if (selectedImage) {
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!validTypes.includes(selectedImage.type)) {
+        newErrors.image = 'Please select a valid image file (JPG, PNG, GIF, or WebP)';
       }
-      
-      try {
-        new URL(imageToTest);
-        // URL is valid, but make sure original has protocol
-        if (!formData.thumbnail_url.startsWith('http://') && !formData.thumbnail_url.startsWith('https://')) {
-          newErrors.thumbnail_url = 'Please include http:// or https:// in your image URL';
-        }
-      } catch {
-        newErrors.thumbnail_url = 'Please provide a valid image URL';
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (selectedImage.size > maxSize) {
+        newErrors.image = 'Image file size must be less than 5MB';
       }
     }
     
@@ -139,11 +131,39 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
     setIsSubmitting(true);
     
     try {
-      // Submit tool
+      let thumbnail_url = null;
+      
+      // Upload image to Supabase Storage if selected
+      if (selectedImage) {
+        const fileExt = selectedImage.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('thumbnails')
+          .upload(fileName, selectedImage);
+        
+        if (uploadError) {
+          console.error('Error uploading image:', uploadError);
+          alert('Failed to upload image. Please try again.');
+          return;
+        }
+        
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('thumbnails')
+          .getPublicUrl(fileName);
+        
+        thumbnail_url = publicUrl;
+      }
+      
+      // Submit tool with thumbnail_url
       const response = await fetch('/api/community/tools', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          thumbnail_url
+        })
       });
       
       if (!response.ok) {
@@ -159,9 +179,9 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
         category: '',
         description: '',
         submitted_by: '',
-        creator_link: '',
-        thumbnail_url: ''
+        creator_link: ''
       });
+      setSelectedImage(null);
       setErrors({});
       
       alert('🎉 Tool submitted successfully! We\'ll review it and add it to the community garden soon.');
@@ -266,16 +286,15 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
                 Tool Image (optional)
               </label>
               <input
-                type="text"
-                value={formData.thumbnail_url}
-                onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
-                className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="https://example.com/image.png"
+                type="file"
+                accept="image/*"
+                onChange={(e) => setSelectedImage(e.target.files?.[0] || null)}
+                className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Upload your image to a service like imgur.com or use a direct image URL. This will appear as a thumbnail for your tool.
+                Upload an image file (JPG, PNG, GIF, or WebP, max 5MB). This will appear as a thumbnail for your tool.
               </p>
-              {errors.thumbnail_url && <p className="text-red-600 text-sm mt-1">{errors.thumbnail_url}</p>}
+              {errors.image && <p className="text-red-600 text-sm mt-1">{errors.image}</p>}
             </div>
 
             {/* Category */}
