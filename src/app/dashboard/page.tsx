@@ -51,7 +51,7 @@ export default function Dashboard() {
       const { data: starData, error: starError } = await supabase
         .from('user_documents')
         .select('document_data, created_at')
-        .eq('user_id', user.id as any)
+        .eq('user_id', user.id as string)
         .eq('document_type', 'interaction')
         .eq('document_data->>interaction_type', 'star')
         .order('created_at', { ascending: false });
@@ -178,11 +178,10 @@ export default function Dashboard() {
 
     try {
       // Fetch all user data
-      const userId = user.id;
       const { data: documents, error: docsError } = await supabase
         .from('user_documents')
         .select('*')
-        .eq('user_id', user.id as any)
+        .eq('user_id', user.id as string)
         .order('created_at', { ascending: false });
 
       if (docsError) throw docsError;
@@ -270,11 +269,10 @@ export default function Dashboard() {
 
     try {
       // Delete all user data from user_documents table
-      const userId = user.id;
       const { error: documentsError } = await supabase
         .from('user_documents')
         .delete()
-        .eq('user_id', user.id as any);
+        .eq('user_id', user.id as string);
 
       if (documentsError) throw documentsError;
 
