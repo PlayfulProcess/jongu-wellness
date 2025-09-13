@@ -51,7 +51,7 @@ export default function Dashboard() {
       const { data: starData, error: starError } = await supabase
         .from('user_documents')
         .select('document_data, created_at')
-        .eq('user_id', user.id as string)
+        .eq('user_id', user.id)
         .eq('document_type', 'interaction')
         .eq('document_data->>interaction_type', 'star')
         .order('created_at', { ascending: false });

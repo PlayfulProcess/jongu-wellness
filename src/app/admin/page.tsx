@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { isAdmin, getSubmissionStatus } from '@/lib/admin-utils'
-import { createClient } from '@/lib/supabase-client'
 import { Header } from '@/components/shared/Header'
 
 interface Submission {
