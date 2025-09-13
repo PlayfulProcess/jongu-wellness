@@ -114,7 +114,8 @@ export async function POST(request: NextRequest) {
       category,
       description,
       submitted_by,
-      creator_link
+      creator_link,
+      thumbnail_url
     } = body;
     
     // Validate required fields
@@ -133,6 +134,7 @@ export async function POST(request: NextRequest) {
       description,
       submitted_by,
       creator_link: creator_link || null,
+      thumbnail_url: thumbnail_url || null,
       creator_id: user.id,
       is_active: 'false', // Require approval for user-submitted tools
       is_featured: 'false',
