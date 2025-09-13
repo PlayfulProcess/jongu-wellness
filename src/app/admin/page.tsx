@@ -8,16 +8,17 @@ import { Header } from '@/components/shared/Header'
 
 interface Submission {
   id: string
-  name: string
-  email: string
+  title: string
+  claude_url: string
   category: string
-  url?: string
-  description?: string
-  message?: string
-  organization?: string
-  expertise?: string
-  collaboration_type?: string
-  status: string
+  description: string
+  creator_name: string
+  creator_link?: string
+  creator_background?: string
+  thumbnail_url?: string
+  submitter_ip?: string
+  reviewed: boolean
+  approved: boolean
   created_at: string
 }
 
@@ -37,13 +38,10 @@ export default function AdminPage() {
 
   const fetchSubmissions = async () => {
     try {
-      const supabase = createClient()
-      const { data, error } = await supabase
-        .from('submissions')
-        .select('*')
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
+      const response = await fetch('/api/admin/submissions')
+      if (!response.ok) throw new Error('Failed to fetch submissions')
+      
+      const data = await response.json()
       setSubmissions(data || [])
     } catch (err) {
       console.error('Error fetching submissions:', err)
@@ -53,24 +51,43 @@ export default function AdminPage() {
     }
   }
 
-  const updateSubmissionStatus = async (id: string, newStatus: string) => {
+  const approveSubmission = async (submissionId: string) => {
     try {
-      const supabase = createClient()
-      const { error } = await supabase
-        .from('submissions')
-        .update({ status: newStatus })
-        .eq('id', id)
+      const response = await fetch('/api/admin/submissions/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ submissionId })
+      })
 
-      if (error) throw error
-      
-      setSubmissions(prev => 
-        prev.map(sub => 
-          sub.id === id ? { ...sub, status: newStatus } : sub
-        )
-      )
+      if (response.ok) {
+        fetchSubmissions() // Refresh data
+      } else {
+        const errorData = await response.json()
+        setError(`Failed to approve submission: ${errorData.error}`)
+      }
     } catch (err) {
-      console.error('Error updating submission:', err)
-      setError('Failed to update submission')
+      console.error('Error approving submission:', err)
+      setError('Error approving submission')
+    }
+  }
+
+  const rejectSubmission = async (submissionId: string) => {
+    try {
+      const response = await fetch('/api/admin/submissions/reject', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ submissionId })
+      })
+
+      if (response.ok) {
+        fetchSubmissions() // Refresh data
+      } else {
+        const errorData = await response.json()
+        setError(`Failed to reject submission: ${errorData.error}`)
+      }
+    } catch (err) {
+      console.error('Error rejecting submission:', err)
+      setError('Error rejecting submission')
     }
   }
 
@@ -147,7 +164,7 @@ export default function AdminPage() {
                       Submission
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Contact
+                      Creator
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Details
@@ -165,49 +182,54 @@ export default function AdminPage() {
                     <tr key={submission.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">
-                          {submission.name}
+                          {submission.title}
                         </div>
                         <div className="text-sm text-gray-500">
                           {submission.category}
                         </div>
-                        {submission.url && (
+                        {submission.claude_url && (
                           <div className="text-sm text-blue-600 hover:text-blue-800">
-                            <a href={submission.url} target="_blank" rel="noopener noreferrer">
-                              {submission.url}
+                            <a href={submission.claude_url} target="_blank" rel="noopener noreferrer">
+                              {submission.claude_url}
                             </a>
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{submission.email}</div>
-                        {submission.organization && (
-                          <div className="text-sm text-gray-500">{submission.organization}</div>
+                        <div className="text-sm text-gray-900">{submission.creator_name}</div>
+                        {submission.creator_link && (
+                          <div className="text-sm text-blue-600 hover:text-blue-800">
+                            <a href={submission.creator_link} target="_blank" rel="noopener noreferrer">
+                              Creator Link
+                            </a>
+                          </div>
                         )}
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-900 max-w-xs truncate">
                           {submission.description}
                         </div>
-                        {submission.expertise && (
+                        {submission.creator_background && (
                           <div className="text-sm text-gray-500">
-                            Expertise: {submission.expertise}
+                            Background: {submission.creator_background}
                           </div>
                         )}
-                        {submission.collaboration_type && (
+                        {submission.thumbnail_url && (
                           <div className="text-sm text-gray-500">
-                            Type: {submission.collaboration_type}
+                            📸 Has image
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          submission.status === 'approved' 
+                          submission.approved && submission.reviewed
                             ? 'bg-green-100 text-green-800'
-                            : submission.status === 'rejected'
+                            : submission.reviewed && !submission.approved
                             ? 'bg-red-100 text-red-800'
                             : 'bg-yellow-100 text-yellow-800'
                         }`}>
-                          {submission.status}
+                          {submission.approved && submission.reviewed ? 'Approved' : 
+                           submission.reviewed && !submission.approved ? 'Rejected' : 'Pending'}
                         </span>
                         <div className="text-xs text-gray-500 mt-1">
                           {new Date(submission.created_at).toLocaleDateString()}
@@ -216,25 +238,18 @@ export default function AdminPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
                           <button
-                            onClick={() => updateSubmissionStatus(submission.id, 'approved')}
-                            disabled={submission.status === 'approved'}
+                            onClick={() => approveSubmission(submission.id)}
+                            disabled={submission.approved && submission.reviewed}
                             className="text-green-600 hover:text-green-900 disabled:text-gray-400"
                           >
                             Approve
                           </button>
                           <button
-                            onClick={() => updateSubmissionStatus(submission.id, 'rejected')}
-                            disabled={submission.status === 'rejected'}
+                            onClick={() => rejectSubmission(submission.id)}
+                            disabled={submission.reviewed && !submission.approved}
                             className="text-red-600 hover:text-red-900 disabled:text-gray-400"
                           >
                             Reject
-                          </button>
-                          <button
-                            onClick={() => updateSubmissionStatus(submission.id, 'pending')}
-                            disabled={submission.status === 'pending'}
-                            className="text-yellow-600 hover:text-yellow-900 disabled:text-gray-400"
-                          >
-                            Pending
                           </button>
                         </div>
                       </td>
