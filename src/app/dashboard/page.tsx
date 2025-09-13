@@ -47,12 +47,11 @@ export default function Dashboard() {
     if (!user) return;
     
     try {
-      // Get user's starred tool interactions
-      const userId = user.id;
+      // Get user's starred tool interactions  
       const { data: starData, error: starError } = await supabase
         .from('user_documents')
         .select('document_data, created_at')
-        .eq('user_id', userId)
+        .eq('user_id', user.id as any)
         .eq('document_type', 'interaction')
         .eq('document_data->>interaction_type', 'star')
         .order('created_at', { ascending: false });
@@ -183,7 +182,7 @@ export default function Dashboard() {
       const { data: documents, error: docsError } = await supabase
         .from('user_documents')
         .select('*')
-        .eq('user_id', userId)
+        .eq('user_id', user.id as any)
         .order('created_at', { ascending: false });
 
       if (docsError) throw docsError;
@@ -275,7 +274,7 @@ export default function Dashboard() {
       const { error: documentsError } = await supabase
         .from('user_documents')
         .delete()
-        .eq('user_id', userId);
+        .eq('user_id', user.id as any);
 
       if (documentsError) throw documentsError;
 
