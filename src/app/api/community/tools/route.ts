@@ -144,19 +144,28 @@ export async function POST(request: NextRequest) {
       stats: { views: 0, sessions: 0, stars: 0 }
     };
 
+    // Log the data being inserted for debugging
+    const insertData = {
+      slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+      channel_slug: 'community',
+      tool_data: toolData
+    };
+    
+    console.log('Inserting tool with data:', JSON.stringify(insertData, null, 2));
+    
     const { data, error } = await supabase
       .from('tools')
-      .insert({
-        slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
-        channel_slug: 'community',
-        tool_data: toolData
-      })
+      .insert(insertData)
       .select()
       .single();
     
     if (error) {
       console.error('Error creating tool:', error);
-      return NextResponse.json({ error: 'Failed to create tool' }, { status: 500 });
+      console.error('Error details:', JSON.stringify(error, null, 2));
+      return NextResponse.json({ 
+        error: 'Failed to create tool',
+        details: error.message || error
+      }, { status: 500 });
     }
     
     return NextResponse.json(data, { status: 201 });
