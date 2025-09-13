@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase-client';
 import { ToolCard } from '@/components/community/ToolCard';
 import { MagicLinkAuth } from '@/components/MagicLinkAuth';
 import { useAuth } from '@/components/AuthProvider';
+import { getSubmissionStatus } from '@/lib/admin-utils';
 import Link from 'next/link';
 
 interface Tool {
@@ -20,6 +21,7 @@ interface Tool {
   created_at: string;
   approved: boolean;
   active: boolean;
+  reviewed: boolean;
 }
 
 interface StarredTool extends Tool {
@@ -86,6 +88,7 @@ export default function Dashboard() {
           created_at: tool.created_at,
           approved: tool.tool_data?.is_active === 'true',
           active: tool.tool_data?.is_active === 'true',
+          reviewed: tool.tool_data?.reviewed === 'true',
           starred_at: starRecord?.created_at || tool.created_at
         };
       }) as StarredTool[];
@@ -120,7 +123,8 @@ export default function Dashboard() {
         thumbnail_url: tool.tool_data?.thumbnail_url || null,
         created_at: tool.created_at,
         approved: tool.tool_data?.is_active === 'true',
-        active: tool.tool_data?.is_active === 'true'
+        active: tool.tool_data?.is_active === 'true',
+        reviewed: tool.tool_data?.reviewed === 'true'
       }));
       
       setSubmittedTools(transformedTools);
@@ -472,12 +476,8 @@ export default function Dashboard() {
                           <span>•</span>
                           <span>{tool.star_count} stars</span>
                           <span>•</span>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            tool.approved 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {tool.approved ? 'Approved' : 'Pending Review'}
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getSubmissionStatus(tool.approved, tool.reviewed).colorClass}`}>
+                            {getSubmissionStatus(tool.approved, tool.reviewed).label}
                           </span>
                         </div>
                       </div>

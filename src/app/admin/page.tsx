@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/AuthProvider'
-import { isAdmin } from '@/lib/admin-utils'
+import { isAdmin, getSubmissionStatus } from '@/lib/admin-utils'
 import { createClient } from '@/lib/supabase-client'
 import { Header } from '@/components/shared/Header'
 
@@ -221,15 +221,8 @@ export default function AdminPage() {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          submission.approved && submission.reviewed
-                            ? 'bg-green-100 text-green-800'
-                            : submission.reviewed && !submission.approved
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {submission.approved && submission.reviewed ? 'Approved' : 
-                           submission.reviewed && !submission.approved ? 'Rejected' : 'Pending'}
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getSubmissionStatus(submission.approved, submission.reviewed).colorClass}`}>
+                          {getSubmissionStatus(submission.approved, submission.reviewed).label}
                         </span>
                         <div className="text-xs text-gray-500 mt-1">
                           {new Date(submission.created_at).toLocaleDateString()}
