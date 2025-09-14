@@ -44,11 +44,12 @@ export async function POST(request: NextRequest) {
     };
 
     // Insert into user_documents table as a collaboration request
-    // Using admin client bypasses RLS, so we can use NULL for user_id
+    // Use email as a temporary user_id for collaboration requests
+    // This avoids NULL user_id issues while maintaining traceability
     const { data, error } = await adminClient
       .from('user_documents')
       .insert({
-        user_id: null, // NULL is allowed when using admin client
+        user_id: email, // Use submitter's email as temporary user_id
         document_type: 'transaction', // Use transaction type for business inquiries
         tool_slug: 'collaboration-request',
         is_public: false,
