@@ -82,10 +82,11 @@ export async function POST(request: NextRequest) {
       stats: { views: 0, sessions: 0, stars: 0 }
     };
 
-    // Generate a unique slug
+    // Generate a unique slug with better collision resistance
     const baseSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
-    const uniqueSlug = `${baseSlug}-${timestamp}`;
+    const timestamp = Date.now().toString();
+    const randomSuffix = Math.random().toString(36).substring(2, 8); // Random alphanumeric
+    const uniqueSlug = `${baseSlug}-${timestamp}-${randomSuffix}`;
     
     // Insert directly into tools table with ultra minimal schema
     const { data, error } = await supabase

@@ -44,12 +44,16 @@ export async function POST(request: NextRequest) {
     };
 
     // Insert into user_documents table as a collaboration request
-    // Use email as a temporary user_id for collaboration requests
+    // Generate a deterministic UUID-like ID from email for collaboration requests
     // This avoids NULL user_id issues while maintaining traceability
+    const emailHash = email.replace(/[^a-z0-9]/gi, '').toLowerCase();
+    const paddedHash = emailHash.padEnd(32, '0').substring(0, 32);
+    const collaborationUserId = `${paddedHash.substring(0, 8)}-${paddedHash.substring(8, 12)}-4${paddedHash.substring(12, 15)}-8${paddedHash.substring(15, 18)}-${paddedHash.substring(18, 30)}`;
+    
     const { data, error } = await adminClient
       .from('user_documents')
       .insert({
-        user_id: email, // Use submitter's email as temporary user_id
+        user_id: collaborationUserId, // Use generated UUID-like ID
         document_type: 'transaction', // Use transaction type for business inquiries
         tool_slug: 'collaboration-request',
         is_public: false,
