@@ -7,7 +7,6 @@ import { MagicLinkAuth } from '@/components/MagicLinkAuth';
 import { useAuth } from '@/components/AuthProvider';
 import { getSubmissionStatus } from '@/lib/admin-utils';
 import Link from 'next/link';
-import type { Database } from '@/types/database.types';
 
 interface Tool {
   id: string;
@@ -53,7 +52,7 @@ export default function Dashboard() {
     
     try {
       // Get user's starred tool interactions
-      const { data: starData, error: starError } = await supabase
+      const { data: starData, error: starError } = await (supabase as any)
         .from('user_documents')
         .select('document_data, created_at')
         .eq('user_id', userId)
@@ -63,7 +62,7 @@ export default function Dashboard() {
 
       if (starError) throw starError;
 
-      const toolIds = starData?.map(item => item.document_data?.target_id).filter(Boolean) || [];
+      const toolIds = starData?.map((item: any) => item.document_data?.target_id).filter(Boolean) || [];
       
       if (toolIds.length === 0) {
         setStarredTools([]);
@@ -78,8 +77,8 @@ export default function Dashboard() {
 
       if (toolsError) throw toolsError;
 
-      const starredTools = toolsData?.map(tool => {
-        const starRecord = starData.find(star => star.document_data?.target_id === tool.id);
+      const starredTools = toolsData?.map((tool: any) => {
+        const starRecord = starData.find((star: any) => star.document_data?.target_id === tool.id);
         return {
           id: tool.id,
           name: tool.tool_data?.name || '',
@@ -186,10 +185,7 @@ export default function Dashboard() {
 
     try {
       // Fetch all user data
-      type UserDocRow = Database['public']['Tables']['user_documents']['Row'];
-      type UserId = NonNullable<UserDocRow['user_id']>;
-            
-      const { data: documents, error: docsError } = await supabase
+      const { data: documents, error: docsError } = await (supabase as any)
         .from('user_documents')
         .select('*')
         .eq('user_id', userId)
@@ -283,10 +279,7 @@ export default function Dashboard() {
     
     try {
       // Delete all user data from user_documents table
-      type UserDocRow = Database['public']['Tables']['user_documents']['Row'];
-      type UserId = NonNullable<UserDocRow['user_id']>;
-            
-      const { error: documentsError } = await supabase
+      const { error: documentsError } = await (supabase as any)
         .from('user_documents')
         .delete()
         .eq('user_id', userId);

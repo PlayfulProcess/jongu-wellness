@@ -84,7 +84,7 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
     if (!user) return;
     
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('user_documents')
         .select('document_data')
         .eq('user_id', user.id)
@@ -92,7 +92,7 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
         .eq('document_data->>interaction_type', 'star');
 
       if (!error && data) {
-        const toolIds = data.map(item => item.document_data?.target_id).filter(Boolean);
+        const toolIds = data.map((item: any) => item.document_data?.target_id).filter(Boolean);
         setStarredTools(new Set(toolIds));
       }
     } catch (error) {

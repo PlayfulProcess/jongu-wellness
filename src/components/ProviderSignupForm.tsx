@@ -32,7 +32,7 @@ export function ProviderSignupForm() {
     setError('');
 
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('provider_signups')
         .insert({
           name: formData.name,
