@@ -106,6 +106,9 @@ export default function Dashboard() {
   const fetchSubmittedTools = useCallback(async () => {
     if (!user) return;
     
+    const userId = user.id;
+    if (!userId) return;
+    
     try {
       const { data, error } = await supabase
         .from('tools')
@@ -153,6 +156,9 @@ export default function Dashboard() {
 
   const handleDeleteTool = async (toolId: string) => {
     if (!user) return;
+
+    const userId = user.id;
+    if (!userId) return;
 
     const confirmed = window.confirm('Are you sure you want to delete this tool? This action cannot be undone.');
     if (!confirmed) return;
@@ -210,8 +216,8 @@ export default function Dashboard() {
           user_id: userId,
           created_at: user.created_at
         },
-        starred_tools: documents?.filter(d => d.document_type === 'interaction' && d.document_data?.interaction_type === 'star') || [],
-        interactions: documents?.filter(d => d.document_type === 'interaction') || [],
+        starred_tools: documents?.filter((d: any) => d.document_type === 'interaction' && d.document_data?.interaction_type === 'star') || [],
+        interactions: documents?.filter((d: any) => d.document_type === 'interaction') || [],
         submitted_tools: tools || [],
         all_documents: documents || []
       };
