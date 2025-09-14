@@ -44,11 +44,26 @@ export async function POST(request: NextRequest) {
     };
 
     // Insert into user_documents table as a collaboration request
-    // Generate a deterministic UUID-like ID from email for collaboration requests
+    // Generate a valid UUID v4 format ID for collaboration requests
     // This avoids NULL user_id issues while maintaining traceability
-    const emailHash = email.replace(/[^a-z0-9]/gi, '').toLowerCase();
-    const paddedHash = emailHash.padEnd(32, '0').substring(0, 32);
-    const collaborationUserId = `${paddedHash.substring(0, 8)}-${paddedHash.substring(8, 12)}-4${paddedHash.substring(12, 15)}-8${paddedHash.substring(15, 18)}-${paddedHash.substring(18, 30)}`;
+    const generateUUID = () => {
+      const hex = '0123456789abcdef';
+      let uuid = '';
+      for (let i = 0; i < 36; i++) {
+        if (i === 8 || i === 13 || i === 18 || i === 23) {
+          uuid += '-';
+        } else if (i === 14) {
+          uuid += '4'; // Version 4 UUID
+        } else if (i === 19) {
+          uuid += hex[(Math.random() * 4) | 8]; // Variant bits
+        } else {
+          uuid += hex[Math.floor(Math.random() * 16)];
+        }
+      }
+      return uuid;
+    };
+    
+    const collaborationUserId = generateUUID();
     
     const { data, error } = await adminClient
       .from('user_documents')

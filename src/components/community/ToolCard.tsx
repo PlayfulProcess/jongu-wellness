@@ -244,10 +244,10 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false }: ToolCard
           </div>
         </div>
 
-        {/* Description - pad to ensure consistent height */}
+        {/* Description - show up to 300 characters with more lines */}
         <div className="flex-grow">
-          <p className="text-gray-600 text-sm mb-4 min-h-[4.5rem] line-clamp-3">
-            {tool.description.padEnd(150, ' ')}
+          <p className="text-gray-600 text-sm mb-4 min-h-[6rem] line-clamp-4">
+            {tool.description.slice(0, 300)}
           </p>
         </div>
 
