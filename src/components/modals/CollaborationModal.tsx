@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { createClient } from '@/lib/supabase-client';
+import { User } from '@supabase/supabase-js';
 
 interface CollaborationModalProps {
   isOpen: boolean;
@@ -8,6 +10,8 @@ interface CollaborationModalProps {
 }
 
 export function CollaborationModal({ isOpen, onClose }: CollaborationModalProps) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -17,6 +21,29 @@ export function CollaborationModal({ isOpen, onClose }: CollaborationModalProps)
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const supabase = createClient();
+
+  const checkUser = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) throw error;
+      setUser(user);
+    } catch (error) {
+      console.error('Error checking user:', error);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [supabase]);
+
+  // Check authentication when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      checkUser();
+    }
+  }, [isOpen, checkUser]);
 
   const collaborationTypes = [
     { value: 'create-tools', label: '🛠️ Create Tools Together' },
@@ -35,8 +62,16 @@ export function CollaborationModal({ isOpen, onClose }: CollaborationModalProps)
       const response = await fetch('/api/community/collaborations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
+        credentials: 'include'
       });
+
+      if (response.status === 401) {
+        // User is not authenticated - show auth modal
+        onClose();
+        window.dispatchEvent(new CustomEvent('openAuthModal'));
+        return;
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -89,17 +124,52 @@ export function CollaborationModal({ isOpen, onClose }: CollaborationModalProps)
             </button>
           </div>
 
-          <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-400 rounded">
-            <h3 className="text-lg font-semibold text-green-800 mb-2">
-              💚 Building Gateways, Not Gatekeepers
-            </h3>
-            <p className="text-green-700 text-sm">
-              We believe in open collaboration and community-driven wellness. Whether you&apos;re a therapist, 
-              coach, researcher, or just someone passionate about mental health tools, we&apos;d love to work together!
-            </p>
-          </div>
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Checking authentication...</p>
+            </div>
+          ) : !user ? (
+            <div className="text-center py-8">
+              <div className="mb-6">
+                <div className="text-6xl mb-4">🔒</div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Sign In Required</h3>
+                <p className="text-gray-600 mb-6">
+                  You need to be signed in to submit collaboration requests.
+                  This helps us maintain quality and prevents spam.
+                </p>
+              </div>
+              <div className="space-y-3">
+                <button
+                  onClick={() => {
+                    onClose();
+                    window.dispatchEvent(new CustomEvent('openAuthModal'));
+                  }}
+                  className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors font-medium"
+                >
+                  Sign In to Submit Collaboration
+                </button>
+                <button
+                  onClick={onClose}
+                  className="w-full bg-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-400 transition-colors font-medium"
+                >
+                  Maybe Later
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-400 rounded">
+                <h3 className="text-lg font-semibold text-green-800 mb-2">
+                  💚 Building Gateways, Not Gatekeepers
+                </h3>
+                <p className="text-green-700 text-sm">
+                  We believe in open collaboration and community-driven wellness. Whether you&apos;re a therapist, 
+                  coach, researcher, or just someone passionate about mental health tools, we&apos;d love to work together!
+                </p>
+              </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
             {/* Contact Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -234,6 +304,8 @@ export function CollaborationModal({ isOpen, onClose }: CollaborationModalProps)
               </a>
             </div>
           </form>
+          </>
+          )}
         </div>
       </div>
     </div>

@@ -158,13 +158,19 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
       }
       
       // Submit tool with thumbnail_url
-      const response = await fetch('/api/community/tools', {
+      const response = await fetch('/api/community/submissions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...formData,
+          title: formData.name,
+          claude_url: formData.url,
+          category: formData.category,
+          description: formData.description,
+          creator_name: formData.submitted_by,
+          creator_link: formData.creator_link,
           thumbnail_url
-        })
+        }),
+        credentials: 'include'
       });
       
       if (!response.ok) {

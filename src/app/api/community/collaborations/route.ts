@@ -5,6 +5,20 @@ import { sendCollaborationNotification } from '@/lib/email';
 export async function POST(request: NextRequest) {
   try {
     const adminClient = createAdminClient();
+    
+    // Check if user is authenticated
+    const { data: { user }, error: authError } = await adminClient.auth.getUser();
+    
+    if (authError || !user) {
+      return NextResponse.json(
+        { 
+          error: 'Authentication required to submit collaboration requests',
+          requiresAuth: true 
+        },
+        { status: 401 }
+      );
+    }
+    
     const body = await request.json();
     
     const {
@@ -44,31 +58,11 @@ export async function POST(request: NextRequest) {
     };
 
     // Insert into user_documents table as a collaboration request
-    // Generate a valid UUID v4 format ID for collaboration requests
-    // This avoids NULL user_id issues while maintaining traceability
-    const generateUUID = () => {
-      const hex = '0123456789abcdef';
-      let uuid = '';
-      for (let i = 0; i < 36; i++) {
-        if (i === 8 || i === 13 || i === 18 || i === 23) {
-          uuid += '-';
-        } else if (i === 14) {
-          uuid += '4'; // Version 4 UUID
-        } else if (i === 19) {
-          uuid += hex[(Math.random() * 4) | 8]; // Variant bits
-        } else {
-          uuid += hex[Math.floor(Math.random() * 16)];
-        }
-      }
-      return uuid;
-    };
-    
-    const collaborationUserId = generateUUID();
-    
+    // Use the authenticated user's ID for the collaboration request
     const { data, error } = await adminClient
       .from('user_documents')
       .insert({
-        user_id: collaborationUserId, // Use generated UUID-like ID
+        user_id: user.id, // Use authenticated user's ID
         document_type: 'transaction', // Use transaction type for business inquiries
         tool_slug: 'collaboration-request',
         is_public: false,
