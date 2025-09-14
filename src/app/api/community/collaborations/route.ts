@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase-admin';
+import { createClient } from '@/lib/supabase-server';
 import { sendCollaborationNotification } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
-    const adminClient = createAdminClient();
+    const supabase = await createClient();
     
     // Check if user is authenticated
-    const { data: { user }, error: authError } = await adminClient.auth.getUser();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
       return NextResponse.json(
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
 
     // Insert into user_documents table as a collaboration request
     // Use the authenticated user's ID for the collaboration request
-    const { data, error } = await adminClient
+    const { data, error } = await supabase
       .from('user_documents')
       .insert({
         user_id: user.id, // Use authenticated user's ID
