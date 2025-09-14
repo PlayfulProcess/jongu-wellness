@@ -53,15 +53,10 @@ export default function Dashboard() {
     
     try {
       // Get user's starred tool interactions
-      // Use NonNullable to match Supabase's expected type
-      type UserDocRow = Database['public']['Tables']['user_documents']['Row'];
-      type UserId = NonNullable<UserDocRow['user_id']>;
-      const typedUserId = userId as UserId;
-      
       const { data: starData, error: starError } = await supabase
         .from('user_documents')
         .select('document_data, created_at')
-        .eq('user_id', typedUserId)
+        .eq('user_id', userId)
         .eq('document_type', 'interaction')
         .eq('document_data->>interaction_type', 'star')
         .order('created_at', { ascending: false });
@@ -116,7 +111,7 @@ export default function Dashboard() {
       const { data, error } = await supabase
         .from('tools')
         .select('id, slug, tool_data, created_at')
-        .eq('tool_data->>creator_id', typedUserId)
+        .eq('tool_data->>creator_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -168,7 +163,7 @@ export default function Dashboard() {
         .from('tools')
         .delete()
         .eq('id', toolId)
-        .eq('tool_data->>creator_id', typedUserId);
+        .eq('tool_data->>creator_id', userId);
 
       if (error) throw error;
       
@@ -193,12 +188,11 @@ export default function Dashboard() {
       // Fetch all user data
       type UserDocRow = Database['public']['Tables']['user_documents']['Row'];
       type UserId = NonNullable<UserDocRow['user_id']>;
-      const typedUserId = userId as UserId;
-      
+            
       const { data: documents, error: docsError } = await supabase
         .from('user_documents')
         .select('*')
-        .eq('user_id', typedUserId)
+        .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
       if (docsError) throw docsError;
@@ -207,7 +201,7 @@ export default function Dashboard() {
       const { data: tools, error: toolsError } = await supabase
         .from('tools')
         .select('*')
-        .eq('tool_data->>creator_id', typedUserId)
+        .eq('tool_data->>creator_id', userId)
         .order('created_at', { ascending: false });
 
       if (toolsError) console.warn('Could not fetch tools:', toolsError);
@@ -217,7 +211,7 @@ export default function Dashboard() {
         export_date: new Date().toISOString(),
         user_info: {
           email: user.email,
-          user_id: typedUserId,
+          user_id: userId,
           created_at: user.created_at
         },
         starred_tools: documents?.filter(d => d.document_type === 'interaction' && d.document_data?.interaction_type === 'star') || [],
@@ -291,12 +285,11 @@ export default function Dashboard() {
       // Delete all user data from user_documents table
       type UserDocRow = Database['public']['Tables']['user_documents']['Row'];
       type UserId = NonNullable<UserDocRow['user_id']>;
-      const typedUserId = userId as UserId;
-      
+            
       const { error: documentsError } = await supabase
         .from('user_documents')
         .delete()
-        .eq('user_id', typedUserId);
+        .eq('user_id', userId);
 
       if (documentsError) throw documentsError;
 
