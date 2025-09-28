@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/components/AuthProvider";
+
 import DiscordWidget from "@/components/DiscordWidget";
 import DonateButton from "@/components/DonateButton";
 import { config } from "@/lib/recursiveeco-config";
+import { AuthProvider } from "@/components/authProvider/AuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

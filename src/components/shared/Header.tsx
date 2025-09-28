@@ -1,19 +1,33 @@
 'use client';
 
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/components/authProvider/AuthProvider';
+import type { User } from '@supabase/supabase-js';
 import { isAdmin } from '@/lib/admin-utils';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
+
+// Função utilitária para ler cookie
+function getCookie(name: string) {
+  if (typeof document === 'undefined') return undefined;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift();
+}
 
 interface HeaderProps {
   showAuthModal?: () => void;
   showCreateChannelModal?: () => void;
+  user?: User | null;
 }
 
-export function Header({ showAuthModal, showCreateChannelModal }: HeaderProps) {
-  const { user, signOut } = useAuth();
+export function Header({ showAuthModal, showCreateChannelModal, user: propUser }: HeaderProps) {
+  const { user: userFromContext, signOut } = useAuth();
+  // Prefer the user passed in via props (if any), otherwise use the context user
+  const user = propUser ?? userFromContext;
+
 
   return (
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-sm border-b border-gray-200">
@@ -209,30 +223,66 @@ function ToolsDropdown() {
             onClick={() => setIsOpen(false)}
           />
           <div className="absolute top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-20 overflow-hidden">
-            {tools.map((tool) => (
-              <a
-                key={tool.name}
-                href={tool.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`block px-4 py-3 hover:bg-gray-50 transition-colors ${
-                  tool.featured ? 'bg-blue-50 border-l-4 border-blue-500' : ''
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-lg">{tool.icon}</span>
-                  <div>
-                    <div className="font-medium text-gray-900">
-                      {tool.name}
+            {tools.map((tool) => {
+              // Se for o Journal, faz o redirecionamento especial com token
+              if (tool.url === 'https://journal.recursive.eco/') {
+                return (
+                  <button
+                    key={tool.name}
+                    className={`block w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors ${
+                      tool.featured ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+                    }`}
+                    onClick={() => {
+                      setIsOpen(false);
+                      const cookieName = 'sb-evixjvagwjmjdjpbazuj-auth-token';
+                      const token = getCookie(cookieName);
+                      if (token) {
+                        window.open(`https://journal.recursive.eco/auth/callback?token=${encodeURIComponent(token)}`, '_blank');
+                      } else {
+                        alert('Token de autenticação não encontrado. Faça login primeiro.');
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg">{tool.icon}</span>
+                      <div>
+                        <div className="font-medium text-gray-900">
+                          {tool.name}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {tool.description}
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-500">
-                      {tool.description}
+                  </button>
+                );
+              }
+              // Para os outros, mantém o link normal
+              return (
+                <a
+                  key={tool.name}
+                  href={tool.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`block px-4 py-3 hover:bg-gray-50 transition-colors ${
+                    tool.featured ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+                  }`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg">{tool.icon}</span>
+                    <div>
+                      <div className="font-medium text-gray-900">
+                        {tool.name}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {tool.description}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </a>
-            ))}
+                </a>
+              );
+            })}
           </div>
         </>
       )}

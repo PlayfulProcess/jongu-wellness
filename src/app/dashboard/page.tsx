@@ -1,12 +1,41 @@
+
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase-client';
 import { ToolCard } from '@/components/community/ToolCard';
 import { MagicLinkAuth } from '@/components/MagicLinkAuth';
-import { useAuth } from '@/components/AuthProvider';
+import { useAuth } from '@/components/authProvider/AuthProvider';
 import { getSubmissionStatus } from '@/lib/admin-utils';
 import Link from 'next/link';
+
+// Tipos auxiliares para dados do Supabase
+type UserDocument = {
+  document_data: {
+    target_id?: string;
+    interaction_type?: string;
+    [key: string]: unknown;
+  };
+  created_at: string;
+  document_type?: string;
+};
+
+type ToolRow = {
+  id: string;
+  slug?: string;
+  tool_data: {
+    name?: string;
+    url?: string;
+    category?: string;
+    description?: string;
+    submitted_by?: string;
+    stats?: { stars?: string; clicks?: string };
+    thumbnail_url?: string | null;
+    is_active?: string;
+    reviewed?: string;
+  };
+  created_at: string;
+};
 
 interface Tool {
   id: string;
@@ -28,31 +57,26 @@ interface StarredTool extends Tool {
   starred_at: string;
 }
 
+
 export default function Dashboard() {
-  const { user, status } = useAuth();
+  const { user } = useAuth();
   const [starredTools, setStarredTools] = useState<StarredTool[]>([]);
   const [submittedTools, setSubmittedTools] = useState<Tool[]>([]);
   const [activeTab, setActiveTab] = useState<'starred' | 'submitted' | 'settings'>('starred');
   const [showAuthModal, setShowAuthModal] = useState(false);
-  
   // Account settings state
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [downloadingData, setDownloadingData] = useState(false);
   const [deletingData, setDeletingData] = useState(false);
-
   const supabase = createClient();
-
 
   const fetchStarredTools = useCallback(async () => {
     if (!user) return;
-    
     const userId = user.id;
-    // Guard: return early if no userId
     if (!userId) return;
-    
     try {
       // Get user's starred tool interactions
-      const { data: starData, error: starError } = await (supabase as any)
+      const { data: starData, error: starError } = await supabase
         .from('user_documents')
         .select('document_data, created_at')
         .eq('user_id', userId)
@@ -62,23 +86,19 @@ export default function Dashboard() {
 
       if (starError) throw starError;
 
-      const toolIds = starData?.map((item: any) => item.document_data?.target_id).filter(Boolean) || [];
-      
+      const toolIds = (starData as UserDocument[] | null)?.map((item) => item.document_data?.target_id).filter(Boolean) || [];
       if (toolIds.length === 0) {
         setStarredTools([]);
         return;
       }
-
       // Get tool details for starred tools
       const { data: toolsData, error: toolsError } = await supabase
         .from('tools')
         .select('id, slug, tool_data, created_at')
         .in('id', toolIds);
-
       if (toolsError) throw toolsError;
-
-      const starredTools = toolsData?.map((tool: any) => {
-        const starRecord = starData.find((star: any) => star.document_data?.target_id === tool.id);
+      const starredTools = (toolsData as ToolRow[] | null)?.map((tool) => {
+        const starRecord = (starData as UserDocument[]).find((star) => star.document_data?.target_id === tool.id);
         return {
           id: tool.id,
           name: tool.tool_data?.name || '',
@@ -96,7 +116,6 @@ export default function Dashboard() {
           starred_at: starRecord?.created_at || tool.created_at
         };
       }) as StarredTool[];
-
       setStarredTools(starredTools || []);
     } catch (error) {
       console.error('Error fetching starred tools:', error);
@@ -105,19 +124,15 @@ export default function Dashboard() {
 
   const fetchSubmittedTools = useCallback(async () => {
     if (!user) return;
-    
     const userId = user.id;
     if (!userId) return;
-    
     try {
       const { data, error } = await supabase
         .from('tools')
         .select('id, slug, tool_data, created_at')
         .eq('tool_data->>creator_id', userId)
         .order('created_at', { ascending: false });
-
       if (error) throw error;
-      
       const transformedTools = (data || []).map(tool => ({
         id: tool.id,
         name: tool.tool_data?.name || '',
@@ -133,7 +148,6 @@ export default function Dashboard() {
         active: tool.tool_data?.is_active === 'true',
         reviewed: tool.tool_data?.reviewed === 'true'
       }));
-      
       setSubmittedTools(transformedTools);
     } catch (error) {
       console.error('Error fetching submitted tools:', error);
@@ -191,7 +205,7 @@ export default function Dashboard() {
 
     try {
       // Fetch all user data
-      const { data: documents, error: docsError } = await (supabase as any)
+      const { data: documents, error: docsError } = await supabase
         .from('user_documents')
         .select('*')
         .eq('user_id', userId)
@@ -209,6 +223,7 @@ export default function Dashboard() {
       if (toolsError) console.warn('Could not fetch tools:', toolsError);
 
       // Create a comprehensive data export
+      const docsArr = documents as UserDocument[] | null;
       const exportData = {
         export_date: new Date().toISOString(),
         user_info: {
@@ -216,10 +231,10 @@ export default function Dashboard() {
           user_id: userId,
           created_at: user.created_at
         },
-        starred_tools: documents?.filter((d: any) => d.document_type === 'interaction' && d.document_data?.interaction_type === 'star') || [],
-        interactions: documents?.filter((d: any) => d.document_type === 'interaction') || [],
+        starred_tools: docsArr?.filter((d) => d.document_type === 'interaction' && d.document_data?.interaction_type === 'star') || [],
+        interactions: docsArr?.filter((d) => d.document_type === 'interaction') || [],
         submitted_tools: tools || [],
-        all_documents: documents || []
+        all_documents: docsArr || []
       };
 
       // Convert to JSON string with nice formatting
@@ -285,7 +300,7 @@ export default function Dashboard() {
     
     try {
       // Delete all user data from user_documents table
-      const { error: documentsError } = await (supabase as any)
+      const { error: documentsError } = await supabase
         .from('user_documents')
         .delete()
         .eq('user_id', userId);
@@ -315,11 +330,12 @@ export default function Dashboard() {
   };
 
 
+  // Se user for null, mostra modal de login
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (user === null) {
       setShowAuthModal(true);
     }
-  }, [status]);
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -328,7 +344,7 @@ export default function Dashboard() {
     }
   }, [user, fetchStarredTools, fetchSubmittedTools]);
 
-  if (status === 'loading') {
+  if (user === undefined) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

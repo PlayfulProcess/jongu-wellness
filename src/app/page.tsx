@@ -1,21 +1,21 @@
 'use client';
 
+import { MagicLinkAuth } from '@/components/MagicLinkAuth';
+import { useAuth } from "@/components/authProvider/AuthProvider"
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { LINKS } from '@/config/links';
 import { Header } from '@/components/shared/Header';
-import { MagicLinkAuth } from '@/components/MagicLinkAuth';
 import { CollaborationModal } from '@/components/modals/CollaborationModal';
 import { SubmitToolModal } from '@/components/modals/SubmitToolModal';
 import { ToolGrid } from '@/components/community/ToolGrid';
 import { CategoryFilter } from '@/components/community/CategoryFilter';
 import { SortingControls } from '@/components/community/SortingControls';
 import { StatsDisplay } from '@/components/community/StatsDisplay';
-import { useAuth } from '@/components/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
 
 export default function HomePage() {
-  const { status } = useAuth();
+   const { user, loading } = useAuth()
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showSubmitToolModal, setShowSubmitToolModal] = useState(false);
@@ -46,7 +46,7 @@ export default function HomePage() {
       const response = await fetch('/api/community/tools');
       
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+       
       }
       
       const tools = await response.json();
@@ -112,7 +112,8 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <Header 
+      <Header
+        user={user}
         showAuthModal={() => setShowAuthModal(true)}
         showCreateChannelModal={() => setShowCollabModal(true)}
       />

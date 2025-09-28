@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAuth } from '@/components/AuthProvider'
 import { isAdmin, getSubmissionStatus } from '@/lib/admin-utils'
 import { Header } from '@/components/shared/Header'
 
@@ -22,18 +21,18 @@ interface Submission {
 }
 
 export default function AdminPage() {
-  const { user, status } = useAuth()
+  // const { user, status } = useAuth()
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (status === 'authenticated' && user && isAdmin(user.email || '')) {
-      fetchSubmissions()
-    } else if (status === 'unauthenticated') {
-      setLoading(false)
-    }
-  }, [status, user])
+  // useEffect(() => {
+  //   if (status === 'authenticated' && user && isAdmin(user.email || '')) {
+  //     fetchSubmissions()
+  //   } else if (status === 'unauthenticated') {
+  //     setLoading(false)
+  //   }
+  // }, [status, user])
 
   const fetchSubmissions = async () => {
     try {
@@ -101,17 +100,17 @@ export default function AdminPage() {
     )
   }
 
-  if (!user || !isAdmin(user.email || '')) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header showAuthModal={() => {}} showCreateChannelModal={() => {}} />
-        <main className="max-w-4xl mx-auto px-4 py-16 text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Access Denied</h1>
-          <p className="text-gray-600">You don&apos;t have permission to access this page.</p>
-        </main>
-      </div>
-    )
-  }
+  // if (!user || !isAdmin(user.email || '')) {
+  //   return (
+  //     <div className="min-h-screen bg-gray-50">
+  //       <Header showAuthModal={() => {}} showCreateChannelModal={() => {}} />
+  //       <main className="max-w-4xl mx-auto px-4 py-16 text-center">
+  //         <h1 className="text-3xl font-bold text-gray-900 mb-4">Access Denied</h1>
+  //         <p className="text-gray-600">You don&apos;t have permission to access this page.</p>
+  //       </main>
+  //     </div>
+  //   )
+  // }
 
   if (loading) {
     return (
