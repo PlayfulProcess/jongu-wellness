@@ -115,7 +115,9 @@ function ChannelsDropdown() {
         className="flex items-center gap-1 text-gray-600 hover:text-gray-900 font-medium transition-colors"
       >
         Channels
-        <ChevronDownIcon className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <svg className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
       </button>
       
       {isOpen && (
