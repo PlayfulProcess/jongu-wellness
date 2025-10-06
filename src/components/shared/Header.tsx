@@ -9,10 +9,9 @@ import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 interface HeaderProps {
   showAuthModal?: () => void;
-  showCreateChannelModal?: () => void;
 }
 
-export function Header({ showAuthModal, showCreateChannelModal }: HeaderProps) {
+export function Header({ showAuthModal }: HeaderProps) {
   const { user, signOut } = useAuth();
 
   return (
@@ -35,16 +34,12 @@ export function Header({ showAuthModal, showCreateChannelModal }: HeaderProps) {
             <nav className="hidden md:flex space-x-6 items-center">
               {/* Channels Dropdown */}
               <ChannelsDropdown />
-              
-              {/* Tools Dropdown */}
-              <ToolsDropdown />
-              
-              <button
-                onClick={showCreateChannelModal}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                🚀 Create Channel
-              </button>
+
+              {/* Studies Dropdown */}
+              <StudiesDropdown />
+
+              {/* About Dropdown */}
+              <AboutDropdown />
             </nav>
           </div>
 
@@ -164,31 +159,34 @@ function ChannelsDropdown() {
   );
 }
 
-// Tools Dropdown Component  
-function ToolsDropdown() {
+// Studies Dropdown Component
+function StudiesDropdown() {
+  return (
+    <a
+      href="https://www.recursive.eco/pages/studies.html"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+    >
+      Studies
+    </a>
+  );
+}
+
+// About Dropdown Component
+function AboutDropdown() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const tools = [
+  const aboutLinks = [
     {
-      name: "Best Possible Self",
-      url: "https://journal.recursive.eco/",
-      description: "Research-backed future visioning",
-      icon: "🌟",
-      featured: true
+      name: "About",
+      url: "https://www.recursive.eco/pages/about.html",
+      description: "Our story and mission"
     },
     {
-      name: "Spiral Generator",
-      url: "https://recursive.eco/spiral/logo-generator.html",
-      description: "Interactive spiral logo generator",
-      icon: "🌀",
-      featured: false
-    },
-    {
-      name: "Recursive Patterns",
-      url: "https://patterns.recursive.eco",
-      description: "Mathematical beauty & patterns",
-      icon: "♾️",
-      featured: false
+      name: "Governance",
+      url: "https://www.recursive.eco/pages/governance.html",
+      description: "How we organize together"
     }
   ];
 
@@ -198,38 +196,31 @@ function ToolsDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-1 text-gray-600 hover:text-gray-900 font-medium transition-colors"
       >
-        Tools
+        About
         <ChevronDownIcon className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
-      
+
       {isOpen && (
         <>
-          <div 
-            className="fixed inset-0 z-10" 
+          <div
+            className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
           <div className="absolute top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-20 overflow-hidden">
-            {tools.map((tool) => (
+            {aboutLinks.map((link) => (
               <a
-                key={tool.name}
-                href={tool.url}
+                key={link.name}
+                href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`block px-4 py-3 hover:bg-gray-50 transition-colors ${
-                  tool.featured ? 'bg-blue-50 border-l-4 border-blue-500' : ''
-                }`}
+                className="block px-4 py-3 hover:bg-gray-50 transition-colors"
                 onClick={() => setIsOpen(false)}
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-lg">{tool.icon}</span>
-                  <div>
-                    <div className="font-medium text-gray-900">
-                      {tool.name}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {tool.description}
-                    </div>
-                  </div>
+                <div className="font-medium text-gray-900">
+                  {link.name}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {link.description}
                 </div>
               </a>
             ))}

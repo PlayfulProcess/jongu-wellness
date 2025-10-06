@@ -112,9 +112,8 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <Header 
+      <Header
         showAuthModal={() => setShowAuthModal(true)}
-        showCreateChannelModal={() => setShowCollabModal(true)}
       />
 
       {/* Section 1: BPS Hero */}
@@ -135,16 +134,10 @@ export default function HomePage() {
                   <li><strong>Open Access:</strong> All tools are completely free, supported by community donations</li>
                   <li><strong>Inclusive:</strong> Recursive.eco tools will still be valuable without engaging with AI</li>
                   <li><strong>Evidence-Based:</strong> Grounded in science or personal experience (which is also evidence)</li>
-                  <li><strong>Community-Driven:</strong> Share tools here or talk about your experience in our Discord channel</li>
+                  <li><strong>Community-Driven:</strong> Share tools here or talk about your experience with others</li>
                   <li><strong>Self-Hosted:</strong> Many tools can be used without creating accounts or saving personal data</li>
                 </ul>
               </div>
-              <p className="mt-6 text-gray-600">
-                This channel is part of the broader Recursive.eco experiment in recursive virtuous meaning-making. We believe wellness tools should be gateways to growth, not gatekeepers behind paywalls.
-              </p>
-              <p className="mt-4 text-sm text-gray-600">
-                Created by <a href="https://www.playfulprocess.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">PlayfulProcess</a> | Supported by the Recursive.eco Community | 🔓 <a href={LINKS.GITHUB_WELLNESS} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">Open source</a>
-              </p>
             </div>
           </div>
         </div>
@@ -217,13 +210,13 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="bg-amber-800 text-amber-200 p-4 rounded-lg mb-6 max-w-2xl mx-auto">
-              <div className="text-lg font-semibold mb-2">🧪 Active experiment in recursive virtuous meaning-making</div>
+              <div className="text-lg font-semibold mb-2">Beta Version | 🧪 Active experiment in recursive virtuous meaning-making</div>
             </div>
-            
-            
+
+
             <div className="flex flex-wrap justify-center items-center space-x-6">
-              <a href="https://www.playfulprocess.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                Subscribe to PlayfulProcess Blog
+              <a href="https://lifeisprocess.substack.com/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                Substack
               </a>
               <a href="https://github.com/PlayfulProcess" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
                 GitHub
