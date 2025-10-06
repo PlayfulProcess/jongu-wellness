@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { isAdmin } from '@/lib/admin-utils';
-import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 interface HeaderProps {
   showAuthModal?: () => void;
@@ -173,60 +172,16 @@ function StudiesDropdown() {
   );
 }
 
-// About Dropdown Component
+// About Link Component
 function AboutDropdown() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const aboutLinks = [
-    {
-      name: "About",
-      url: "https://www.recursive.eco/pages/about.html",
-      description: "Our story and mission"
-    },
-    {
-      name: "Governance",
-      url: "https://www.recursive.eco/pages/governance.html",
-      description: "How we organize together"
-    }
-  ];
-
   return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 text-gray-600 hover:text-gray-900 font-medium transition-colors"
-      >
-        About
-        <ChevronDownIcon className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
-
-      {isOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setIsOpen(false)}
-          />
-          <div className="absolute top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-20 overflow-hidden">
-            {aboutLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block px-4 py-3 hover:bg-gray-50 transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                <div className="font-medium text-gray-900">
-                  {link.name}
-                </div>
-                <div className="text-xs text-gray-500">
-                  {link.description}
-                </div>
-              </a>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
+    <a
+      href="https://www.recursive.eco/pages/about.html"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+    >
+      About
+    </a>
   );
 }
