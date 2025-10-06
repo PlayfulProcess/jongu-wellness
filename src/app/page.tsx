@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { LINKS } from '@/config/links';
 import { Header } from '@/components/shared/Header';
 import { MagicLinkAuth } from '@/components/MagicLinkAuth';
 import { CollaborationModal } from '@/components/modals/CollaborationModal';
