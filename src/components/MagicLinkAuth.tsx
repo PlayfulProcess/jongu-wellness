@@ -80,9 +80,23 @@ export function MagicLinkAuth({ isOpen, onClose }: MagicLinkAuthProps) {
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
             Sign in to Recursive.eco
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
             We&apos;ll send you a magic link to sign in instantly
           </p>
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-3 text-xs text-left space-y-1">
+            <p className="text-blue-900 dark:text-blue-200">
+              <strong>⚠️ Beta Notice:</strong> Magic links work best with Gmail accounts.
+            </p>
+            <p className="text-blue-800 dark:text-blue-300">
+              • Emails come from <strong>pp@playfulprocess.com</strong>
+            </p>
+            <p className="text-blue-800 dark:text-blue-300">
+              • Check your <strong>Spam folder</strong> if you don&apos;t see it
+            </p>
+            <p className="text-blue-800 dark:text-blue-300">
+              • Issues? Email <strong>pp@playfulprocess.com</strong>
+            </p>
+          </div>
         </div>
 
         <form onSubmit={handleSendMagicLink} className="space-y-4">
