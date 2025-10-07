@@ -26,7 +26,7 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryStats, setCategoryStats] = useState({});
   const [totalTools, setTotalTools] = useState(0);
-  const [averageStars, setAverageStars] = useState(0);
+  const [totalStars, setTotalStars] = useState(0);
 
   const checkUser = async () => {
     const supabase = createClient();
@@ -58,26 +58,22 @@ export default function HomePage() {
       
       // Calculate stats
       const stats: {[key: string]: number} = {};
-      let totalStars = 0;
-      let starredToolsCount = 0;
+      let allStars = 0;
 
       tools.forEach((tool: { category: string; star_count: number }) => {
         stats[tool.category] = (stats[tool.category] || 0) + 1;
-        if (tool.star_count > 0) {
-          totalStars += tool.star_count;
-          starredToolsCount++;
-        }
+        allStars += tool.star_count || 0;
       });
 
       setCategoryStats(stats);
       setTotalTools(tools.length);
-      setAverageStars(starredToolsCount > 0 ? totalStars / starredToolsCount : 0);
+      setTotalStars(allStars);
     } catch (error) {
       console.error('Error fetching stats:', error);
       // Set default values on error
       setCategoryStats({});
       setTotalTools(0);
-      setAverageStars(0);
+      setTotalStars(0);
     }
   };
 
@@ -170,7 +166,7 @@ export default function HomePage() {
           <div id="tools-search">
             <StatsDisplay
               totalTools={totalTools}
-              averageRating={averageStars}
+              totalStars={totalStars}
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
               onSubmitToolClick={() => setShowSubmitToolModal(true)}
