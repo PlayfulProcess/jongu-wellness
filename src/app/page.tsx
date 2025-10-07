@@ -131,10 +131,9 @@ export default function HomePage() {
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">What makes this different?</h3>
                 <ul className="list-disc list-inside space-y-2 text-gray-800">
                   <li><strong>Open Access:</strong> All tools are completely free, supported by community donations</li>
-                  <li><strong>Inclusive:</strong> Recursive.eco tools will still be valuable without engaging with AI</li>
+                  <li><strong>Human-centered:</strong> Tools will still be valuable without engaging with AI</li>
                   <li><strong>Evidence-Based:</strong> Grounded in science or personal experience (which is also evidence)</li>
-                  <li><strong>Community-Driven:</strong> Share tools here or talk about your experience with others</li>
-                  <li><strong>Self-Hosted:</strong> Many tools can be used without creating accounts or saving personal data</li>
+                  <li><strong>Community-Driven:</strong> <a href="https://www.recursive.eco/pages/courses/course-viewer.html?course=vibe-coding-101" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">Learn how to create a tool</a> and submit below!</li>
                 </ul>
               </div>
             </div>

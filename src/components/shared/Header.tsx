@@ -12,6 +12,7 @@ interface HeaderProps {
 
 export function Header({ showAuthModal }: HeaderProps) {
   const { user, signOut } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-sm border-b border-gray-200">
@@ -34,10 +35,13 @@ export function Header({ showAuthModal }: HeaderProps) {
               {/* Channels Dropdown */}
               <ChannelsDropdown />
 
-              {/* Studies Dropdown */}
+              {/* Courses Link */}
+              <CoursesLink />
+
+              {/* Studies Link */}
               <StudiesDropdown />
 
-              {/* About Dropdown */}
+              {/* About Link */}
               <AboutDropdown />
             </nav>
           </div>
@@ -45,7 +49,7 @@ export function Header({ showAuthModal }: HeaderProps) {
           {/* User Menu */}
           <div className="flex items-center space-x-4">
             {user ? (
-              <div className="flex items-center space-x-4">
+              <div className="hidden sm:flex items-center space-x-4">
                 <Link
                   href="/dashboard"
                   className="text-sm text-blue-600 hover:text-blue-800 font-medium"
@@ -71,13 +75,99 @@ export function Header({ showAuthModal }: HeaderProps) {
             ) : (
               <button
                 onClick={showAuthModal}
-                className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors"
+                className="hidden sm:inline-block text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Sign In
               </button>
             )}
+
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 text-gray-600 hover:text-gray-900"
+              aria-label="Toggle menu"
+            >
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
           </div>
         </div>
+
+        {/* Mobile menu panel */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-gray-200 py-2">
+            <div className="space-y-1">
+              <a
+                href="https://channels.recursive.eco/"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+              >
+                Wellness Channel
+              </a>
+              <a
+                href="https://www.recursive.eco/pages/courses/index.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+              >
+                Courses
+              </a>
+              <a
+                href="https://www.recursive.eco/pages/studies.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+              >
+                Studies
+              </a>
+              <a
+                href="https://www.recursive.eco/pages/about.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+              >
+                About
+              </a>
+              {user ? (
+                <>
+                  <Link
+                    href="/dashboard"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:text-blue-800 hover:bg-gray-50"
+                  >
+                    Dashboard
+                  </Link>
+                  {isAdmin(user.email || '') && (
+                    <Link
+                      href="/admin"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-orange-600 hover:text-orange-800 hover:bg-gray-50"
+                    >
+                      Admin
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => {
+                      signOut();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => {
+                    showAuthModal?.();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium bg-blue-600 text-white hover:bg-blue-700"
+                >
+                  Sign In
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );
@@ -170,6 +260,20 @@ function StudiesDropdown() {
       className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
     >
       Studies
+    </a>
+  );
+}
+
+// Courses Link Component
+function CoursesLink() {
+  return (
+    <a
+      href="https://www.recursive.eco/pages/courses/index.html"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+    >
+      Courses
     </a>
   );
 }
