@@ -12,7 +12,7 @@ interface Tool {
   id: string;
   name: string;
   url: string;
-  category: string;
+  category: string[];  // Array of hashtags
   description: string;
   submitted_by: string;
   star_count: number;
