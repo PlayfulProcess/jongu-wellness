@@ -423,7 +423,7 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness' }: S
                   placeholder="https://yourwebsite.com"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Your name will become a clickable link to this website in the tool display
+                  Your name will become a clickable link to this website
                 </p>
                 {errors.creator_link && <p className="text-red-600 text-sm mt-1">{errors.creator_link}</p>}
               </div>
@@ -436,7 +436,7 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness' }: S
                 disabled={isSubmitting}
                 className="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
               >
-                {isSubmitting ? '⏳ Submitting...' : '🌱 Submit Tool'}
+                {isSubmitting ? '⏳ Submitting...' : '🌱 Submit'}
               </button>
               <button
                 type="button"
