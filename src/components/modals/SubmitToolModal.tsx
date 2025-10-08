@@ -73,8 +73,8 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness' }: S
   const validateForm = () => {
     const newErrors: {[key: string]: string} = {};
 
-    if (!formData.name.trim()) newErrors.name = 'Tool name is required';
-    if (!formData.url.trim()) newErrors.url = 'Tool URL is required';
+    if (!formData.name.trim()) newErrors.name = 'Title is required';
+    if (!formData.url.trim()) newErrors.url = 'URL is required';
     if (hashtags.length === 0) newErrors.hashtags = 'At least one hashtag is required';
     if (!formData.description.trim()) newErrors.description = 'Description is required';
     if (!formData.submitted_by.trim()) newErrors.submitted_by = 'Your name is required';
@@ -208,14 +208,14 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness' }: S
       setSelectedImage(null);
       setErrors({});
       
-      alert('🎉 Tool submitted successfully! We\'ll review it and add it to the community garden soon.');
+      alert('🎉 Submitted successfully! We\'ll review it and add it to the channel soon.');
       onClose();
       
     } catch (error: unknown) {
       console.error('Error submitting tool:', error);
       
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      alert(`❌ Failed to submit tool: ${errorMessage}`);
+      alert(`❌ Failed to submit: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -228,7 +228,7 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness' }: S
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Share a Tool</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Submit Content</h2>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 text-2xl"
@@ -248,7 +248,7 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness' }: S
                 <div className="text-6xl mb-4">🔒</div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Sign In Required</h3>
                 <p className="text-gray-600 mb-6">
-                  You need to be signed in to submit tools to our community garden.
+                  You need to be signed in to submit content.
                   This helps us maintain quality and prevents spam.
                 </p>
               </div>
@@ -261,7 +261,7 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness' }: S
                   }}
                   className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
                 >
-                  Sign In to Submit Tool
+                  Sign In to Submit
                 </button>
                 <button
                   onClick={onClose}
@@ -274,10 +274,10 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness' }: S
           ) : (
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Tool Name */}
+            {/* Title */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tool Name *
+                Title *
               </label>
               <input
                 type="text"
@@ -289,10 +289,10 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness' }: S
               {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
             </div>
 
-            {/* Tool URL */}
+            {/* URL */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tool URL *
+                URL *
               </label>
               <input
                 type="text"
