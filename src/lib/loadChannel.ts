@@ -120,7 +120,8 @@ export async function getAllChannels(): Promise<ChannelConfig[]> {
 
         const totalStars = (data || []).reduce((sum, tool) => {
           const toolData = tool.tool_data as any;
-          return sum + (toolData?.star_count || 0);
+          const stars = parseInt(toolData?.stats?.stars || '0');
+          return sum + stars;
         }, 0);
 
         return { ...channel, totalStars };

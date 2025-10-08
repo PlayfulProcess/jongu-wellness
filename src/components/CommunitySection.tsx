@@ -127,6 +127,7 @@ export function CommunitySection({ channelSlug = 'wellness' }: CommunitySectionP
             selectedHashtag={selectedHashtag}
             sortBy={sortBy}
             searchQuery={searchQuery}
+            channelSlug={channelSlug}
             onToolStar={fetchStats}
             onHashtagClick={setSelectedHashtag}
           />

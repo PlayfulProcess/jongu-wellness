@@ -21,11 +21,12 @@ interface ToolGridProps {
   selectedHashtag: string;  // Renamed from selectedCategory
   sortBy: string;
   searchQuery?: string;
+  channelSlug?: string;  // Add channel slug
   onToolStar?: () => void;
   onHashtagClick?: (hashtag: string) => void;  // New prop for hashtag clicks
 }
 
-export function ToolGrid({ selectedHashtag, sortBy, searchQuery = '', onToolStar, onHashtagClick }: ToolGridProps) {
+export function ToolGrid({ selectedHashtag, sortBy, searchQuery = '', channelSlug = 'wellness', onToolStar, onHashtagClick }: ToolGridProps) {
   const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -40,6 +41,7 @@ export function ToolGrid({ selectedHashtag, sortBy, searchQuery = '', onToolStar
       const params = new URLSearchParams();
       // Remove category filtering - we'll filter client-side
       params.append('sort', sortBy);
+      params.append('channel_slug', channelSlug);
 
       if (forceRefresh) {
         params.append('_t', Date.now().toString());
@@ -66,7 +68,7 @@ export function ToolGrid({ selectedHashtag, sortBy, searchQuery = '', onToolStar
     } finally {
       setLoading(false);
     }
-  }, [sortBy]);
+  }, [sortBy, channelSlug]);
 
   const checkUser = useCallback(async () => {
     try {
