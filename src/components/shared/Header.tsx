@@ -6,11 +6,12 @@ import { useState } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { isAdmin } from '@/lib/admin-utils';
 
-interface HeaderProps {
-  showAuthModal?: () => void;
-}
-
-export function Header({ showAuthModal }: HeaderProps) {
+export function Header() {
+  const showAuthModal = () => {
+    if ((window as any).__openAuthModal) {
+      (window as any).__openAuthModal();
+    }
+  };
   const { user, signOut } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
