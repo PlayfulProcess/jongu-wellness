@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Filter active tools only
-    let filteredData = (data || []).filter((tool: DatabaseTool) =>
+    const filteredData = (data || []).filter((tool: DatabaseTool) =>
       tool.tool_data?.is_active === 'true' || tool.tool_data?.is_active === true
     );
     

@@ -5,7 +5,10 @@ import { useMemo } from 'react';
 interface Tool {
   id: string;
   category: string[];
-  [key: string]: any;
+  name?: string;
+  description?: string;
+  star_count?: number;
+  created_at?: string;
 }
 
 interface HashtagFilterProps {
