@@ -13,18 +13,34 @@ import { StatsDisplay } from '@/components/community/StatsDisplay';
 import { useAuth } from '@/components/AuthProvider';
 import { createClient } from '@/lib/supabase-client';
 
+interface Tool {
+  id: string;
+  name: string;
+  title?: string;
+  url: string;
+  category: string[];
+  description: string;
+  submitted_by: string;
+  creator_link?: string | null;
+  star_count: number;
+  thumbnail_url?: string | null;
+  created_at: string;
+  approved?: boolean;
+  active?: boolean;
+}
+
 export default function HomePage() {
   const { status } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showSubmitToolModal, setShowSubmitToolModal] = useState(false);
   const [, setUser] = useState<{ email?: string } | null>(null);
-  
+
   // Community tools state
   const [selectedHashtag, setSelectedHashtag] = useState('all');
   const [sortBy, setSortBy] = useState('stars');
   const [searchQuery, setSearchQuery] = useState('');
-  const [allTools, setAllTools] = useState([]);
+  const [allTools, setAllTools] = useState<Tool[]>([]);
   const [totalTools, setTotalTools] = useState(0);
   const [totalStars, setTotalStars] = useState(0);
 

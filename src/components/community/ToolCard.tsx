@@ -186,7 +186,7 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, onHashtagC
     );
   };
 
-  const design = getCategoryDesign(tool.category);
+  const design = getCategoryDesign(tool.category[0] || 'tool');
 
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-gray-100 flex flex-col h-full">

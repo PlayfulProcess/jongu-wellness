@@ -1,5 +1,8 @@
 # Hashtag System Implementation Plan (Simplified)
+  - SubmitToolModal - Add hashtag input UI (chips interface)
+  - Database Migration - Run the SQL to convert category from TEXT to TEXT[]
 
+  
 ## Overview
 Replace fixed categories with a flexible hashtag system where users can add custom tags. The most popular tags are calculated and displayed client-side. This approach minimizes database complexity and is perfect for small-scale use.
 
