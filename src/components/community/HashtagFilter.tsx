@@ -30,7 +30,7 @@ export function HashtagFilter({ selectedHashtag, onHashtagChange, allTools }: Ha
 
     return Object.entries(counts)
       .sort((a, b) => b[1] - a[1]) // Sort by count descending
-      .slice(0, 15); // Top 15
+      .slice(0, 10); // Top 10
   }, [allTools]);
 
   const totalTools = allTools.length;
