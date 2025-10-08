@@ -7,7 +7,7 @@ import { MagicLinkAuth } from '@/components/MagicLinkAuth';
 import { CollaborationModal } from '@/components/modals/CollaborationModal';
 import { SubmitToolModal } from '@/components/modals/SubmitToolModal';
 import { ToolGrid } from '@/components/community/ToolGrid';
-import { CategoryFilter } from '@/components/community/CategoryFilter';
+import { HashtagFilter } from '@/components/community/HashtagFilter';
 import { SortingControls } from '@/components/community/SortingControls';
 import { StatsDisplay } from '@/components/community/StatsDisplay';
 import { useAuth } from '@/components/AuthProvider';
@@ -21,10 +21,10 @@ export default function HomePage() {
   const [, setUser] = useState<{ email?: string } | null>(null);
   
   // Community tools state
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedHashtag, setSelectedHashtag] = useState('all');
   const [sortBy, setSortBy] = useState('stars');
   const [searchQuery, setSearchQuery] = useState('');
-  const [categoryStats, setCategoryStats] = useState({});
+  const [allTools, setAllTools] = useState([]);
   const [totalTools, setTotalTools] = useState(0);
   const [totalStars, setTotalStars] = useState(0);
 
@@ -43,35 +43,30 @@ export default function HomePage() {
   const fetchStats = async () => {
     try {
       const response = await fetch('/api/community/tools');
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       const tools = await response.json();
-      
+
       // Ensure tools is an array
       if (!Array.isArray(tools)) {
         console.error('Expected array but got:', typeof tools, tools);
         return;
       }
-      
-      // Calculate stats
-      const stats: {[key: string]: number} = {};
-      let allStars = 0;
 
-      tools.forEach((tool: { category: string; star_count: number }) => {
-        stats[tool.category] = (stats[tool.category] || 0) + 1;
-        allStars += tool.star_count || 0;
-      });
-
-      setCategoryStats(stats);
+      // Set all tools for client-side filtering
+      setAllTools(tools);
       setTotalTools(tools.length);
+
+      // Calculate total stars
+      const allStars = tools.reduce((sum: number, tool: { star_count: number }) => sum + (tool.star_count || 0), 0);
       setTotalStars(allStars);
     } catch (error) {
       console.error('Error fetching stats:', error);
       // Set default values on error
-      setCategoryStats({});
+      setAllTools([]);
       setTotalTools(0);
       setTotalStars(0);
     }
@@ -175,10 +170,10 @@ export default function HomePage() {
 
           {/* Controls */}
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 space-y-4 lg:space-y-0">
-            <CategoryFilter
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-              categoryStats={categoryStats}
+            <HashtagFilter
+              selectedHashtag={selectedHashtag}
+              onHashtagChange={setSelectedHashtag}
+              allTools={allTools}
             />
             <SortingControls
               sortBy={sortBy}
@@ -189,10 +184,11 @@ export default function HomePage() {
           {/* Tools Grid */}
           <div className="tools-section">
             <ToolGrid
-              selectedCategory={selectedCategory}
+              selectedHashtag={selectedHashtag}
               sortBy={sortBy}
               searchQuery={searchQuery}
               onToolStar={fetchStats}
+              onHashtagClick={setSelectedHashtag}
             />
           </div>
 

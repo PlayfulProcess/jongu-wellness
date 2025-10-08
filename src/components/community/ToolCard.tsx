@@ -9,7 +9,7 @@ interface Tool {
   name: string;
   title?: string;
   url: string;
-  category: string;
+  category: string[];  // Now an array of hashtags
   description: string;
   submitted_by: string;
   creator_link?: string | null;
@@ -23,6 +23,7 @@ interface ToolCardProps {
   onStar?: (toolId: string) => void;
   onUnstar?: (toolId: string) => void;
   isStarred?: boolean;
+  onHashtagClick?: (hashtag: string) => void;
 }
 
 const getCategoryDesign = (category: string) => {
@@ -90,7 +91,7 @@ const getCategoryDesign = (category: string) => {
   };
 };
 
-export function ToolCard({ tool, onStar, onUnstar, isStarred = false }: ToolCardProps) {
+export function ToolCard({ tool, onStar, onUnstar, isStarred = false, onHashtagClick }: ToolCardProps) {
   const [isStarring, setIsStarring] = useState(false);
   const [showStarError, setShowStarError] = useState(false);
 
@@ -250,6 +251,24 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false }: ToolCard
             {tool.description.slice(0, 300)}
           </p>
         </div>
+
+        {/* Hashtags */}
+        {tool.category && tool.category.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-4">
+            {tool.category.map((tag) => (
+              <button
+                key={tag}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onHashtagClick?.(tag);
+                }}
+                className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded transition-colors"
+              >
+                #{tag}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Creator Info */}
         <div className="flex items-center mb-4">

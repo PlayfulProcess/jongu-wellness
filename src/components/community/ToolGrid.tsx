@@ -9,7 +9,7 @@ interface Tool {
   name: string;
   title?: string;
   url: string;
-  category: string;
+  category: string[];  // Now an array of hashtags
   description: string;
   submitted_by: string;
   star_count: number;
@@ -18,13 +18,14 @@ interface Tool {
 }
 
 interface ToolGridProps {
-  selectedCategory: string;
+  selectedHashtag: string;  // Renamed from selectedCategory
   sortBy: string;
   searchQuery?: string;
   onToolStar?: () => void;
+  onHashtagClick?: (hashtag: string) => void;  // New prop for hashtag clicks
 }
 
-export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolStar }: ToolGridProps) {
+export function ToolGrid({ selectedHashtag, sortBy, searchQuery = '', onToolStar, onHashtagClick }: ToolGridProps) {
   const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,15 +38,13 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
     try {
       setLoading(true);
       const params = new URLSearchParams();
-      if (selectedCategory !== 'all') {
-        params.append('category', selectedCategory);
-      }
+      // Remove category filtering - we'll filter client-side
       params.append('sort', sortBy);
-      
+
       if (forceRefresh) {
         params.append('_t', Date.now().toString());
       }
-      
+
       const response = await fetch(`/api/community/tools?${params}`, {
         cache: forceRefresh ? 'no-cache' : 'default',
         headers: forceRefresh ? {
@@ -57,7 +56,7 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
       if (!response.ok) {
         throw new Error('Failed to fetch tools');
       }
-      
+
       const data = await response.json();
       setTools(data);
       setError(null);
@@ -67,7 +66,7 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, sortBy]);
+  }, [sortBy]);
 
   const checkUser = useCallback(async () => {
     try {
@@ -143,13 +142,28 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
     }
   };
 
-  // Filter tools by search query
-  const filteredTools = tools.filter(tool =>
-    searchQuery === '' ||
-    tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    tool.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    tool.submitted_by.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter tools by hashtag and search query
+  const filteredTools = tools.filter(tool => {
+    // Hashtag filter (category is now an array)
+    if (selectedHashtag !== 'all' && !tool.category?.includes(selectedHashtag)) {
+      return false;
+    }
+
+    // Search filter (check name, description, submitted_by, OR hashtags)
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const matchesName = tool.name.toLowerCase().includes(query);
+      const matchesDesc = tool.description.toLowerCase().includes(query);
+      const matchesSubmitter = tool.submitted_by.toLowerCase().includes(query);
+      const matchesHashtag = tool.category?.some(tag => tag.toLowerCase().includes(query));
+
+      if (!matchesName && !matchesDesc && !matchesSubmitter && !matchesHashtag) {
+        return false;
+      }
+    }
+
+    return true;
+  });
 
   if (loading) {
     return (
@@ -188,17 +202,17 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
           </svg>
           <p className="text-lg font-medium">No tools found</p>
           <p className="text-sm">
-            {searchQuery 
+            {searchQuery
               ? `No tools match "${searchQuery}"`
-              : selectedCategory === 'all' 
+              : selectedHashtag === 'all'
                 ? 'No tools available yet'
-                : `No tools in this category yet`
+                : `No tools with #${selectedHashtag} hashtag yet`
             }
           </p>
         </div>
         {searchQuery && (
           <p className="text-gray-400 text-sm">
-            Try adjusting your search terms or browse all categories
+            Try adjusting your search terms or browse all hashtags
           </p>
         )}
       </div>
@@ -214,6 +228,7 @@ export function ToolGrid({ selectedCategory, sortBy, searchQuery = '', onToolSta
           onStar={handleStar}
           onUnstar={handleUnstar}
           isStarred={starredTools.has(tool.id)}
+          onHashtagClick={onHashtagClick}
         />
       ))}
     </div>
