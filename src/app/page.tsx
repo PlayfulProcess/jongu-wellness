@@ -3,12 +3,15 @@ import { Header } from '@/components/shared/Header';
 import { ChannelHero } from '@/components/ChannelHero';
 import { CommunitySection } from '@/components/CommunitySection';
 import { PageModals } from '@/components/PageModals';
+import { getAllChannels } from '@/lib/loadChannel';
 
 export default async function HomePage() {
+  const channels = getAllChannels();
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <Header />
+      <Header channels={channels} currentChannelSlug="wellness" />
 
       {/* Hero Section - Loaded from MDX */}
       <ChannelHero channelSlug="wellness" />

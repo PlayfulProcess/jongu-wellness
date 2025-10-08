@@ -5,8 +5,14 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { isAdmin } from '@/lib/admin-utils';
+import { ChannelConfig } from '@/lib/loadChannel';
 
-export function Header() {
+interface HeaderProps {
+  channels?: ChannelConfig[];
+  currentChannelSlug?: string;
+}
+
+export function Header({ channels = [], currentChannelSlug = 'wellness' }: HeaderProps) {
   const showAuthModal = () => {
     if ((window as any).__openAuthModal) {
       (window as any).__openAuthModal();
@@ -34,7 +40,7 @@ export function Header() {
             
             <nav className="hidden md:flex space-x-6 items-center">
               {/* Channels Dropdown */}
-              <ChannelsDropdown />
+              <ChannelsDropdown channels={channels} currentChannelSlug={currentChannelSlug} />
 
               {/* Courses Link */}
               <CoursesLink />
@@ -175,29 +181,12 @@ export function Header() {
 }
 
 // Channels Dropdown Component
-function ChannelsDropdown() {
+function ChannelsDropdown({ channels, currentChannelSlug }: { channels: ChannelConfig[], currentChannelSlug: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const channels = [
-    {
-      name: "Wellness",
-      url: "https://channels.recursive.eco/",
-      description: "Mental health & wellness tools",
-      active: true
-    },
-    {
-      name: "Parents",
-      url: "https://parents.recursive.eco", 
-      description: "Parenting support & resources",
-      comingSoon: true
-    },
-    {
-      name: "Developers",
-      url: "https://developers.recursive.eco",
-      description: "Code with purpose",
-      comingSoon: true
-    }
-  ];
+  if (channels.length === 0) {
+    return null; // Don't show if no channels
+  }
 
   return (
     <div className="relative">
@@ -219,30 +208,29 @@ function ChannelsDropdown() {
           />
           <div className="absolute top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-20 overflow-hidden">
             {channels.map((channel) => (
-              <a
-                key={channel.name}
-                href={channel.url}
+              <Link
+                key={channel.slug}
+                href={channel.slug === 'wellness' ? '/' : `/channels/${channel.slug}`}
                 className={`block px-4 py-3 hover:bg-gray-50 transition-colors ${
-                  channel.active ? 'bg-blue-50 border-l-4 border-blue-500' : ''
-                } ${channel.comingSoon ? 'opacity-60 cursor-not-allowed' : ''}`}
-                onClick={channel.comingSoon ? (e) => e.preventDefault() : undefined}
+                  channel.slug === currentChannelSlug ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+                }`}
+                onClick={() => setIsOpen(false)}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium text-gray-900">
+                    <div className={`font-medium ${
+                      channel.slug === currentChannelSlug ? 'text-blue-600' : 'text-gray-900'
+                    }`}>
                       {channel.name}
                     </div>
-                    <div className="text-xs text-gray-500">
-                      {channel.description}
-                    </div>
                   </div>
-                  {channel.comingSoon && (
-                    <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">
-                      Soon
-                    </span>
+                  {channel.slug === currentChannelSlug && (
+                    <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
                   )}
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </>
