@@ -26,71 +26,6 @@ interface ToolCardProps {
   onHashtagClick?: (hashtag: string) => void;
 }
 
-const getCategoryDesign = (category: string) => {
-  const designs: Record<string, {
-    gradient: string;
-    textColor: string;
-    icon: string;
-    name: string;
-  }> = {
-    'mindfulness': {
-      gradient: 'bg-blue-50',
-      textColor: 'text-gray-800',
-      icon: '🧘‍♀️',
-      name: 'Mindfulness'
-    },
-    'distress-tolerance': {
-      gradient: 'bg-blue-50',
-      textColor: 'text-gray-800',
-      icon: '🌊',
-      name: 'Distress Tolerance'
-    },
-    'emotion-regulation': {
-      gradient: 'bg-blue-50',
-      textColor: 'text-gray-800',
-      icon: '💝',
-      name: 'Emotion Regulation'
-    },
-    'interpersonal-effectiveness': {
-      gradient: 'bg-blue-50',
-      textColor: 'text-gray-800',
-      icon: '🤝',
-      name: 'Interpersonal Skills'
-    },
-    'creativity': {
-      gradient: 'bg-blue-50',
-      textColor: 'text-gray-800',
-      icon: '🎨',
-      name: 'Creativity'
-    },
-    'productivity': {
-      gradient: 'bg-blue-50',
-      textColor: 'text-gray-800',
-      icon: '⚡',
-      name: 'Productivity'
-    },
-    'health': {
-      gradient: 'bg-blue-50',
-      textColor: 'text-gray-800',
-      icon: '🌱',
-      name: 'Health & Wellness'
-    },
-    'relationships': {
-      gradient: 'bg-blue-50',
-      textColor: 'text-gray-800',
-      icon: '💕',
-      name: 'Relationships'
-    }
-  };
-  
-  return designs[category] || {
-    gradient: 'bg-blue-50',
-    textColor: 'text-gray-800',
-    icon: '🛠️',
-    name: category || 'Tool'
-  };
-};
-
 export function ToolCard({ tool, onStar, onUnstar, isStarred = false, onHashtagClick }: ToolCardProps) {
   const [isStarring, setIsStarring] = useState(false);
   const [showStarError, setShowStarError] = useState(false);
@@ -186,45 +121,23 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, onHashtagC
     );
   };
 
-  const design = getCategoryDesign(tool.category[0] || 'tool');
-
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-gray-100 flex flex-col h-full">
       {/* Enhanced Image/Placeholder Area */}
       <div className="relative h-48">
         {tool.thumbnail_url ? (
-          <>
-            <Image
-              src={tool.thumbnail_url}
-              alt={tool.title || tool.name || 'Tool thumbnail'}
-              width={400}
-              height={300}
-              className="w-full h-full object-contain bg-gray-50"
-            />
-            {/* Category badge for images */}
-            <div className="absolute top-3 left-3">
-              <span className={`inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/50 backdrop-blur-sm shadow-lg`}>
-                <span className="text-lg">{design.icon}</span>
-              </span>
-            </div>
-          </>
+          <Image
+            src={tool.thumbnail_url}
+            alt={tool.title || tool.name || 'Tool thumbnail'}
+            width={400}
+            height={300}
+            className="w-full h-full object-contain bg-gray-50"
+          />
         ) : (
-          <div className={`w-full h-full ${design.gradient} flex items-center justify-center relative overflow-hidden`}>
-            {/* Subtle geometric pattern overlay */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="w-full h-full" style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236b7280' fill-opacity='0.3'%3E%3Cpath d='M0 0h80v80H0V0zm20 20v40h40V20H20zm20 35a15 15 0 1 1 0-30 15 15 0 0 1 0 30z' fill-opacity='0.1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-              }} />
-            </div>
-            
-            <div className={`text-center ${design.textColor} relative z-10 p-6`}>
-              <div className="text-6xl mb-4 drop-shadow-lg filter">
-                {design.icon}
-              </div>
-              <h3 className="text-xl font-bold uppercase tracking-wider drop-shadow-md">
-                {design.name}
-              </h3>
-              <div className="mt-3 w-16 h-0.5 bg-gray-400/40 mx-auto rounded-full"></div>
+          <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+            <div className="text-center text-gray-500 p-6">
+              <div className="text-4xl mb-2">🛠️</div>
+              <p className="text-sm font-medium">No Preview</p>
             </div>
           </div>
         )}

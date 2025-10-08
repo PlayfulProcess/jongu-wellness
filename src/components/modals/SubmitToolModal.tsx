@@ -15,11 +15,12 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     url: '',
-    category: '',
     description: '',
     submitted_by: '',
     creator_link: ''
   });
+  const [hashtags, setHashtags] = useState<string[]>([]);
+  const [hashtagInput, setHashtagInput] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
@@ -47,23 +48,33 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
     }
   }, [isOpen, checkUser]);
 
-  const categories = [
-    { value: 'mindfulness', label: '🧘 Mindfulness' },
-    { value: 'distress-tolerance', label: '🛡️ Distress Tolerance' },
-    { value: 'emotion-regulation', label: '❤️ Emotion Regulation' },
-    { value: 'interpersonal-effectiveness', label: '🤝 Interpersonal Skills' },
-    { value: 'creativity', label: '🎨 Creativity' },
-    { value: 'productivity', label: '⚡ Productivity' },
-    { value: 'health', label: '🌱 Health & Wellness' },
-    { value: 'relationships', label: '💕 Relationships' }
-  ];
+  const addHashtag = () => {
+    const tag = hashtagInput.trim().toLowerCase().replace(/^#+/, ''); // Remove leading # if present
+    if (tag && !hashtags.includes(tag) && hashtags.length < 5) {
+      setHashtags([...hashtags, tag]);
+      setHashtagInput('');
+    }
+  };
+
+  const removeHashtag = (tagToRemove: string) => {
+    setHashtags(hashtags.filter(tag => tag !== tagToRemove));
+  };
+
+  const handleHashtagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',' || e.key === ' ') {
+      e.preventDefault();
+      addHashtag();
+    } else if (e.key === 'Backspace' && !hashtagInput && hashtags.length > 0) {
+      removeHashtag(hashtags[hashtags.length - 1]);
+    }
+  };
 
   const validateForm = () => {
     const newErrors: {[key: string]: string} = {};
-    
+
     if (!formData.name.trim()) newErrors.name = 'Tool name is required';
     if (!formData.url.trim()) newErrors.url = 'Tool URL is required';
-    if (!formData.category) newErrors.category = 'Category is required';
+    if (hashtags.length === 0) newErrors.hashtags = 'At least one hashtag is required';
     if (!formData.description.trim()) newErrors.description = 'Description is required';
     if (!formData.submitted_by.trim()) newErrors.submitted_by = 'Your name is required';
     
@@ -157,14 +168,14 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
         thumbnail_url = data.publicUrl;
       }
       
-      // Submit tool with thumbnail_url
+      // Submit tool with thumbnail_url and hashtags as array
       const response = await fetch('/api/community/submissions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: formData.name,
           claude_url: formData.url,
-          category: formData.category,
+          category: hashtags, // Send as array
           description: formData.description,
           creator_name: formData.submitted_by,
           creator_link: formData.creator_link,
@@ -186,11 +197,12 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
       setFormData({
         name: '',
         url: '',
-        category: '',
         description: '',
         submitted_by: '',
         creator_link: ''
       });
+      setHashtags([]);
+      setHashtagInput('');
       setSelectedImage(null);
       setErrors({});
       
@@ -307,24 +319,47 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
               {errors.image && <p className="text-red-600 text-sm mt-1">{errors.image}</p>}
             </div>
 
-            {/* Category */}
+            {/* Hashtags */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Category *
+                Hashtags * <span className="text-gray-500 text-xs">(1-5 tags)</span>
               </label>
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Select a category</option>
-                {categories.map((cat) => (
-                  <option key={cat.value} value={cat.value}>
-                    {cat.label}
-                  </option>
-                ))}
-              </select>
-              {errors.category && <p className="text-red-600 text-sm mt-1">{errors.category}</p>}
+              <div className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500">
+                {/* Display hashtag chips */}
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {hashtags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                    >
+                      #{tag}
+                      <button
+                        type="button"
+                        onClick={() => removeHashtag(tag)}
+                        className="ml-2 text-blue-600 hover:text-blue-800 font-bold"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                {/* Input for new hashtags */}
+                {hashtags.length < 5 && (
+                  <input
+                    type="text"
+                    value={hashtagInput}
+                    onChange={(e) => setHashtagInput(e.target.value)}
+                    onKeyDown={handleHashtagKeyDown}
+                    onBlur={addHashtag}
+                    className="w-full outline-none text-gray-900"
+                    placeholder={hashtags.length === 0 ? "Type hashtags and press Enter, Space, or Comma" : "Add another..."}
+                  />
+                )}
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Examples: mindfulness, anxiety, gratitude, self-care, journaling
+              </p>
+              {errors.hashtags && <p className="text-red-600 text-sm mt-1">{errors.hashtags}</p>}
             </div>
 
             {/* Description */}
