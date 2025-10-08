@@ -27,7 +27,8 @@ export async function POST(request: NextRequest) {
       creator_name,
       creator_link,
       creator_background,
-      thumbnail_url
+      thumbnail_url,
+      channel_slug
     } = body;
     
     // Validate required fields
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
       .from('tools')
       .insert({
         slug: uniqueSlug,
-        channel_slug: 'community',
+        channel_slug: channel_slug || 'wellness', // Use provided channel_slug or default to wellness
         tool_data: toolData
       })
       .select()

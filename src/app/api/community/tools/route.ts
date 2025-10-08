@@ -27,13 +27,15 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
     const { searchParams } = new URL(request.url);
-    
-    const sort = searchParams.get('sort') || 'stars';
 
-    // Get all tools - no server-side category filtering (done client-side)
+    const sort = searchParams.get('sort') || 'stars';
+    const channelSlug = searchParams.get('channel_slug') || 'wellness';
+
+    // Get tools for specific channel - no server-side category filtering (done client-side)
     let query = supabase
       .from('tools')
-      .select('id, slug, channel_slug, tool_data, created_at, updated_at');
+      .select('id, slug, channel_slug, tool_data, created_at, updated_at')
+      .eq('channel_slug', channelSlug);
 
     // Simple sorting by created_at for now
     if (sort === 'newest') {

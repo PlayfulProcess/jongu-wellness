@@ -22,7 +22,11 @@ interface Tool {
   active?: boolean;
 }
 
-export function CommunitySection() {
+interface CommunitySectionProps {
+  channelSlug?: string;
+}
+
+export function CommunitySection({ channelSlug = 'wellness' }: CommunitySectionProps) {
   const handleSubmitToolClick = () => {
     if ((window as any).__openSubmitToolModal) {
       (window as any).__openSubmitToolModal();
@@ -37,7 +41,7 @@ export function CommunitySection() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/community/tools');
+      const response = await fetch(`/api/community/tools?channel_slug=${channelSlug}`);
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -69,7 +73,7 @@ export function CommunitySection() {
 
   useEffect(() => {
     fetchStats();
-  }, []);
+  }, [channelSlug]); // Refetch when channel changes
 
   return (
     <section

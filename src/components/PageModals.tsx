@@ -6,7 +6,11 @@ import { CollaborationModal } from '@/components/modals/CollaborationModal';
 import { SubmitToolModal } from '@/components/modals/SubmitToolModal';
 import { createClient } from '@/lib/supabase-client';
 
-export function PageModals() {
+interface PageModalsProps {
+  channelSlug?: string;
+}
+
+export function PageModals({ channelSlug = 'wellness' }: PageModalsProps) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showSubmitToolModal, setShowSubmitToolModal] = useState(false);
@@ -54,6 +58,7 @@ export function PageModals() {
       <SubmitToolModal
         isOpen={showSubmitToolModal}
         onClose={() => setShowSubmitToolModal(false)}
+        channelSlug={channelSlug}
       />
 
       {/* Hidden trigger component to allow other components to open modals */}

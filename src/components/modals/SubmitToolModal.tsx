@@ -7,9 +7,10 @@ import { User } from '@supabase/supabase-js';
 interface SubmitToolModalProps {
   isOpen: boolean;
   onClose: () => void;
+  channelSlug?: string;
 }
 
-export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
+export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness' }: SubmitToolModalProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -168,7 +169,7 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
         thumbnail_url = data.publicUrl;
       }
       
-      // Submit tool with thumbnail_url and hashtags as array
+      // Submit tool with thumbnail_url, hashtags as array, and channel_slug
       const response = await fetch('/api/community/submissions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -179,7 +180,8 @@ export function SubmitToolModal({ isOpen, onClose }: SubmitToolModalProps) {
           description: formData.description,
           creator_name: formData.submitted_by,
           creator_link: formData.creator_link,
-          thumbnail_url
+          thumbnail_url,
+          channel_slug: channelSlug
         }),
         credentials: 'include'
       });

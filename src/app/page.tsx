@@ -7,17 +7,18 @@ import { getAllChannels } from '@/lib/loadChannel';
 
 export default async function HomePage() {
   const channels = getAllChannels();
+  const channelSlug = 'wellness';
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <Header channels={channels} currentChannelSlug="wellness" />
+      <Header channels={channels} currentChannelSlug={channelSlug} />
 
       {/* Hero Section - Loaded from MDX */}
-      <ChannelHero channelSlug="wellness" />
+      <ChannelHero channelSlug={channelSlug} />
 
       {/* Community Wellness Tool Garden */}
-      <CommunitySection />
+      <CommunitySection channelSlug={channelSlug} />
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
@@ -47,7 +48,7 @@ export default async function HomePage() {
       </footer>
 
       {/* Modals */}
-      <PageModals />
+      <PageModals channelSlug={channelSlug} />
     </div>
   );
 }
