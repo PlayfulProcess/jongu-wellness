@@ -7,7 +7,7 @@ interface HeaderWithChannelsProps {
 }
 
 export async function HeaderWithChannels({ currentChannelSlug = 'wellness' }: HeaderWithChannelsProps) {
-  const channels = getAllChannels();
+  const channels = await getAllChannels();
 
   return (
     <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-sm border-b border-gray-200">

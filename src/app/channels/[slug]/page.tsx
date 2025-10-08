@@ -4,21 +4,32 @@ import { ChannelHero } from '@/components/ChannelHero';
 import { CommunitySection } from '@/components/CommunitySection';
 import { PageModals } from '@/components/PageModals';
 import { getAllChannels } from '@/lib/loadChannel';
+import { notFound } from 'next/navigation';
 
-export default async function HomePage() {
+interface ChannelPageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default async function ChannelPage({ params }: ChannelPageProps) {
+  const { slug } = await params;
   const channels = await getAllChannels();
-  const channelSlug = 'wellness';
+
+  // Check if channel exists
+  const channelExists = channels.some(c => c.slug === slug);
+  if (!channelExists) {
+    notFound();
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <Header channels={channels} currentChannelSlug={channelSlug} />
+      <Header channels={channels} currentChannelSlug={slug} />
 
       {/* Hero Section - Loaded from MDX */}
-      <ChannelHero channelSlug={channelSlug} />
+      <ChannelHero channelSlug={slug} />
 
-      {/* Community Wellness Tool Garden */}
-      <CommunitySection channelSlug={channelSlug} />
+      {/* Community Tool Garden */}
+      <CommunitySection channelSlug={slug} />
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
@@ -48,7 +59,7 @@ export default async function HomePage() {
       </footer>
 
       {/* Modals */}
-      <PageModals channelSlug={channelSlug} />
+      <PageModals channelSlug={slug} />
     </div>
   );
 }
