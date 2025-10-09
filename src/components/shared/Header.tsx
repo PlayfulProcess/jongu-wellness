@@ -105,12 +105,15 @@ export function Header({ channels = [], currentChannelSlug = 'wellness' }: Heade
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-gray-200 py-2">
             <div className="space-y-1">
-              {/* All Channels - Flat List */}
+              {/* Channels Section */}
+              <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Channels
+              </div>
               {channels.map((channel) => (
                 <Link
                   key={channel.slug}
                   href={channel.slug === 'wellness' ? '/' : `/channels/${channel.slug}`}
-                  className={`block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50 ${
+                  className={`block pl-6 pr-3 py-2 rounded-md text-base font-medium hover:bg-gray-50 ${
                     channel.slug === currentChannelSlug
                       ? 'text-blue-600 bg-blue-50'
                       : 'text-gray-700 hover:text-gray-900'
@@ -120,6 +123,9 @@ export function Header({ channels = [], currentChannelSlug = 'wellness' }: Heade
                   {channel.name}
                 </Link>
               ))}
+
+              {/* Divider */}
+              <div className="border-t border-gray-200 my-2"></div>
               <a
                 href="https://www.recursive.eco/pages/courses/index.html"
                 target="_blank"
