@@ -96,8 +96,12 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, onHashtagC
   const renderStarButton = () => {
     return (
       <button
-        onClick={handleStarToggle}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleStarToggle();
+        }}
         disabled={isStarring}
+        title={isStarred ? 'Saved - View in Dashboard' : 'Save to Dashboard'}
         className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
           isStarred
             ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
@@ -116,13 +120,21 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, onHashtagC
             d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
           />
         </svg>
-        <span>{isStarred ? 'Starred' : 'Star'}</span>
+        <span>{isStarred ? 'Saved' : 'Save'}</span>
       </button>
     );
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-gray-100 flex flex-col h-full">
+    <div
+      onClick={handleToolClick}
+      className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-gray-100 flex flex-col h-full cursor-pointer relative"
+    >
+      {/* Save Button - Top Right */}
+      <div className="absolute top-3 right-3 z-10">
+        {renderStarButton()}
+      </div>
+
       {/* Enhanced Image/Placeholder Area */}
       <div className="relative h-48">
         {tool.thumbnail_url ? (
@@ -145,12 +157,12 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, onHashtagC
 
       {/* Content */}
       <div className="p-4 flex flex-col flex-grow">
-        {/* Title and Stars */}
+        {/* Title and Save Count */}
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-semibold text-gray-900 text-lg line-clamp-2 flex-1 mr-2">
             {tool.name}
           </h3>
-          <div className="flex items-center space-x-1 text-sm text-gray-600">
+          <div className="flex items-center space-x-1 text-sm text-gray-600" title={`${tool.star_count} saves`}>
             <svg className="w-4 h-4 fill-yellow-500" viewBox="0 0 24 24">
               <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
             </svg>
@@ -184,7 +196,7 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, onHashtagC
         )}
 
         {/* Creator Info */}
-        <div className="flex items-center mb-4">
+        <div className="flex items-center mt-auto">
           <div className="flex-1">
             <p className="text-xs text-gray-500">Submitted by</p>
             {tool.creator_link ? (
@@ -192,6 +204,7 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, onHashtagC
                 href={tool.creator_link}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
                 className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors underline"
               >
                 {tool.submitted_by}
@@ -200,17 +213,6 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, onHashtagC
               <p className="text-sm font-medium text-gray-900">{tool.submitted_by}</p>
             )}
           </div>
-        </div>
-
-        {/* Action Buttons - Always at bottom */}
-        <div className="flex space-x-2 mt-auto">
-          <button
-            onClick={handleToolClick}
-            className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-          >
-            Try This Tool
-          </button>
-          {renderStarButton()}
         </div>
       </div>
       
