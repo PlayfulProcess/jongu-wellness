@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { MagicLinkAuth } from '@/components/MagicLinkAuth';
+import { DualAuth } from '@/components/DualAuth';
 import { CollaborationModal } from '@/components/modals/CollaborationModal';
 import { SubmitToolModal } from '@/components/modals/SubmitToolModal';
 import { createClient } from '@/lib/supabase-client';
@@ -45,7 +45,7 @@ export function PageModals({ channelSlug = 'wellness' }: PageModalsProps) {
 
   return (
     <>
-      <MagicLinkAuth
+      <DualAuth
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
       />
