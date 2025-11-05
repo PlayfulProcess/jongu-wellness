@@ -52,7 +52,7 @@ export function DualAuth({ isOpen, onClose }: DualAuthProps) {
     };
   }, [isOpen, onClose]);
 
-  // Step 1: Send email with magic link + OTP
+  // Step 1: Send OTP code via email
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -66,7 +66,6 @@ export function DualAuth({ isOpen, onClose }: DualAuthProps) {
         email,
         options: {
           shouldCreateUser: true,
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
 
@@ -74,7 +73,7 @@ export function DualAuth({ isOpen, onClose }: DualAuthProps) {
 
       setMessage({
         type: 'success',
-        text: `Check your email! We sent you a magic link and a 6-digit code to ${email}`,
+        text: `Check your email! We sent a 6-digit code to ${email}`,
       });
       setMode('verify');
     } catch (error: unknown) {
@@ -138,7 +137,6 @@ export function DualAuth({ isOpen, onClose }: DualAuthProps) {
         email,
         options: {
           shouldCreateUser: true,
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
 
@@ -168,18 +166,21 @@ export function DualAuth({ isOpen, onClose }: DualAuthProps) {
           <>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Sign In</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              We&apos;ll send you an email with both a clickable link and a 6-digit code
+              Enter your email to receive a 6-digit verification code
             </p>
 
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-3 mb-4 text-xs text-left space-y-1">
               <p className="text-blue-900 dark:text-blue-200">
-                <strong>📧 Two ways to sign in:</strong>
+                <strong>📧 How it works:</strong>
               </p>
               <p className="text-blue-800 dark:text-blue-300">
-                • <strong>Option 1:</strong> Click the magic link (may not work on corporate email)
+                1. Enter your email address
               </p>
               <p className="text-blue-800 dark:text-blue-300">
-                • <strong>Option 2:</strong> Enter the 6-digit code (works everywhere, including Outlook)
+                2. Check your email for a 6-digit code
+              </p>
+              <p className="text-blue-800 dark:text-blue-300">
+                3. Enter the code to sign in
               </p>
               <p className="text-blue-800 dark:text-blue-300 mt-2">
                 • Check your <strong>Spam folder</strong> if you don&apos;t see it
@@ -223,7 +224,7 @@ export function DualAuth({ isOpen, onClose }: DualAuthProps) {
                 disabled={loading}
                 className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
               >
-                {loading ? 'Sending...' : 'Send Magic Link & Code'}
+                {loading ? 'Sending...' : 'Send Verification Code'}
               </button>
             </form>
 
@@ -242,14 +243,14 @@ export function DualAuth({ isOpen, onClose }: DualAuthProps) {
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Check Your Email</h2>
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                We sent an email to <strong className="text-gray-900 dark:text-gray-100">{email}</strong>
+                We sent a 6-digit code to <strong className="text-gray-900 dark:text-gray-100">{email}</strong>
               </p>
               <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-4">
-                <p className="text-sm text-blue-900 dark:text-blue-200 mb-2">
-                  <strong>Option 1:</strong> Click the magic link in the email
-                </p>
                 <p className="text-sm text-blue-900 dark:text-blue-200">
-                  <strong>Option 2:</strong> Enter the 6-digit code below
+                  📧 Enter the 6-digit code from your email below
+                </p>
+                <p className="text-xs text-blue-800 dark:text-blue-300 mt-2">
+                  Don't see it? Check your spam folder
                 </p>
               </div>
             </div>
