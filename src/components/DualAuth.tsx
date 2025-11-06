@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase-client';
 
-type AuthMode = 'email' | 'verify';
+type AuthMode = 'email' | 'verify' | 'direct-verify';
 
 interface DualAuthProps {
   isOpen: boolean;
@@ -228,12 +228,24 @@ export function DualAuth({ isOpen, onClose }: DualAuthProps) {
               </button>
             </form>
 
-            <button
-              onClick={onClose}
-              className="mt-4 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 w-full"
-            >
-              Continue without signing in
-            </button>
+            <div className="mt-4 flex flex-col space-y-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('direct-verify');
+                  setMessage(null);
+                }}
+                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+              >
+                Already have a code? Enter it here →
+              </button>
+              <button
+                onClick={onClose}
+                className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              >
+                Continue without signing in
+              </button>
+            </div>
           </>
         )}
 
@@ -319,6 +331,91 @@ export function DualAuth({ isOpen, onClose }: DualAuthProps) {
               Code expires in 1 hour • Can request new code after 60 seconds
             </p>
           </form>
+        )}
+
+        {/* Step 3: Direct Verify - Enter Both Email and OTP */}
+        {mode === 'direct-verify' && (
+          <>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Enter Your Code</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Already received a verification code? Enter your email and code below
+            </p>
+
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-3 mb-4 text-xs text-left">
+              <p className="text-blue-900 dark:text-blue-200">
+                <strong>📧 Check your email</strong> for a 6-digit code and enter it below
+              </p>
+            </div>
+
+            <form onSubmit={handleVerifyOTP} className="space-y-4">
+              <div>
+                <label htmlFor="direct-email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Email address
+                </label>
+                <input
+                  id="direct-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  required
+                  disabled={loading}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="direct-otp" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Enter 6-digit code
+                </label>
+                <input
+                  id="direct-otp"
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  placeholder="123456"
+                  required
+                  disabled={loading}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-center text-2xl font-mono tracking-widest focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 placeholder-gray-500 dark:placeholder-gray-400"
+                  maxLength={6}
+                  pattern="\d{6}"
+                />
+              </div>
+
+              {message && (
+                <div
+                  className={`p-3 rounded-lg text-sm ${
+                    message.type === 'success'
+                      ? 'bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-700'
+                      : 'bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-700'
+                  }`}
+                >
+                  {message.text}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading || otp.length !== 6}
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              >
+                {loading ? 'Verifying...' : 'Sign In'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('email');
+                  setOtp('');
+                  setEmail('');
+                  setMessage(null);
+                }}
+                className="w-full text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              >
+                ← Back to email entry
+              </button>
+            </form>
+          </>
         )}
       </div>
     </div>

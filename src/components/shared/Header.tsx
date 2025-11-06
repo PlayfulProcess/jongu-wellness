@@ -28,13 +28,12 @@ export function Header({ channels = [], currentChannelSlug = 'wellness' }: Heade
           {/* Logo and Navigation */}
           <div className="flex items-center space-x-8">
             <Link href="https://www.recursive.eco/" className="flex items-center space-x-2">
-              <Image 
-                src="/recursive-logo-1756153260128.png" 
+              <Image
+                src="/recursive-logo-1756153435820.svg"
                 alt="Recursive.eco"
                 width={60}
                 height={60}
                 className="h-12 w-auto"
-                style={{ transform: 'rotate(200deg)' }}
               />
             </Link>
             
