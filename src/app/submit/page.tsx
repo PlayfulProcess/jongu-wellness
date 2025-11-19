@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase-client';
 import { useAuth } from '@/components/AuthProvider';
@@ -26,7 +26,6 @@ function SubmitPageContent() {
   });
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [hashtagInput, setHashtagInput] = useState('');
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -117,7 +116,6 @@ function SubmitPageContent() {
         creator_link: ''
       });
       setHashtags([]);
-      setSelectedImage(null);
     } catch (error: any) {
       console.error('Error submitting tool:', error);
       setErrors({ submit: error.message || 'Failed to submit. Please try again.' });
@@ -297,7 +295,7 @@ function SubmitPageContent() {
                 placeholder="https://creator-website.com"
               />
               <p className="mt-1 text-xs text-gray-500">
-                Link to the creator's website or social media
+                Link to the creator&apos;s website or social media
               </p>
             </div>
 
