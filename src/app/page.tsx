@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { Header } from '@/components/shared/Header';
 import { ChannelHero } from '@/components/ChannelHero';
@@ -48,7 +49,9 @@ export default async function HomePage() {
       </footer>
 
       {/* Modals */}
-      <PageModals channelSlug={channelSlug} />
+      <Suspense fallback={null}>
+        <PageModals channelSlug={channelSlug} />
+      </Suspense>
     </div>
   );
 }

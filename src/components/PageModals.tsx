@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { DualAuth } from '@/components/DualAuth';
 import { CollaborationModal } from '@/components/modals/CollaborationModal';
 import { SubmitToolModal } from '@/components/modals/SubmitToolModal';
@@ -11,10 +12,12 @@ interface PageModalsProps {
 }
 
 export function PageModals({ channelSlug = 'wellness' }: PageModalsProps) {
+  const searchParams = useSearchParams();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showSubmitToolModal, setShowSubmitToolModal] = useState(false);
   const [, setUser] = useState<{ email?: string } | null>(null);
+  const [prefillData, setPrefillData] = useState<any>(null);
 
   const checkUser = useCallback(async () => {
     const supabase = createClient();
@@ -43,6 +46,46 @@ export function PageModals({ channelSlug = 'wellness' }: PageModalsProps) {
     };
   }, [checkUser]);
 
+  // Auto-open submit modal if doc_id is present in URL
+  useEffect(() => {
+    const docId = searchParams?.get('doc_id');
+    const channel = searchParams?.get('channel');
+
+    if (docId) {
+      const fetchDocumentAndOpenModal = async () => {
+        const supabase = createClient();
+        try {
+          const { data, error } = await supabase
+            .from('user_documents')
+            .select('*')
+            .eq('id', docId)
+            .single();
+
+          if (error) {
+            console.error('Error loading document:', error);
+            return;
+          }
+
+          if (data) {
+            // Pre-fill form data from document
+            setPrefillData({
+              name: data.document_data?.title || '',
+              url: `https://recursive.eco/view/${docId}`,
+              description: data.document_data?.description || '',
+            });
+
+            // Auto-open the modal
+            setShowSubmitToolModal(true);
+          }
+        } catch (err) {
+          console.error('Error fetching document:', err);
+        }
+      };
+
+      fetchDocumentAndOpenModal();
+    }
+  }, [searchParams]);
+
   return (
     <>
       <DualAuth
@@ -59,6 +102,7 @@ export function PageModals({ channelSlug = 'wellness' }: PageModalsProps) {
         isOpen={showSubmitToolModal}
         onClose={() => setShowSubmitToolModal(false)}
         channelSlug={channelSlug}
+        prefillData={prefillData}
       />
 
       {/* Hidden trigger component to allow other components to open modals */}

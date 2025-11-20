@@ -8,9 +8,14 @@ interface SubmitToolModalProps {
   isOpen: boolean;
   onClose: () => void;
   channelSlug?: string;
+  prefillData?: {
+    name?: string;
+    url?: string;
+    description?: string;
+  };
 }
 
-export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness' }: SubmitToolModalProps) {
+export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', prefillData }: SubmitToolModalProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -48,6 +53,18 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness' }: S
       checkUser();
     }
   }, [isOpen, checkUser]);
+
+  // Populate form with prefill data when provided
+  useEffect(() => {
+    if (prefillData && isOpen) {
+      setFormData(prevData => ({
+        ...prevData,
+        name: prefillData.name || prevData.name,
+        url: prefillData.url || prevData.url,
+        description: prefillData.description || prevData.description,
+      }));
+    }
+  }, [prefillData, isOpen]);
 
   const addHashtag = () => {
     const tag = hashtagInput.trim().toLowerCase().replace(/^#+/, ''); // Remove leading # if present
