@@ -118,24 +118,27 @@ function SubmitPageContent() {
     setIsSubmitting(true);
 
     try {
-      // Insert into tools table
-      const { error } = await supabase
-        .from('tools')
-        .insert({
-          name: formData.name,
-          url: formData.url,
-          category: hashtags,
+      // Submit using API route (same as SubmitToolModal)
+      const response = await fetch('/api/community/submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: formData.name,
+          claude_url: formData.url,
+          category: hashtags, // Send as array
           description: formData.description,
-          submitted_by: formData.submitted_by,
+          creator_name: formData.submitted_by,
           creator_link: formData.creator_link || null,
-          thumbnail_url: null, // TODO: Handle image upload if needed
-          approved: false,
-          reviewed: false,
-          active: true,
-          user_id: user.id
-        });
+          thumbnail_url: null,
+          channel_slug: prefillChannel
+        }),
+        credentials: 'include'
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to submit');
+      }
 
       setSubmitSuccess(true);
 
