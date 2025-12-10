@@ -34,7 +34,7 @@ export const ChannelComponents = {
     <li>{children}</li>
   ),
   p: ({ children }: { children: React.ReactNode }) => (
-    <p className="mb-4">{children}</p>
+    <p className="mb-4 text-gray-900">{children}</p>
   ),
   a: ({ href, children }: { href?: string; children: React.ReactNode }) => (
     <a href={href} className="text-blue-600 hover:text-blue-800 underline" target="_blank" rel="noopener noreferrer">
