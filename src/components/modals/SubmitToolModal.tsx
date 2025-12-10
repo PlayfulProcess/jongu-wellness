@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase-client';
 import { User } from '@supabase/supabase-js';
+import { isAllowedUrlForChannel, getAllowedDomainsMessage } from '@/lib/url-validation';
 
 interface SubmitToolModalProps {
   isOpen: boolean;
@@ -99,17 +100,23 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
     // URL validation
     if (formData.url) {
       let urlToTest = formData.url.trim();
-      
+
       // Auto-add https:// if no protocol is provided
       if (!urlToTest.startsWith('http://') && !urlToTest.startsWith('https://')) {
         urlToTest = 'https://' + urlToTest;
       }
-      
+
       try {
         new URL(urlToTest);
         // URL is valid, but make sure original has protocol
         if (!formData.url.startsWith('http://') && !formData.url.startsWith('https://')) {
           newErrors.url = 'Please include http:// or https:// in your URL';
+        } else {
+          // Channel-specific URL validation (e.g., kids-stories only allows Google Drive and recursive.eco)
+          const validationResult = isAllowedUrlForChannel(formData.url, channelSlug);
+          if (!validationResult.isValid) {
+            newErrors.url = validationResult.error || 'This URL is not allowed for this channel';
+          }
         }
       } catch {
         newErrors.url = 'Please provide a valid URL (e.g., https://example.com)';
@@ -318,6 +325,11 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
                 className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="https://your-tool-url.com"
               />
+              {getAllowedDomainsMessage(channelSlug) && (
+                <p className="text-xs text-blue-600 mt-1">
+                  ℹ️ {getAllowedDomainsMessage(channelSlug)}
+                </p>
+              )}
               {errors.url && <p className="text-red-600 text-sm mt-1">{errors.url}</p>}
             </div>
 

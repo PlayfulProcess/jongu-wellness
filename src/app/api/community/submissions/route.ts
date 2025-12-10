@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { sendToolSubmissionNotification } from '@/lib/email';
 import { isAdmin, isRecursiveEcoReservedName } from '@/lib/admin-utils';
+import { isAllowedUrlForChannel } from '@/lib/url-validation';
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,7 +39,16 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
+    // Channel-specific URL validation
+    const urlValidation = isAllowedUrlForChannel(claude_url, channel_slug || 'wellness');
+    if (!urlValidation.isValid) {
+      return NextResponse.json(
+        { error: urlValidation.error || 'URL not allowed for this channel' },
+        { status: 400 }
+      );
+    }
+
     // Protect "Recursive.eco" brand - only admins can use it
     const userEmail = user.email || '';
     const isUserAdmin = isAdmin(userEmail);
