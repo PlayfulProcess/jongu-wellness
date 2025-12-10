@@ -30,8 +30,12 @@ export function isKidsSafeUrl(url: string): UrlValidationResult {
     const urlObj = new URL(url);
     const hostname = urlObj.hostname.toLowerCase();
 
-    // Allow recursive.eco and all subdomains only
-    if (hostname === 'recursive.eco' || hostname.endsWith('.recursive.eco')) {
+    // Allow recursive.eco and all subdomains (including www)
+    if (
+      hostname === 'recursive.eco' ||
+      hostname === 'www.recursive.eco' ||
+      hostname.endsWith('.recursive.eco')
+    ) {
       return { isValid: true };
     }
 
