@@ -5,6 +5,19 @@ import { createClient } from '@/lib/supabase-client';
 import { User } from '@supabase/supabase-js';
 import { isAllowedUrlForChannel, getAllowedDomainsMessage } from '@/lib/url-validation';
 
+/**
+ * Get the display URL for thumbnail preview.
+ * Uses image proxy for Google Drive URLs to handle CORS.
+ */
+function getProxiedImageUrl(url: string): string {
+  if (!url) return '';
+  // Use proxy for Google Drive URLs
+  if (url.includes('drive.google.com')) {
+    return `/api/image-proxy?url=${encodeURIComponent(url)}`;
+  }
+  return url;
+}
+
 interface PrefilledData {
   doc_id?: string | null;
   title?: string | null;
@@ -404,7 +417,7 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
                     <div className="mt-2">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={thumbnailUrlInput}
+                        src={getProxiedImageUrl(thumbnailUrlInput)}
                         alt="Thumbnail preview"
                         className="h-20 w-auto rounded border"
                         onError={(e) => {
