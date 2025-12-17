@@ -5,18 +5,24 @@ import { createClient } from '@/lib/supabase-client';
 import { User } from '@supabase/supabase-js';
 import { isAllowedUrlForChannel, getAllowedDomainsMessage } from '@/lib/url-validation';
 
+interface PrefilledData {
+  doc_id?: string | null;
+  title?: string | null;
+  description?: string | null;
+  creator_name?: string | null;
+  creator_link?: string | null;
+  thumbnail_url?: string | null;
+  hashtags?: string[];
+}
+
 interface SubmitToolModalProps {
   isOpen: boolean;
   onClose: () => void;
   channelSlug?: string;
-  prefillData?: {
-    name?: string;
-    url?: string;
-    description?: string;
-  };
+  prefilledData?: PrefilledData;
 }
 
-export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', prefillData }: SubmitToolModalProps) {
+export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', prefilledData }: SubmitToolModalProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -29,6 +35,8 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [hashtagInput, setHashtagInput] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [thumbnailMode, setThumbnailMode] = useState<'url' | 'file'>('file');
+  const [thumbnailUrlInput, setThumbnailUrlInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
@@ -55,17 +63,29 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
     }
   }, [isOpen, checkUser]);
 
-  // Populate form with prefill data when provided
+  // Initialize with prefilled data when modal opens
   useEffect(() => {
-    if (prefillData && isOpen) {
-      setFormData(prevData => ({
-        ...prevData,
-        name: prefillData.name || prevData.name,
-        url: prefillData.url || prevData.url,
-        description: prefillData.description || prevData.description,
-      }));
+    if (isOpen && prefilledData) {
+      setFormData({
+        name: prefilledData.title || '',
+        url: prefilledData.doc_id
+          ? `https://recursive.eco/view/${prefilledData.doc_id}`
+          : '',
+        description: prefilledData.description || '',
+        submitted_by: prefilledData.creator_name || '',
+        creator_link: prefilledData.creator_link || ''
+      });
+
+      if (prefilledData.hashtags?.length) {
+        setHashtags(prefilledData.hashtags);
+      }
+
+      if (prefilledData.thumbnail_url) {
+        setThumbnailUrlInput(prefilledData.thumbnail_url);
+        setThumbnailMode('url');
+      }
     }
-  }, [prefillData, isOpen]);
+  }, [isOpen, prefilledData]);
 
   const addHashtag = () => {
     const tag = hashtagInput.trim().toLowerCase().replace(/^#+/, ''); // Remove leading # if present
@@ -168,28 +188,32 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
     
     try {
       let thumbnail_url = null;
-      
-      // Upload image to Supabase Storage if selected
-      if (selectedImage) {
+
+      // Use URL if in URL mode
+      if (thumbnailMode === 'url' && thumbnailUrlInput) {
+        thumbnail_url = thumbnailUrlInput;
+      }
+      // Upload file if in file mode
+      else if (thumbnailMode === 'file' && selectedImage) {
         const fileExt = selectedImage.name.split('.').pop();
         const fileName = `${Math.random()}.${fileExt}`;
-        
+
         const { error: uploadError } = await supabase.storage
           .from('thumbnails')
           .upload(fileName, selectedImage);
-        
+
         if (uploadError) {
           console.error('Error uploading image:', uploadError);
           alert('Failed to upload image. Please try again.');
           setIsSubmitting(false);
           return;
         }
-        
+
         // Get public URL - using the correct syntax from the reference
         const { data } = supabase.storage
           .from('thumbnails')
           .getPublicUrl(fileName);
-        
+
         thumbnail_url = data.publicUrl;
       }
       
@@ -230,6 +254,8 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
       setHashtags([]);
       setHashtagInput('');
       setSelectedImage(null);
+      setThumbnailMode('file');
+      setThumbnailUrlInput('');
       setErrors({});
       
       alert('🎉 Submitted successfully! We\'ll review it and add it to the channel soon.');
@@ -333,20 +359,74 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
               {errors.url && <p className="text-red-600 text-sm mt-1">{errors.url}</p>}
             </div>
 
-            {/* Tool Image */}
+            {/* Tool Image - URL or File */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Tool Image (optional)
               </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setSelectedImage(e.target.files?.[0] || null)}
-                className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Upload an image file (JPG, PNG, GIF, or WebP, max 5MB). This will appear as a thumbnail for your tool.
-              </p>
+
+              {/* Toggle between URL and File */}
+              <div className="flex gap-2 mb-2">
+                <button
+                  type="button"
+                  onClick={() => setThumbnailMode('url')}
+                  className={`px-3 py-1 text-sm rounded ${
+                    thumbnailMode === 'url'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  Use URL
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setThumbnailMode('file')}
+                  className={`px-3 py-1 text-sm rounded ${
+                    thumbnailMode === 'file'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  Upload File
+                </button>
+              </div>
+
+              {thumbnailMode === 'url' ? (
+                <>
+                  <input
+                    type="url"
+                    value={thumbnailUrlInput}
+                    onChange={(e) => setThumbnailUrlInput(e.target.value)}
+                    className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="https://drive.google.com/... or image URL"
+                  />
+                  {thumbnailUrlInput && (
+                    <div className="mt-2">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={thumbnailUrlInput}
+                        alt="Thumbnail preview"
+                        className="h-20 w-auto rounded border"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setSelectedImage(e.target.files?.[0] || null)}
+                    className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    JPG, PNG, GIF, or WebP, max 5MB
+                  </p>
+                </>
+              )}
               {errors.image && <p className="text-red-600 text-sm mt-1">{errors.image}</p>}
             </div>
 
