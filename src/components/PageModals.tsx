@@ -7,6 +7,16 @@ import { CollaborationModal } from '@/components/modals/CollaborationModal';
 import { SubmitToolModal } from '@/components/modals/SubmitToolModal';
 import { createClient } from '@/lib/supabase-client';
 
+interface PrefilledData {
+  doc_id?: string | null;
+  title?: string | null;
+  description?: string | null;
+  creator_name?: string | null;
+  creator_link?: string | null;
+  thumbnail_url?: string | null;
+  hashtags?: string[];
+}
+
 interface PageModalsProps {
   channelSlug?: string;
 }
@@ -17,7 +27,7 @@ export function PageModals({ channelSlug = 'wellness' }: PageModalsProps) {
   const [showCollabModal, setShowCollabModal] = useState(false);
   const [showSubmitToolModal, setShowSubmitToolModal] = useState(false);
   const [, setUser] = useState<{ email?: string } | null>(null);
-  const [prefillData, setPrefillData] = useState<any>(null);
+  const [prefilledData, setPrefilledData] = useState<PrefilledData | null>(null);
 
   const checkUser = useCallback(async () => {
     const supabase = createClient();
@@ -46,43 +56,24 @@ export function PageModals({ channelSlug = 'wellness' }: PageModalsProps) {
     };
   }, [checkUser]);
 
-  // Auto-open submit modal if doc_id is present in URL
+  // Auto-open submit modal if doc_id is present in URL (from recursive-creator)
   useEffect(() => {
     const docId = searchParams?.get('doc_id');
-    const channel = searchParams?.get('channel');
 
     if (docId) {
-      const fetchDocumentAndOpenModal = async () => {
-        const supabase = createClient();
-        try {
-          const { data, error } = await supabase
-            .from('user_documents')
-            .select('*')
-            .eq('id', docId)
-            .single();
-
-          if (error) {
-            console.error('Error loading document:', error);
-            return;
-          }
-
-          if (data) {
-            // Pre-fill form data from document
-            setPrefillData({
-              name: data.document_data?.title || '',
-              url: `https://recursive.eco/view/${docId}`,
-              description: data.document_data?.description || '',
-            });
-
-            // Auto-open the modal
-            setShowSubmitToolModal(true);
-          }
-        } catch (err) {
-          console.error('Error fetching document:', err);
-        }
+      // Read all query params directly from URL
+      const prefilled: PrefilledData = {
+        doc_id: docId,
+        title: searchParams?.get('title'),
+        description: searchParams?.get('description'),
+        creator_name: searchParams?.get('creator_name'),
+        creator_link: searchParams?.get('creator_link'),
+        thumbnail_url: searchParams?.get('thumbnail_url'),
+        hashtags: searchParams?.get('hashtags')?.split(',').filter(Boolean) || [],
       };
 
-      fetchDocumentAndOpenModal();
+      setPrefilledData(prefilled);
+      setShowSubmitToolModal(true);
     }
   }, [searchParams]);
 
@@ -102,7 +93,7 @@ export function PageModals({ channelSlug = 'wellness' }: PageModalsProps) {
         isOpen={showSubmitToolModal}
         onClose={() => setShowSubmitToolModal(false)}
         channelSlug={channelSlug}
-        prefillData={prefillData}
+        prefilledData={prefilledData || undefined}
       />
 
       {/* Hidden trigger component to allow other components to open modals */}
