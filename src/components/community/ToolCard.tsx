@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { StarErrorModal } from './StarErrorModal';
+import { isGoogleDriveUrl, getProxiedImageUrl } from '@/lib/image-utils';
 
 interface Tool {
   id: string;
@@ -138,13 +139,23 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, onHashtagC
       {/* Enhanced Image/Placeholder Area */}
       <div className="relative h-48">
         {tool.thumbnail_url ? (
-          <Image
-            src={tool.thumbnail_url}
-            alt={tool.title || tool.name || 'Tool thumbnail'}
-            width={400}
-            height={300}
-            className="w-full h-full object-contain bg-gray-50"
-          />
+          // Use regular img for Google Drive URLs (proxied), Next.js Image for others
+          isGoogleDriveUrl(tool.thumbnail_url) ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={getProxiedImageUrl(tool.thumbnail_url)}
+              alt={tool.title || tool.name || 'Tool thumbnail'}
+              className="w-full h-full object-contain bg-gray-50"
+            />
+          ) : (
+            <Image
+              src={tool.thumbnail_url}
+              alt={tool.title || tool.name || 'Tool thumbnail'}
+              width={400}
+              height={300}
+              className="w-full h-full object-contain bg-gray-50"
+            />
+          )
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
             <div className="text-center text-gray-500 p-6">

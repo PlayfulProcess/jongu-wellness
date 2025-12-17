@@ -4,19 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase-client';
 import { User } from '@supabase/supabase-js';
 import { isAllowedUrlForChannel, getAllowedDomainsMessage } from '@/lib/url-validation';
-
-/**
- * Get the display URL for thumbnail preview.
- * Uses image proxy for Google Drive URLs to handle CORS.
- */
-function getProxiedImageUrl(url: string): string {
-  if (!url) return '';
-  // Use proxy for Google Drive URLs
-  if (url.includes('drive.google.com')) {
-    return `/api/image-proxy?url=${encodeURIComponent(url)}`;
-  }
-  return url;
-}
+import { getProxiedImageUrl } from '@/lib/image-utils';
 
 interface PrefilledData {
   doc_id?: string | null;
