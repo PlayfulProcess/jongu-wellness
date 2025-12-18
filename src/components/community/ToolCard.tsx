@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { StarErrorModal } from './StarErrorModal';
 import { isGoogleDriveUrl, getProxiedImageUrl } from '@/lib/image-utils';
 
@@ -30,6 +29,7 @@ interface ToolCardProps {
 export function ToolCard({ tool, onStar, onUnstar, isStarred = false, onHashtagClick }: ToolCardProps) {
   const [isStarring, setIsStarring] = useState(false);
   const [showStarError, setShowStarError] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const handleToolClick = () => {
     window.open(tool.url, '_blank');
