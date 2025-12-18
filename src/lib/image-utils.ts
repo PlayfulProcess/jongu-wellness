@@ -7,11 +7,14 @@ export function isGoogleDriveUrl(url: string): boolean {
 
 /**
  * Get the display URL for images.
- * Uses image proxy for Google Drive URLs to handle CORS.
+ *
+ * - Google Drive URLs: Proxied via /api/image-proxy (required due to CORS)
+ * - YouTube URLs (img.youtube.com): Pass through directly (public, no CORS issues)
+ * - Other URLs: Pass through directly
  */
 export function getProxiedImageUrl(url: string): string {
   if (!url) return '';
-  // Use proxy for Google Drive URLs
+  // Only proxy Google Drive URLs - YouTube and other public image hosts work directly
   if (isGoogleDriveUrl(url)) {
     return `/api/image-proxy?url=${encodeURIComponent(url)}`;
   }
