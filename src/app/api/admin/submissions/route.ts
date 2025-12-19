@@ -44,6 +44,7 @@ export async function GET() {
         thumbnail_url: toolData.thumbnail_url || '',
         submitter_ip: toolData.submitter_ip || '',
         submitter_email: creatorId ? emailMap.get(creatorId) || null : null,
+        channel_slug: tool.channel_slug || 'wellness',
         reviewed: toolData.reviewed === 'true' || toolData.reviewed === true,
         approved: toolData.is_active === 'true' || toolData.is_active === true,
         created_at: tool.created_at

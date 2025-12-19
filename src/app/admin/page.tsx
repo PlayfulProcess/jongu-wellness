@@ -19,6 +19,7 @@ interface Submission {
   thumbnail_url?: string
   submitter_ip?: string
   submitter_email?: string | null
+  channel_slug?: string
   reviewed: boolean
   approved: boolean
   created_at: string
@@ -190,6 +191,7 @@ export default function AdminPage() {
                   creator_link: submission.creator_link,
                   thumbnail_url: submission.thumbnail_url,
                   submitter_email: submission.submitter_email,
+                  channel_slug: submission.channel_slug,
                   created_at: submission.created_at,
                   approved: submission.approved,
                   reviewed: submission.reviewed
@@ -212,7 +214,7 @@ export default function AdminPage() {
             setShowEditModal(false)
             setEditingSubmission(null)
           }}
-          channelSlug="wellness"
+          channelSlug={editingSubmission.channel_slug || 'wellness'}
           editMode={true}
           editToolId={editingSubmission.id}
           prefilledData={{

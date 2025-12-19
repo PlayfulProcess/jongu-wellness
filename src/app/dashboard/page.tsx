@@ -20,6 +20,7 @@ interface Tool {
   star_count: number;
   total_clicks: number;
   thumbnail_url?: string | null;
+  channel_slug?: string;
   created_at: string;
   approved: boolean;
   active: boolean;
@@ -78,7 +79,7 @@ export default function Dashboard() {
       // Get tool details for starred tools
       const { data: toolsData, error: toolsError } = await supabase
         .from('tools')
-        .select('id, slug, tool_data, created_at')
+        .select('id, slug, tool_data, channel_slug, created_at')
         .in('id', toolIds);
 
       if (toolsError) throw toolsError;
@@ -95,6 +96,7 @@ export default function Dashboard() {
           star_count: parseInt(tool.tool_data?.stats?.stars || '0'),
           total_clicks: parseInt(tool.tool_data?.stats?.clicks || '0'),
           thumbnail_url: tool.tool_data?.thumbnail_url || null,
+          channel_slug: tool.channel_slug || 'wellness',
           created_at: tool.created_at,
           approved: tool.tool_data?.is_active === 'true',
           active: tool.tool_data?.is_active === 'true',
@@ -118,12 +120,12 @@ export default function Dashboard() {
     try {
       const { data, error } = await supabase
         .from('tools')
-        .select('id, slug, tool_data, created_at')
+        .select('id, slug, tool_data, channel_slug, created_at')
         .eq('tool_data->>creator_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
+
       const transformedTools = (data || []).map(tool => ({
         id: tool.id,
         name: tool.tool_data?.name || '',
@@ -137,6 +139,7 @@ export default function Dashboard() {
         star_count: parseInt(tool.tool_data?.stats?.stars || '0'),
         total_clicks: parseInt(tool.tool_data?.stats?.clicks || '0'),
         thumbnail_url: tool.tool_data?.thumbnail_url || null,
+        channel_slug: tool.channel_slug || 'wellness',
         created_at: tool.created_at,
         approved: tool.tool_data?.is_active === 'true',
         active: tool.tool_data?.is_active === 'true',
@@ -634,7 +637,7 @@ export default function Dashboard() {
             setShowEditModal(false);
             setEditingTool(null);
           }}
-          channelSlug="wellness"
+          channelSlug={editingTool.channel_slug || 'wellness'}
           editMode={true}
           editToolId={editingTool.id}
           prefilledData={{

@@ -19,6 +19,7 @@ interface Submission {
   star_count?: number;
   thumbnail_url?: string | null;
   submitter_email?: string | null;
+  channel_slug?: string;
   created_at: string;
   approved: boolean;
   reviewed: boolean;
@@ -94,11 +95,16 @@ export function SubmissionCard({
       onClick={handleCardClick}
       className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-gray-100 flex flex-col h-full cursor-pointer relative"
     >
-      {/* Status Badge - Top Right */}
-      <div className="absolute top-3 right-3 z-10">
+      {/* Badges - Top Right */}
+      <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 items-end">
         <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold ${status.colorClass} shadow-sm`}>
           {status.label}
         </span>
+        {submission.channel_slug && (
+          <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-purple-100 text-purple-800 shadow-sm">
+            #{submission.channel_slug}
+          </span>
+        )}
       </div>
 
       {/* Enhanced Image/Placeholder Area */}
