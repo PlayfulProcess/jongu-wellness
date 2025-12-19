@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { StarErrorModal } from './StarErrorModal';
 import { getProxiedImageUrl } from '@/lib/image-utils';
+import { ExternalLinkWarningModal } from '@/components/modals/ExternalLinkWarningModal';
 
 interface Tool {
   id: string;
@@ -26,13 +27,46 @@ interface ToolCardProps {
   onHashtagClick?: (hashtag: string) => void;
 }
 
+function isExternalUrl(url: string): boolean {
+  try {
+    const urlObj = new URL(url);
+    return !urlObj.hostname.includes('recursive.eco');
+  } catch {
+    return false;
+  }
+}
+
 export function ToolCard({ tool, onStar, onUnstar, isStarred = false, onHashtagClick }: ToolCardProps) {
   const [isStarring, setIsStarring] = useState(false);
   const [showStarError, setShowStarError] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [showExternalWarning, setShowExternalWarning] = useState(false);
+  const [pendingUrl, setPendingUrl] = useState<string>('');
 
   const handleToolClick = () => {
-    window.open(tool.url, '_blank');
+    if (isExternalUrl(tool.url)) {
+      setPendingUrl(tool.url);
+      setShowExternalWarning(true);
+    } else {
+      window.open(tool.url, '_blank');
+    }
+  };
+
+  const handleContinueToExternal = () => {
+    if (pendingUrl) {
+      window.open(pendingUrl, '_blank');
+      setPendingUrl('');
+    }
+  };
+
+  const handleCreatorLinkClick = (e: React.MouseEvent, url: string) => {
+    e.stopPropagation();
+    if (isExternalUrl(url)) {
+      setPendingUrl(url);
+      setShowExternalWarning(true);
+    } else {
+      window.open(url, '_blank');
+    }
   };
 
   const handleStarToggle = async () => {
@@ -205,7 +239,7 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, onHashtagC
                 href={tool.creator_link}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => handleCreatorLinkClick(e, tool.creator_link!)}
                 className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors underline"
               >
                 {tool.submitted_by}
@@ -216,12 +250,23 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, onHashtagC
           </div>
         </div>
       </div>
-      
+
       {/* Star Error Modal */}
-      <StarErrorModal 
+      <StarErrorModal
         isOpen={showStarError}
         onClose={() => setShowStarError(false)}
         onRefresh={() => window.location.reload()}
+      />
+
+      {/* External Link Warning Modal */}
+      <ExternalLinkWarningModal
+        isOpen={showExternalWarning}
+        onClose={() => {
+          setShowExternalWarning(false);
+          setPendingUrl('');
+        }}
+        onContinue={handleContinueToExternal}
+        url={pendingUrl}
       />
     </div>
   );
