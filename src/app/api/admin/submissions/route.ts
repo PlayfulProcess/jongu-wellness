@@ -22,11 +22,6 @@ export async function GET() {
       return NextResponse.json([]);
     }
 
-    // Get unique creator IDs
-    const creatorIds = tools
-      .map(tool => tool.tool_data?.creator_id)
-      .filter(Boolean);
-
     // Fetch user emails for all creator IDs
     const { data: users } = await adminClient.auth.admin.listUsers();
     const emailMap = new Map(
