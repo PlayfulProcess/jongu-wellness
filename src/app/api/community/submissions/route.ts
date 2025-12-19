@@ -4,6 +4,20 @@ import { sendToolSubmissionNotification } from '@/lib/email';
 import { isAdmin, isRecursiveEcoReservedName } from '@/lib/admin-utils';
 import { isAllowedUrlForChannel } from '@/lib/url-validation';
 
+/**
+ * Extracts the document ID from a recursive.eco URL
+ * @param url - URL in format: https://recursive.eco/view/{uuid} or https://dev.recursive.eco/view/{uuid}
+ * @returns The UUID document ID or null if not found
+ */
+function extractDocIdFromUrl(url: string): string | null {
+  try {
+    const match = url.match(/\/view\/([a-f0-9-]{36})/i);
+    return match ? match[1] : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -113,12 +127,58 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Error creating submission:', error);
       console.error('Detailed error:', JSON.stringify(error, null, 2));
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: 'Database error: ' + (error.message || 'Failed to submit tool'),
         details: error.details || null
       }, { status: 500 });
     }
-    
+
+    // Sync submission data back to user_documents if URL is from recursive.eco
+    const docId = extractDocIdFromUrl(claude_url);
+    if (docId) {
+      try {
+        // First, fetch the existing document to preserve fields we don't want to overwrite
+        const { data: existingDoc, error: fetchError } = await supabase
+          .from('user_documents')
+          .select('document_data')
+          .eq('id', docId)
+          .single();
+
+        if (!fetchError && existingDoc) {
+          // Merge new submission data with existing document_data
+          const updatedDocumentData = {
+            ...existingDoc.document_data,
+            // Update with submission data
+            title: title,
+            description: description,
+            creator_name: creator_name,
+            creator_link: creator_link || existingDoc.document_data?.creator_link,
+            thumbnail_url: thumbnail_url || existingDoc.document_data?.thumbnail_url,
+            hashtags: category, // category in tools = hashtags in user_documents
+          };
+
+          // Update user_documents with the merged data
+          const { error: updateError } = await supabase
+            .from('user_documents')
+            .update({
+              document_data: updatedDocumentData,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', docId);
+
+          if (updateError) {
+            console.error('Failed to sync submission to user_documents:', updateError);
+            // Don't fail the request - submission was successful, sync is a bonus
+          } else {
+            console.log(`Successfully synced submission data to user_documents: ${docId}`);
+          }
+        }
+      } catch (syncError) {
+        console.error('Error syncing to user_documents:', syncError);
+        // Don't fail the request - submission was successful, sync is a bonus
+      }
+    }
+
     // Send email notification
     try {
       await sendToolSubmissionNotification({
