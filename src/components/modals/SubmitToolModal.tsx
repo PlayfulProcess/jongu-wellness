@@ -230,6 +230,14 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
 
       const method = editMode ? 'PUT' : 'POST';
 
+      console.log(`Submitting to ${method} ${endpoint}`, {
+        title: formData.name,
+        url: formData.url,
+        category: hashtags,
+        editMode,
+        editToolId
+      });
+
       const response = await fetch(endpoint, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -246,8 +254,15 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
         credentials: 'include'
       });
 
+      console.log('Response status:', response.status, response.statusText);
+
       if (!response.ok) {
-        const errorData = await response.json();
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (e) {
+          errorData = { error: `Server returned ${response.status}: ${response.statusText}` };
+        }
         console.error('Server error response:', errorData);
         throw new Error(errorData.error || `Failed to ${editMode ? 'update' : 'submit'} tool`);
       }
@@ -283,9 +298,20 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
       
     } catch (error: unknown) {
       console.error('Error submitting tool:', error);
-      
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      alert(`❌ Failed to submit: ${errorMessage}`);
+
+      let errorMessage = 'Unknown error';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        console.error('Error details:', {
+          name: error.name,
+          message: error.message,
+          stack: error.stack
+        });
+      } else {
+        console.error('Non-Error thrown:', error);
+      }
+
+      alert(`❌ Failed to ${editMode ? 'update' : 'submit'}: ${errorMessage}\n\nCheck console for details.`);
     } finally {
       setIsSubmitting(false);
     }
