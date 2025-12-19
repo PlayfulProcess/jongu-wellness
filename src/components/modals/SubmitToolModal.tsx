@@ -8,6 +8,7 @@ import { getProxiedImageUrl } from '@/lib/image-utils';
 
 interface PrefilledData {
   doc_id?: string | null;
+  url?: string | null;
   title?: string | null;
   description?: string | null;
   creator_name?: string | null;
@@ -69,11 +70,13 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
   // Initialize with prefilled data when modal opens
   useEffect(() => {
     if (isOpen && prefilledData) {
+      // Use URL directly if provided, otherwise construct from doc_id
+      const toolUrl = prefilledData.url ||
+        (prefilledData.doc_id ? `https://recursive.eco/view/${prefilledData.doc_id}` : '');
+
       setFormData({
         name: prefilledData.title || '',
-        url: prefilledData.doc_id
-          ? `https://recursive.eco/view/${prefilledData.doc_id}`
-          : '',
+        url: toolUrl,
         description: prefilledData.description || '',
         submitted_by: prefilledData.creator_name || '',
         creator_link: prefilledData.creator_link || ''

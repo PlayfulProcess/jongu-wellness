@@ -216,7 +216,7 @@ export default function AdminPage() {
           editMode={true}
           editToolId={editingSubmission.id}
           prefilledData={{
-            doc_id: editingSubmission.claude_url?.includes('recursive.eco/view/') ? editingSubmission.claude_url.split('/view/')[1] : null,
+            url: editingSubmission.claude_url,
             title: editingSubmission.title,
             description: editingSubmission.description,
             creator_name: editingSubmission.creator_name,

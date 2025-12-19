@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
+import { isAdmin } from '@/lib/admin-utils';
 
 export async function PUT(
   request: NextRequest,
@@ -54,8 +55,12 @@ export async function PUT(
       );
     }
 
-    // Check if user is the creator
-    if (existingTool.tool_data?.creator_id !== user.id) {
+    // Check if user is the creator or an admin
+    const userEmail = user.email || '';
+    const isUserAdmin = isAdmin(userEmail);
+    const isCreator = existingTool.tool_data?.creator_id === user.id;
+
+    if (!isCreator && !isUserAdmin) {
       return NextResponse.json(
         { error: 'You can only edit your own submissions' },
         { status: 403 }

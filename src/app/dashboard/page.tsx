@@ -638,7 +638,7 @@ export default function Dashboard() {
           editMode={true}
           editToolId={editingTool.id}
           prefilledData={{
-            doc_id: editingTool.url.includes('recursive.eco/view/') ? editingTool.url.split('/view/')[1] : null,
+            url: editingTool.url,
             title: editingTool.name,
             description: editingTool.description,
             creator_name: editingTool.submitted_by,
