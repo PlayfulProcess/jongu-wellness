@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase-client';
 import { ToolCard } from '@/components/community/ToolCard';
 import { SubmissionCard } from '@/components/community/SubmissionCard';
+import { SubmitToolModal } from '@/components/modals/SubmitToolModal';
 import { MagicLinkAuth } from '@/components/MagicLinkAuth';
 import { useAuth } from '@/components/AuthProvider';
 import Link from 'next/link';
@@ -34,7 +35,11 @@ export default function Dashboard() {
   const [submittedTools, setSubmittedTools] = useState<Tool[]>([]);
   const [activeTab, setActiveTab] = useState<'starred' | 'submitted' | 'settings'>('starred');
   const [showAuthModal, setShowAuthModal] = useState(false);
-  
+
+  // Edit modal state
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingTool, setEditingTool] = useState<Tool | null>(null);
+
   // Account settings state
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [downloadingData, setDownloadingData] = useState(false);
@@ -171,13 +176,18 @@ export default function Dashboard() {
         .eq('tool_data->>creator_id', userId);
 
       if (error) throw error;
-      
+
       setSubmittedTools(prev => prev.filter(tool => tool.id !== toolId));
       alert('Tool deleted successfully.');
     } catch (error) {
       console.error('Error deleting tool:', error);
       alert('Error deleting tool. Please try again.');
     }
+  };
+
+  const handleEditTool = (submission: Tool | any) => {
+    setEditingTool(submission);
+    setShowEditModal(true);
   };
 
   const handleDownloadData = async () => {
@@ -486,6 +496,7 @@ export default function Dashboard() {
                     key={tool.id}
                     submission={tool}
                     onDelete={handleDeleteTool}
+                    onEdit={handleEditTool}
                   />
                 ))}
               </div>
@@ -610,6 +621,29 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
+      {/* Edit Modal */}
+      {showEditModal && editingTool && (
+        <SubmitToolModal
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingTool(null);
+          }}
+          channelSlug="wellness"
+          editMode={true}
+          editToolId={editingTool.id}
+          prefilledData={{
+            doc_id: editingTool.url.includes('recursive.eco/view/') ? editingTool.url.split('/view/')[1] : null,
+            title: editingTool.name,
+            description: editingTool.description,
+            creator_name: editingTool.submitted_by,
+            creator_link: '',
+            thumbnail_url: editingTool.thumbnail_url,
+            hashtags: editingTool.category
+          }}
+        />
+      )}
     </div>
   );
 }

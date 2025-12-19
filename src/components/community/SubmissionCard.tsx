@@ -18,6 +18,7 @@ interface Submission {
   creator_link?: string | null;
   star_count?: number;
   thumbnail_url?: string | null;
+  submitter_email?: string | null;
   created_at: string;
   approved: boolean;
   reviewed: boolean;
@@ -28,6 +29,7 @@ interface SubmissionCardProps {
   onDelete?: (id: string) => void;
   onApprove?: (id: string) => void;
   onReject?: (id: string) => void;
+  onEdit?: (submission: Submission) => void;
   showAdminActions?: boolean;
   onHashtagClick?: (hashtag: string) => void;
 }
@@ -46,6 +48,7 @@ export function SubmissionCard({
   onDelete,
   onApprove,
   onReject,
+  onEdit,
   showAdminActions = false,
   onHashtagClick
 }: SubmissionCardProps) {
@@ -177,57 +180,91 @@ export function SubmissionCard({
             ) : (
               <p className="text-sm font-medium text-gray-900">{creatorName}</p>
             )}
+            {/* Show email in admin view */}
+            {showAdminActions && submission.submitter_email && (
+              <p className="text-xs text-gray-500 mt-1">
+                {submission.submitter_email}
+              </p>
+            )}
           </div>
         </div>
 
         {/* Action Buttons */}
         {showAdminActions && onApprove && onReject && (
-          <div className="flex space-x-2 pt-4 border-t border-gray-200">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onApprove(submission.id);
-              }}
-              disabled={submission.approved && submission.reviewed}
-              className="flex-1 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-            >
-              Approve
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onReject(submission.id);
-              }}
-              disabled={submission.reviewed && !submission.approved}
-              className="flex-1 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-            >
-              Reject
-            </button>
-          </div>
+          <>
+            <div className="flex space-x-2 pt-4 border-t border-gray-200">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onApprove(submission.id);
+                }}
+                disabled={submission.approved && submission.reviewed}
+                className="flex-1 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              >
+                Approve
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onReject(submission.id);
+                }}
+                disabled={submission.reviewed && !submission.approved}
+                className="flex-1 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              >
+                Reject
+              </button>
+            </div>
+            {onEdit && (
+              <div className="flex pt-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(submission);
+                  }}
+                  className="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Edit
+                </button>
+              </div>
+            )}
+          </>
         )}
 
         {/* User Actions (Delete) */}
         {!showAdminActions && onDelete && (
-          <div className="flex space-x-2 pt-4 border-t border-gray-200">
-            <a
-              href={toolUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => handleLinkClick(e, toolUrl)}
-              className="flex-1 text-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              View Tool
-            </a>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(submission.id);
-              }}
-              className="flex-1 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
-            >
-              Delete
-            </button>
-          </div>
+          <>
+            <div className="flex space-x-2 pt-4 border-t border-gray-200">
+              <a
+                href={toolUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => handleLinkClick(e, toolUrl)}
+                className="flex-1 text-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                View Tool
+              </a>
+              {onEdit && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(submission);
+                  }}
+                  className="flex-1 px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Edit
+                </button>
+              )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(submission.id);
+                }}
+                className="flex-1 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </>
         )}
       </div>
 

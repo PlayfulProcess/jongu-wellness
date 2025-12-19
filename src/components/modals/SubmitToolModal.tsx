@@ -21,9 +21,11 @@ interface SubmitToolModalProps {
   onClose: () => void;
   channelSlug?: string;
   prefilledData?: PrefilledData;
+  editMode?: boolean;
+  editToolId?: string;
 }
 
-export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', prefilledData }: SubmitToolModalProps) {
+export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', prefilledData, editMode = false, editToolId }: SubmitToolModalProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -219,8 +221,14 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
       }
       
       // Submit tool with thumbnail_url, hashtags as array, and channel_slug
-      const response = await fetch('/api/community/submissions', {
-        method: 'POST',
+      const endpoint = editMode && editToolId
+        ? `/api/community/tools/${editToolId}`
+        : '/api/community/submissions';
+
+      const method = editMode ? 'PUT' : 'POST';
+
+      const response = await fetch(endpoint, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: formData.name,
@@ -234,16 +242,16 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
         }),
         credentials: 'include'
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Server error response:', errorData);
-        throw new Error(errorData.error || 'Failed to submit tool');
+        throw new Error(errorData.error || `Failed to ${editMode ? 'update' : 'submit'} tool`);
       }
-      
+
       const result = await response.json();
-      console.log('Tool submitted successfully:', result);
-      
+      console.log(`Tool ${editMode ? 'updated' : 'submitted'} successfully:`, result);
+
       // Reset form and close modal
       setFormData({
         name: '',
@@ -258,9 +266,17 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
       setThumbnailMode('file');
       setThumbnailUrlInput('');
       setErrors({});
-      
-      alert('🎉 Submitted successfully! We\'ll review it and add it to the channel soon.');
+
+      alert(editMode
+        ? '✅ Updated successfully! Your changes have been saved.'
+        : '🎉 Submitted successfully! We\'ll review it and add it to the channel soon.'
+      );
       onClose();
+
+      // Refresh the page to show updated data
+      if (editMode) {
+        window.location.reload();
+      }
       
     } catch (error: unknown) {
       console.error('Error submitting tool:', error);
@@ -279,7 +295,7 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Submit Content</h2>
+            <h2 className="text-2xl font-bold text-gray-900">{editMode ? 'Edit Content' : 'Submit Content'}</h2>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 text-2xl"

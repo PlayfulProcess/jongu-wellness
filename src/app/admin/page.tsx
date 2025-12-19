@@ -5,6 +5,7 @@ import { useAuth } from '@/components/AuthProvider'
 import { isAdmin } from '@/lib/admin-utils'
 import { Header } from '@/components/shared/Header'
 import { SubmissionCard } from '@/components/community/SubmissionCard'
+import { SubmitToolModal } from '@/components/modals/SubmitToolModal'
 
 interface Submission {
   id: string
@@ -17,6 +18,7 @@ interface Submission {
   creator_background?: string
   thumbnail_url?: string
   submitter_ip?: string
+  submitter_email?: string | null
   reviewed: boolean
   approved: boolean
   created_at: string
@@ -27,6 +29,10 @@ export default function AdminPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  // Edit modal state
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editingSubmission, setEditingSubmission] = useState<Submission | null>(null)
 
   useEffect(() => {
     if (status === 'authenticated' && user && isAdmin(user.email || '')) {
@@ -89,6 +95,11 @@ export default function AdminPage() {
       console.error('Error rejecting submission:', err)
       setError('Error rejecting submission')
     }
+  }
+
+  const handleEditSubmission = (submission: Submission | any) => {
+    setEditingSubmission(submission)
+    setShowEditModal(true)
   }
 
   if (status === 'loading') {
@@ -176,18 +187,43 @@ export default function AdminPage() {
                   creator_name: submission.creator_name,
                   creator_link: submission.creator_link,
                   thumbnail_url: submission.thumbnail_url,
+                  submitter_email: submission.submitter_email,
                   created_at: submission.created_at,
                   approved: submission.approved,
                   reviewed: submission.reviewed
                 }}
                 onApprove={approveSubmission}
                 onReject={rejectSubmission}
+                onEdit={handleEditSubmission}
                 showAdminActions={true}
               />
             ))}
           </div>
         )}
       </main>
+
+      {/* Edit Modal */}
+      {showEditModal && editingSubmission && (
+        <SubmitToolModal
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false)
+            setEditingSubmission(null)
+          }}
+          channelSlug="wellness"
+          editMode={true}
+          editToolId={editingSubmission.id}
+          prefilledData={{
+            doc_id: editingSubmission.claude_url?.includes('recursive.eco/view/') ? editingSubmission.claude_url.split('/view/')[1] : null,
+            title: editingSubmission.title,
+            description: editingSubmission.description,
+            creator_name: editingSubmission.creator_name,
+            creator_link: editingSubmission.creator_link || '',
+            thumbnail_url: editingSubmission.thumbnail_url || null,
+            hashtags: Array.isArray(editingSubmission.category) ? editingSubmission.category : [editingSubmission.category]
+          }}
+        />
+      )}
     </div>
   )
 }
