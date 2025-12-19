@@ -555,14 +555,17 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
               </div>
             </div>
 
-            {/* Submit Button */}
+            {/* Submit/Save Button */}
             <div className="flex space-x-4">
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
               >
-                {isSubmitting ? '⏳ Submitting...' : '🌱 Submit'}
+                {isSubmitting
+                  ? (editMode ? '⏳ Saving...' : '⏳ Submitting...')
+                  : (editMode ? '💾 Save' : '🌱 Submit')
+                }
               </button>
               <button
                 type="button"

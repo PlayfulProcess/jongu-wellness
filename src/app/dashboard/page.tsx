@@ -16,6 +16,7 @@ interface Tool {
   category: string[];  // Array of hashtags
   description: string;
   submitted_by: string;
+  creator_link?: string | null;
   star_count: number;
   total_clicks: number;
   thumbnail_url?: string | null;
@@ -127,9 +128,12 @@ export default function Dashboard() {
         id: tool.id,
         name: tool.tool_data?.name || '',
         url: tool.tool_data?.url || '#',
-        category: tool.tool_data?.category || 'uncategorized',
+        category: Array.isArray(tool.tool_data?.category)
+          ? tool.tool_data.category
+          : (tool.tool_data?.category ? [tool.tool_data.category] : []),
         description: tool.tool_data?.description || '',
         submitted_by: tool.tool_data?.submitted_by || 'Anonymous',
+        creator_link: tool.tool_data?.creator_link || null,
         star_count: parseInt(tool.tool_data?.stats?.stars || '0'),
         total_clicks: parseInt(tool.tool_data?.stats?.clicks || '0'),
         thumbnail_url: tool.tool_data?.thumbnail_url || null,
@@ -638,7 +642,7 @@ export default function Dashboard() {
             title: editingTool.name,
             description: editingTool.description,
             creator_name: editingTool.submitted_by,
-            creator_link: '',
+            creator_link: editingTool.creator_link || '',
             thumbnail_url: editingTool.thumbnail_url,
             hashtags: editingTool.category
           }}

@@ -182,7 +182,9 @@ export default function AdminPage() {
                   title: submission.title,
                   url: submission.claude_url,
                   claude_url: submission.claude_url,
-                  category: [submission.category],
+                  category: Array.isArray(submission.category)
+                    ? submission.category
+                    : (typeof submission.category === 'string' ? [submission.category] : []),
                   description: submission.description,
                   creator_name: submission.creator_name,
                   creator_link: submission.creator_link,
