@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
+import { createAdminClient } from '@/lib/supabase-admin';
 import { isAdmin } from '@/lib/admin-utils';
 
 export const runtime = 'nodejs';
@@ -92,8 +93,9 @@ export async function PUT(
     // Stringify for storage (important!)
     const toolDataString = JSON.stringify(updatedToolData);
 
-    // Update the tool in the database
-    const { error } = await supabase
+    // Use admin client to bypass RLS policies for the update
+    const adminClient = createAdminClient();
+    const { error } = await adminClient
       .from('tools')
       .update({
         tool_data: toolDataString,
