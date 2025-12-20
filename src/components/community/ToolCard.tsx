@@ -205,9 +205,9 @@ export function ToolCard({ tool, onStar, onUnstar, isStarred = false, onHashtagC
           </div>
         </div>
 
-        {/* Description - show up to 300 characters with more lines */}
+        {/* Description - show full 300 characters */}
         <div className="flex-grow">
-          <p className="text-gray-600 text-sm mb-4 min-h-[6rem] line-clamp-4">
+          <p className="text-gray-600 text-sm mb-4">
             {tool.description.slice(0, 300)}
           </p>
         </div>
