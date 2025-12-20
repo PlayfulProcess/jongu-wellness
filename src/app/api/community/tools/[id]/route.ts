@@ -49,7 +49,7 @@ export async function PUT(
     // Fetch the existing tool to verify ownership
     const { data: existingTool, error: fetchError } = await supabase
       .from('tools')
-      .select('tool_data')
+      .select('tool_data, channel_slug')
       .eq('id', toolId)
       .single();
 
@@ -60,10 +60,15 @@ export async function PUT(
       );
     }
 
+    // Parse tool_data if it's stored as a JSON string
+    const toolData = typeof existingTool.tool_data === 'string'
+      ? JSON.parse(existingTool.tool_data)
+      : existingTool.tool_data;
+
     // Check if user is the creator or an admin
     const userEmail = user.email || '';
     const isUserAdmin = isAdmin(userEmail);
-    const isCreator = existingTool.tool_data?.creator_id === user.id;
+    const isCreator = toolData?.creator_id === user.id;
 
     if (!isCreator && !isUserAdmin) {
       return NextResponse.json(
@@ -74,7 +79,7 @@ export async function PUT(
 
     // Update tool data
     const updatedToolData = {
-      ...existingTool.tool_data,
+      ...toolData,
       name: title,
       url: claude_url,
       category,
@@ -84,17 +89,18 @@ export async function PUT(
       thumbnail_url: thumbnail_url || null,
     };
 
+    // Stringify for storage (important!)
+    const toolDataString = JSON.stringify(updatedToolData);
+
     // Update the tool in the database
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('tools')
       .update({
-        tool_data: updatedToolData,
-        channel_slug: channel_slug || existingTool.tool_data?.channel_slug || 'wellness',
+        tool_data: toolDataString,
+        channel_slug: channel_slug || existingTool.channel_slug || 'wellness',
         updated_at: new Date().toISOString()
       })
-      .eq('id', toolId)
-      .select()
-      .single();
+      .eq('id', toolId);
 
     if (error) {
       console.error('Error updating tool:', error);
@@ -104,7 +110,7 @@ export async function PUT(
       );
     }
 
-    return NextResponse.json(data, { status: 200 });
+    return NextResponse.json({ success: true, id: toolId }, { status: 200 });
   } catch (error) {
     console.error('Error in tool update API:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
