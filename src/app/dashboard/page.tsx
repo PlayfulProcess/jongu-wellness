@@ -3,9 +3,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase-client';
 import { ToolCard } from '@/components/community/ToolCard';
+import { SubmissionCard } from '@/components/community/SubmissionCard';
+import { SubmitToolModal } from '@/components/modals/SubmitToolModal';
 import { MagicLinkAuth } from '@/components/MagicLinkAuth';
 import { useAuth } from '@/components/AuthProvider';
-import { getSubmissionStatus } from '@/lib/admin-utils';
 import Link from 'next/link';
 
 interface Tool {
@@ -15,9 +16,11 @@ interface Tool {
   category: string[];  // Array of hashtags
   description: string;
   submitted_by: string;
+  creator_link?: string | null;
   star_count: number;
   total_clicks: number;
   thumbnail_url?: string | null;
+  channel_slug?: string;
   created_at: string;
   approved: boolean;
   active: boolean;
@@ -34,7 +37,11 @@ export default function Dashboard() {
   const [submittedTools, setSubmittedTools] = useState<Tool[]>([]);
   const [activeTab, setActiveTab] = useState<'starred' | 'submitted' | 'settings'>('starred');
   const [showAuthModal, setShowAuthModal] = useState(false);
-  
+
+  // Edit modal state
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingTool, setEditingTool] = useState<Tool | null>(null);
+
   // Account settings state
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [downloadingData, setDownloadingData] = useState(false);
@@ -72,7 +79,7 @@ export default function Dashboard() {
       // Get tool details for starred tools
       const { data: toolsData, error: toolsError } = await supabase
         .from('tools')
-        .select('id, slug, tool_data, created_at')
+        .select('id, slug, tool_data, channel_slug, created_at')
         .in('id', toolIds);
 
       if (toolsError) throw toolsError;
@@ -89,6 +96,7 @@ export default function Dashboard() {
           star_count: parseInt(tool.tool_data?.stats?.stars || '0'),
           total_clicks: parseInt(tool.tool_data?.stats?.clicks || '0'),
           thumbnail_url: tool.tool_data?.thumbnail_url || null,
+          channel_slug: tool.channel_slug || 'wellness',
           created_at: tool.created_at,
           approved: tool.tool_data?.is_active === 'true',
           active: tool.tool_data?.is_active === 'true',
@@ -112,22 +120,26 @@ export default function Dashboard() {
     try {
       const { data, error } = await supabase
         .from('tools')
-        .select('id, slug, tool_data, created_at')
+        .select('id, slug, tool_data, channel_slug, created_at')
         .eq('tool_data->>creator_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
+
       const transformedTools = (data || []).map(tool => ({
         id: tool.id,
         name: tool.tool_data?.name || '',
         url: tool.tool_data?.url || '#',
-        category: tool.tool_data?.category || 'uncategorized',
+        category: Array.isArray(tool.tool_data?.category)
+          ? tool.tool_data.category
+          : (tool.tool_data?.category ? [tool.tool_data.category] : []),
         description: tool.tool_data?.description || '',
         submitted_by: tool.tool_data?.submitted_by || 'Anonymous',
+        creator_link: tool.tool_data?.creator_link || null,
         star_count: parseInt(tool.tool_data?.stats?.stars || '0'),
         total_clicks: parseInt(tool.tool_data?.stats?.clicks || '0'),
         thumbnail_url: tool.tool_data?.thumbnail_url || null,
+        channel_slug: tool.channel_slug || 'wellness',
         created_at: tool.created_at,
         approved: tool.tool_data?.is_active === 'true',
         active: tool.tool_data?.is_active === 'true',
@@ -171,13 +183,18 @@ export default function Dashboard() {
         .eq('tool_data->>creator_id', userId);
 
       if (error) throw error;
-      
+
       setSubmittedTools(prev => prev.filter(tool => tool.id !== toolId));
       alert('Tool deleted successfully.');
     } catch (error) {
       console.error('Error deleting tool:', error);
       alert('Error deleting tool. Please try again.');
     }
+  };
+
+  const handleEditTool = (submission: Tool | any) => {
+    setEditingTool(submission);
+    setShowEditModal(true);
   };
 
   const handleDownloadData = async () => {
@@ -470,7 +487,7 @@ export default function Dashboard() {
                 <p className="text-gray-600">Tools you&apos;ve submitted to the community.</p>
               </div>
             </div>
-            
+
             {submittedTools.length === 0 ? (
               <div className="text-center py-12">
                 <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -480,41 +497,14 @@ export default function Dashboard() {
                 <p className="mt-1 text-sm text-gray-500">You haven&apos;t submitted any tools yet.</p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {submittedTools.map((tool) => (
-                  <div key={tool.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">{tool.name}</h3>
-                        <p className="text-gray-600 text-sm mb-2">{tool.description}</p>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
-                          <span className="capitalize">{tool.category}</span>
-                          <span>•</span>
-                          <span>{tool.star_count} stars</span>
-                          <span>•</span>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getSubmissionStatus(tool.approved, tool.reviewed).colorClass}`}>
-                            {getSubmissionStatus(tool.approved, tool.reviewed).label}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <a
-                          href={tool.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                        >
-                          View Tool
-                        </a>
-                        <button
-                          onClick={() => handleDeleteTool(tool.id)}
-                          className="text-red-600 hover:text-red-800 text-sm font-medium"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  <SubmissionCard
+                    key={tool.id}
+                    submission={tool}
+                    onDelete={handleDeleteTool}
+                    onEdit={handleEditTool}
+                  />
                 ))}
               </div>
             )}
@@ -638,6 +628,29 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
+      {/* Edit Modal */}
+      {showEditModal && editingTool && (
+        <SubmitToolModal
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingTool(null);
+          }}
+          channelSlug={editingTool.channel_slug || 'wellness'}
+          editMode={true}
+          editToolId={editingTool.id}
+          prefilledData={{
+            url: editingTool.url,
+            title: editingTool.name,
+            description: editingTool.description,
+            creator_name: editingTool.submitted_by,
+            creator_link: editingTool.creator_link || '',
+            thumbnail_url: editingTool.thumbnail_url,
+            hashtags: editingTool.category
+          }}
+        />
+      )}
     </div>
   );
 }
