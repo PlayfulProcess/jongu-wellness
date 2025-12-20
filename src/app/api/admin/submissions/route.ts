@@ -10,7 +10,7 @@ export async function GET() {
     // Query tools table for community submissions (including Recursive.eco tools)
     const { data: tools, error } = await adminClient
       .from('tools')
-      .select('id, slug, tool_data, created_at, updated_at')
+      .select('id, slug, tool_data, channel_slug, created_at, updated_at')
       .order('created_at', { ascending: false });
 
     if (error) {
