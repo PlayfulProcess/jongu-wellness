@@ -23,6 +23,7 @@ const DEFAULT_GRADIENTS: { [key: string]: string } = {
   productivity: 'from-green-50 to-teal-100',
   relationships: 'from-pink-50 to-rose-100',
   mindfulness: 'from-indigo-50 to-blue-100',
+  tarot: 'from-indigo-50 to-violet-100',
   // Add more defaults as needed, or leave blank to use a generic gradient
 };
 
