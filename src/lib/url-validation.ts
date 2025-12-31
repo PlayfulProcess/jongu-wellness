@@ -11,13 +11,17 @@ export interface UrlValidationResult {
  * Checks if a URL is allowed for a specific channel
  */
 export function isAllowedUrlForChannel(url: string, channelSlug: string): UrlValidationResult {
-  // Only apply restrictions to kids-stories channel
-  if (channelSlug !== 'kids-stories') {
-    return { isValid: true };
+  // Content channels only allow recursive.eco domains
+  if (channelSlug === 'kids-stories') {
+    return isKidsSafeUrl(url);
   }
 
-  // For kids-stories, only allow recursive.eco domains
-  return isKidsSafeUrl(url);
+  if (channelSlug === 'tarot') {
+    return isTarotSafeUrl(url);
+  }
+
+  // Resource channels allow external URLs
+  return { isValid: true };
 }
 
 /**
@@ -53,11 +57,45 @@ export function isKidsSafeUrl(url: string): UrlValidationResult {
 }
 
 /**
+ * Validates if a URL is safe for the tarot channel
+ * Only allows recursive.eco and creator.recursive.eco domains
+ */
+export function isTarotSafeUrl(url: string): UrlValidationResult {
+  try {
+    const urlObj = new URL(url);
+    const hostname = urlObj.hostname.toLowerCase();
+
+    // Allow recursive.eco and all subdomains (including creator, www)
+    if (
+      hostname === 'recursive.eco' ||
+      hostname === 'www.recursive.eco' ||
+      hostname.endsWith('.recursive.eco')
+    ) {
+      return { isValid: true };
+    }
+
+    // If none of the patterns match, reject the URL
+    return {
+      isValid: false,
+      error: 'This channel only accepts tarot decks from recursive.eco.'
+    };
+  } catch (error) {
+    return {
+      isValid: false,
+      error: 'Invalid URL format'
+    };
+  }
+}
+
+/**
  * Get allowed domains message for a channel
  */
 export function getAllowedDomainsMessage(channelSlug: string): string | null {
   if (channelSlug === 'kids-stories') {
     return 'Only recursive.eco playlists are accepted for child safety.';
+  }
+  if (channelSlug === 'tarot') {
+    return 'Only tarot decks from recursive.eco are accepted.';
   }
   return null;
 }
