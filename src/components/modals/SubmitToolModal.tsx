@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase-client';
-import { User } from '@supabase/supabase-js';
+import { useAuth } from '@/components/AuthProvider';
 import { isAllowedUrlForChannel, getAllowedDomainsMessage } from '@/lib/url-validation';
 import { getProxiedImageUrl } from '@/lib/image-utils';
 
@@ -28,8 +28,8 @@ interface SubmitToolModalProps {
 }
 
 export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', prefilledData, editMode = false, editToolId }: SubmitToolModalProps) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, status } = useAuth();
+  const loading = status === 'loading';
   const [formData, setFormData] = useState({
     name: '',
     url: '',
@@ -46,27 +46,6 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   const supabase = createClient();
-
-  const checkUser = useCallback(async () => {
-    try {
-      setLoading(true);
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error) throw error;
-      setUser(user);
-    } catch (error) {
-      console.error('Error checking user:', error);
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  }, [supabase]);
-
-  // Check authentication when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      checkUser();
-    }
-  }, [isOpen, checkUser]);
 
   // Initialize with prefilled data when modal opens
   useEffect(() => {
