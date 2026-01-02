@@ -20,6 +20,10 @@ export function isAllowedUrlForChannel(url: string, channelSlug: string): UrlVal
     return isTarotSafeUrl(url);
   }
 
+  if (channelSlug === 'iching') {
+    return isIChingSafeUrl(url);
+  }
+
   // Resource channels allow external URLs
   return { isValid: true };
 }
@@ -88,6 +92,37 @@ export function isTarotSafeUrl(url: string): UrlValidationResult {
 }
 
 /**
+ * Validates if a URL is safe for the iching channel
+ * Only allows recursive.eco and creator.recursive.eco domains
+ */
+export function isIChingSafeUrl(url: string): UrlValidationResult {
+  try {
+    const urlObj = new URL(url);
+    const hostname = urlObj.hostname.toLowerCase();
+
+    // Allow recursive.eco and all subdomains (including creator, www)
+    if (
+      hostname === 'recursive.eco' ||
+      hostname === 'www.recursive.eco' ||
+      hostname.endsWith('.recursive.eco')
+    ) {
+      return { isValid: true };
+    }
+
+    // If none of the patterns match, reject the URL
+    return {
+      isValid: false,
+      error: 'This channel only accepts I Ching books from recursive.eco.'
+    };
+  } catch (error) {
+    return {
+      isValid: false,
+      error: 'Invalid URL format'
+    };
+  }
+}
+
+/**
  * Get allowed domains message for a channel
  */
 export function getAllowedDomainsMessage(channelSlug: string): string | null {
@@ -96,6 +131,9 @@ export function getAllowedDomainsMessage(channelSlug: string): string | null {
   }
   if (channelSlug === 'tarot') {
     return 'Only tarot decks from recursive.eco are accepted.';
+  }
+  if (channelSlug === 'iching') {
+    return 'Only I Ching books from recursive.eco are accepted.';
   }
   return null;
 }
