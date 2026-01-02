@@ -9,6 +9,7 @@ import { getProxiedImageUrl } from '@/lib/image-utils';
 interface PrefilledData {
   doc_id?: string | null;
   url?: string | null;
+  tool_type?: string | null;
   title?: string | null;
   description?: string | null;
   creator_name?: string | null;
@@ -70,9 +71,19 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
   // Initialize with prefilled data when modal opens
   useEffect(() => {
     if (isOpen && prefilledData) {
-      // Use URL directly if provided, otherwise construct from doc_id
-      const toolUrl = prefilledData.url ||
-        (prefilledData.doc_id ? `https://recursive.eco/view/${prefilledData.doc_id}` : '');
+      // Use URL directly if provided, otherwise construct from doc_id based on tool_type
+      let toolUrl = '';
+      if (prefilledData.url) {
+        toolUrl = prefilledData.url;
+      } else if (prefilledData.doc_id) {
+        // Construct URL based on tool_type
+        if (prefilledData.tool_type === 'tarot_deck') {
+          toolUrl = `https://recursive.eco/pages/tarot-viewer.html?deckId=${prefilledData.doc_id}`;
+        } else {
+          // Default to /view/ for sequence and other types
+          toolUrl = `https://recursive.eco/view/${prefilledData.doc_id}`;
+        }
+      }
 
       setFormData({
         name: prefilledData.title || '',
