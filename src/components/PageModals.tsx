@@ -9,6 +9,8 @@ import { createClient } from '@/lib/supabase-client';
 
 interface PrefilledData {
   doc_id?: string | null;
+  url?: string | null;
+  tool_type?: string | null;
   title?: string | null;
   description?: string | null;
   creator_name?: string | null;
@@ -64,6 +66,8 @@ export function PageModals({ channelSlug = 'wellness' }: PageModalsProps) {
       // Read all query params directly from URL
       const prefilled: PrefilledData = {
         doc_id: docId,
+        url: searchParams?.get('url'),
+        tool_type: searchParams?.get('tool_type'),
         title: searchParams?.get('title'),
         description: searchParams?.get('description'),
         creator_name: searchParams?.get('creator_name'),

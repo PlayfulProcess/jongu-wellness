@@ -1,14 +1,15 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase-client';
-import { User } from '@supabase/supabase-js';
+import { useAuth } from '@/components/AuthProvider';
 import { isAllowedUrlForChannel, getAllowedDomainsMessage } from '@/lib/url-validation';
 import { getProxiedImageUrl } from '@/lib/image-utils';
 
 interface PrefilledData {
   doc_id?: string | null;
   url?: string | null;
+  tool_type?: string | null;
   title?: string | null;
   description?: string | null;
   creator_name?: string | null;
@@ -27,8 +28,8 @@ interface SubmitToolModalProps {
 }
 
 export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', prefilledData, editMode = false, editToolId }: SubmitToolModalProps) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, status } = useAuth();
+  const loading = status === 'loading';
   const [formData, setFormData] = useState({
     name: '',
     url: '',
@@ -46,33 +47,22 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
 
   const supabase = createClient();
 
-  const checkUser = useCallback(async () => {
-    try {
-      setLoading(true);
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error) throw error;
-      setUser(user);
-    } catch (error) {
-      console.error('Error checking user:', error);
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  }, [supabase]);
-
-  // Check authentication when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      checkUser();
-    }
-  }, [isOpen, checkUser]);
-
   // Initialize with prefilled data when modal opens
   useEffect(() => {
     if (isOpen && prefilledData) {
-      // Use URL directly if provided, otherwise construct from doc_id
-      const toolUrl = prefilledData.url ||
-        (prefilledData.doc_id ? `https://recursive.eco/view/${prefilledData.doc_id}` : '');
+      // Use URL directly if provided, otherwise construct from doc_id based on tool_type
+      let toolUrl = '';
+      if (prefilledData.url) {
+        toolUrl = prefilledData.url;
+      } else if (prefilledData.doc_id) {
+        // Construct URL based on tool_type
+        if (prefilledData.tool_type === 'tarot_deck') {
+          toolUrl = `https://recursive.eco/pages/tarot-viewer.html?deckId=${prefilledData.doc_id}`;
+        } else {
+          // Default to /view/ for sequence and other types
+          toolUrl = `https://recursive.eco/view/${prefilledData.doc_id}`;
+        }
+      }
 
       setFormData({
         name: prefilledData.title || '',
