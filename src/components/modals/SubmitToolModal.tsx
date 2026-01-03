@@ -81,6 +81,10 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
       if (prefilledData.thumbnail_url) {
         setThumbnailUrlInput(prefilledData.thumbnail_url);
         setThumbnailMode('url');
+      } else if (prefilledData.tool_type === 'iching') {
+        // Default yin-yang thumbnail for I Ching submissions
+        setThumbnailUrlInput('https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Yin_yang.svg/512px-Yin_yang.svg.png');
+        setThumbnailMode('url');
       }
     }
   }, [isOpen, prefilledData]);
