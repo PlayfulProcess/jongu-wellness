@@ -58,6 +58,8 @@ export function SubmitToolModal({ isOpen, onClose, channelSlug = 'wellness', pre
         // Construct URL based on tool_type
         if (prefilledData.tool_type === 'tarot_deck') {
           toolUrl = `https://recursive.eco/pages/tarot-viewer.html?deckId=${prefilledData.doc_id}`;
+        } else if (prefilledData.tool_type === 'iching') {
+          toolUrl = `https://recursive.eco/pages/iching-viewer.html?bookId=${prefilledData.doc_id}`;
         } else {
           // Default to /view/ for sequence and other types
           toolUrl = `https://recursive.eco/view/${prefilledData.doc_id}`;

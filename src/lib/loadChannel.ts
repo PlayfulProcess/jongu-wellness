@@ -24,6 +24,7 @@ const DEFAULT_GRADIENTS: { [key: string]: string } = {
   relationships: 'from-pink-50 to-rose-100',
   mindfulness: 'from-indigo-50 to-blue-100',
   tarot: 'from-indigo-50 to-violet-100',
+  iching: 'from-amber-50 to-yellow-100',
   // Add more defaults as needed, or leave blank to use a generic gradient
 };
 
